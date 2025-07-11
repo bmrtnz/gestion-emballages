@@ -1,0 +1,28 @@
+/* frontend/src/assets/main.css */
+
+/* Importer la police Outfit */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700&display=swap');
+
+/* Définition de nos variables de design */
+:root {
+  --primary-color: #007bff;
+  --sidebar-bg: #ffffff;
+  --content-bg: #f4f7f9;
+  --text-color: #333;
+  --text-color-light: #666;
+  --border-color: #e0e0e0;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Appliquer la police au body */
+body {
+  margin: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  background-color: var(--content-bg);
+  color: var(--text-color);
+}
+
+#app {
+  display: flex;
+}

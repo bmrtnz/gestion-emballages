@@ -1,0 +1,53 @@
+####### STATIONS
+
+### Station A
+User Jean Martin (id = 686d808469413bec5a3fa289)
+j.martin@valdegaronne.com / password123
+Station Coopérative du Val de Garonne (id = 686d39c291729b4d55005bda)
+login
+{
+    "email": "j.martin@valdegaronne.com",
+    "password": "password123"
+}
+
+
+### Station B
+User Marie Lebrun (id = 686d7f1469413bec5a3fa286)
+m.lebrun@coop-pyrenees.fr / password123
+Station Coopérative des Pyrénées (id = 686d7dcd69413bec5a3fa283)
+login
+{
+    "email": "m.lebrun@coop-pyrenees.fr",
+    "password": "password123"
+}
+
+
+####### FOURNISSEURS
+
+Fournisseur Emballage du Nord (id = 686d3af864e5d56216404f93)
+login
+{
+    "email": "edn@supplier.com",
+    "password": "password123"
+}
+
+####### GESTIONNAIRE
+
+User Nicole Lang (id = 686d38c591729b4d55005bd3)
+nicole@embadif.com / password123
+login
+{
+    "email": "nicole@embadif.com",
+    "password": "password123"
+}
+
+
+####### ARTICLES
+
+BQT-CART-500 - Barquette Carton 500g (id = 686d3be7c99e3791fb655d52)
+Fournisseur Emballages du Nord (id = 686d3af864e5d56216404f91 ?)
+
+
+id demande de transfert : 686d83c72fbb6e1e5901dfde
+id de la prevision : 686d903f75244627f36f2361
+file key : 1752012319207-M1-P2-Fiche Tes 5 ennemis.pdf
