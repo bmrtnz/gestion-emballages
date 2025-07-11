@@ -1,0 +1,14 @@
+# Fichiers système
+.DS_Store
+npm-debug.log
+
+# Dossiers de dépendances
+/backend/node_modules
+/frontend/node_modules
+
+# Fichiers d'environnement (NE JAMAIS PARTAGER)
+.env
+/backend/.env
+
+# Dossiers de build (pour plus tard)
+/frontend/dist
