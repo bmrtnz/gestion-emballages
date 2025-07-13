@@ -1,0 +1,1 @@
+<template><div><h1>Transferts</h1><p>Page en construction.</p></div></template>

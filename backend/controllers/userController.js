@@ -2,88 +2,96 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('../utils/asyncHandler');
+const { BadRequestError, UnauthorizedError } = require('../utils/appError');
+const config = require('../config/env');
 
-// @desc    Créer un nouvel utilisateur
-// @route   POST /api/users
-// @access  Public (pour l'instant)
-exports.createUser = async (req, res) => {
+/**
+ * @description Créer un nouvel utilisateur.
+ * @route POST /api/users
+ * @access Public (devrait être restreint en production)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.createUser = asyncHandler(async (req, res, next) => {
     const { email, password, role, nomComplet, entiteId } = req.body;
 
-    try {
-        const userExists = await User.findOne({ email });
-
-        if (userExists) {
-            return res.status(400).json({ message: 'Cet utilisateur existe déjà' });
-        }
-
-        const user = await User.create({
-            email,
-            password,
-            role,
-            nomComplet,
-            entiteId
-        });
-
-        if (user) {
-            // Ne pas renvoyer le mot de passe haché
-            const userResponse = {
-                _id: user._id,
-                email: user.email,
-                role: user.role,
-                nomComplet: user.nomComplet,
-                entiteId: user.entiteId,
-                createdAt: user.createdAt,
-            };
-            res.status(201).json(userResponse);
-        } else {
-            res.status(400).json({ message: 'Données invalides' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: `Erreur du serveur: ${error.message}` });
+    // Vérifie si un utilisateur avec cet email existe déjà.
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+        return next(new BadRequestError('Cet utilisateur existe déjà'));
     }
-};
 
-// @desc    Authentifier un utilisateur & obtenir un token
-// @route   POST /api/users/login
-// @access  Public
-exports.loginUser = async (req, res) => {
+    // Crée l'utilisateur. Le mot de passe est haché automatiquement par un hook pre-save dans le modèle.
+    const user = await User.create({
+        email,
+        password,
+        role,
+        nomComplet,
+        entiteId
+    });
+
+    // Prépare la réponse en excluant le mot de passe.
+    const userResponse = {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        nomComplet: user.nomComplet,
+        entiteId: user.entiteId,
+        createdAt: user.createdAt,
+    };
+    res.status(201).json(userResponse);
+});
+
+/**
+ * @description Authentifier un utilisateur et retourner un token JWT.
+ * @route POST /api/users/login
+ * @access Public
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.loginUser = asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
 
-    try {
-        const user = await User.findOne({ email });
+    // Recherche l'utilisateur par email.
+    const user = await User.findOne({ email });
 
-        // Vérifie si l'utilisateur existe ET si le mot de passe correspond
-        if (user && (await bcrypt.compare(password, user.password))) {
-            // Génère le token
-            const token = jwt.sign(
-                { id: user._id, role: user.role }, // Payload du token
-                process.env.JWT_SECRET,            // Clé secrète
-                { expiresIn: '1d' }                // Expiration (1 jour)
-            );
+    // Vérifie si l'utilisateur existe et si le mot de passe fourni correspond au mot de passe haché.
+    if (user && (await bcrypt.compare(password, user.password))) {
+        // Génère le token JWT avec les informations essentielles de l'utilisateur.
+        const token = jwt.sign(
+            { id: user._id, role: user.role, entiteId: user.entiteId }, // Payload
+            config.jwtSecret, // Clé secrète
+            { expiresIn: '1d' } // Durée de validité
+        );
 
-            res.json({
-                _id: user._id,
-                nomComplet: user.nomComplet,
-                email: user.email,
-                role: user.role,
-                token: token,
-            });
-        } else {
-            res.status(401).json({ message: 'Email ou mot de passe invalide' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: `Erreur du serveur: ${error.message}` });
-    }
-};
-
-// @desc    Obtenir le profil de l'utilisateur connecté
-// @route   GET /api/users/profile
-// @access  Privé
-exports.getUserProfile = async (req, res) => {
-    // req.user est disponible grâce à notre middleware 'protect'
-    if (req.user) {
-        res.json(req.user);
+        // Renvoie les informations de l'utilisateur et le token.
+        res.json({
+            _id: user._id,
+            nomComplet: user.nomComplet,
+            email: user.email,
+            role: user.role,
+            entiteId: user.entiteId,
+            token: token,
+        });
     } else {
-        res.status(404).json({ message: 'Utilisateur non trouvé' });
+        // Si l'authentification échoue, lever une erreur 401.
+        return next(new UnauthorizedError('Email ou mot de passe invalide'));
     }
-};
+});
+
+/**
+ * @description Obtenir le profil de l'utilisateur actuellement connecté.
+ * @route GET /api/users/profile
+ * @access Privé
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.getUserProfile = asyncHandler(async (req, res, next) => {
+    // Les informations de l'utilisateur sont déjà attachées à l'objet `req`
+    // par le middleware `protect`. Il suffit de les renvoyer.
+    res.json(req.user);
+});

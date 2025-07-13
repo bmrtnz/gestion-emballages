@@ -1,0 +1,1 @@
+<template><div><h1>Stations</h1><p>Page en construction.</p></div></template>

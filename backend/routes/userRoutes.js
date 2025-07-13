@@ -2,11 +2,21 @@
 const express = require("express");
 const router = express.Router();
 const {
-  createUser,
-  loginUser,
-  getUserProfile,
+    createUser,
+    loginUser,
+    getUserProfile,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
+const {
+    createUserValidator,
+    loginUserValidator,
+} = require("../validators/userValidators");
+const { validate } = require("../middleware/validationMiddleware");
+
+/**
+ * @fileoverview Ce fichier définit les routes pour l'authentification et la gestion des utilisateurs.
+ * @module routes/userRoutes
+ */
 
 /**
  * @swagger
@@ -15,7 +25,8 @@ const { protect } = require("../middleware/authMiddleware");
  *     description: Authentification et gestion des utilisateurs
  */
 
-router.post("/", createUser);
+// Route pour créer un nouvel utilisateur.
+router.post("/", createUserValidator, validate, createUser);
 
 /**
  * @swagger
@@ -45,7 +56,8 @@ router.post("/", createUser);
  *       401:
  *         description: Email ou mot de passe invalide.
  */
-router.post("/login", loginUser);
+// Route pour l'authentification des utilisateurs.
+router.post("/login", loginUserValidator, validate, loginUser);
 
 /**
  * @swagger
@@ -61,6 +73,7 @@ router.post("/login", loginUser);
  *       401:
  *         description: Non autorisé.
  */
+// Route pour obtenir le profil de l'utilisateur actuellement connecté.
 router.get("/profile", protect, getUserProfile);
 
 module.exports = router;

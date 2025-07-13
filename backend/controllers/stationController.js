@@ -1,61 +1,67 @@
 // backend/controllers/stationController.js
 const Station = require('../models/stationModel');
+const { NotFoundError } = require('../utils/appError');
+const asyncHandler = require('../utils/asyncHandler');
 
-// @desc    Créer une nouvelle station
-// @route   POST /api/stations
-// @access  Privé (Manager, Gestionnaire)
-exports.createStation = async (req, res) => {
-    try {
-        const { nom, identifiantInterne, adresse, contactPrincipal } = req.body;
-        const station = await Station.create({ nom, identifiantInterne, adresse, contactPrincipal });
-        res.status(201).json(station);
-    } catch (error) {
-        res.status(400).json({ message: 'Erreur lors de la création de la station', error: error.message });
-    }
-};
+/**
+ * @description Créer une nouvelle station.
+ * @route POST /api/stations
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.createStation = asyncHandler(async (req, res, next) => {
+    const { nom, identifiantInterne, adresse, contactPrincipal } = req.body;
+    const station = await Station.create({ nom, identifiantInterne, adresse, contactPrincipal });
+    res.status(201).json(station);
+});
 
-// @desc    Obtenir toutes les stations
-// @route   GET /api/stations
-// @access  Privé (Tous les utilisateurs connectés)
-exports.getStations = async (req, res) => {
-    try {
-        const stations = await Station.find({ isActive: true });
-        res.json(stations);
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur du serveur' });
-    }
-};
+/**
+ * @description Obtenir toutes les stations actives.
+ * @route GET /api/stations
+ * @access Privé (Tous les utilisateurs connectés)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.getStations = asyncHandler(async (req, res, next) => {
+    const stations = await Station.find({ isActive: true });
+    res.json(stations);
+});
 
-// @desc    Mettre à jour une station
-// @route   PUT /api/stations/:id
-// @access  Privé (Manager, Gestionnaire)
-exports.updateStation = async (req, res) => {
-    try {
-        const station = await Station.findByIdAndUpdate(req.params.id, req.body, {
-            new: true, // Renvoie le document mis à jour
-            runValidators: true,
-        });
-        if (!station) {
-            return res.status(404).json({ message: 'Station non trouvée' });
-        }
-        res.json(station);
-    } catch (error) {
-        res.status(400).json({ message: 'Erreur lors de la mise à jour', error: error.message });
+/**
+ * @description Mettre à jour une station par son ID.
+ * @route PUT /api/stations/:id
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.updateStation = asyncHandler(async (req, res, next) => {
+    const station = await Station.findByIdAndUpdate(req.params.id, req.body, {
+        new: true, // Renvoie le document mis à jour.
+        runValidators: true, // Exécute les validateurs du schéma.
+    });
+    if (!station) {
+        return next(new NotFoundError('Station non trouvée'));
     }
-};
+    res.json(station);
+});
 
-// @desc    Supprimer (désactiver) une station
-// @route   DELETE /api/stations/:id
-// @access  Privé (Manager, Gestionnaire)
-exports.deleteStation = async (req, res) => {
-    try {
-        // On ne supprime pas vraiment, on désactive (soft delete)
-        const station = await Station.findByIdAndUpdate(req.params.id, { isActive: false });
-        if (!station) {
-            return res.status(404).json({ message: 'Station non trouvée' });
-        }
-        res.json({ message: 'Station désactivée avec succès' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur du serveur' });
+/**
+ * @description Désactiver une station (suppression logique).
+ * @route DELETE /api/stations/:id
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.deleteStation = asyncHandler(async (req, res, next) => {
+    // La station n'est pas supprimée de la base, mais marquée comme inactive.
+    const station = await Station.findByIdAndUpdate(req.params.id, { isActive: false });
+    if (!station) {
+        return next(new NotFoundError('Station non trouvée'));
     }
-};
+    res.json({ message: 'Station désactivée avec succès' });
+});

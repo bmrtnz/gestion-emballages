@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "data:import": "node data/seeder.js",
+    "data:destroy": "node data/seeder.js -d",
+    "docs:generate": "jsdoc -c jsdoc.json"
   },
   "keywords": [],
   "author": "",
@@ -16,11 +19,16 @@
     "cors": "^2.8.5",
     "dotenv": "^17.1.0",
     "express": "^5.1.0",
+    "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "minio": "^8.0.5",
     "mongoose": "^8.16.2",
     "multer": "^2.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "clean-jsdoc-theme": "^4.3.0",
+    "jsdoc": "^4.0.4"
   }
 }

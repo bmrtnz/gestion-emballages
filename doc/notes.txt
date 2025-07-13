@@ -51,3 +51,16 @@ Fournisseur Emballages du Nord (id = 686d3af864e5d56216404f91 ?)
 id demande de transfert : 686d83c72fbb6e1e5901dfde
 id de la prevision : 686d903f75244627f36f2361
 file key : 1752012319207-M1-P2-Fiche Tes 5 ennemis.pdf
+
+
+
+
+
+
+GOOGLE_CLOUD_PROJECT = gestion-emballages
+
+@backend/ Analyse the overall architecture of this project, including:
+  Main modules and their responsibilities
+  Data flow and dependencis
+  Use of design patterns
+  Potential architeftural issues

@@ -1,14 +1,11 @@
 <script setup>
-import StationList from './StationList.vue';
+import StationList from "./StationList.vue";
 // Plus besoin de useRouter ici
 </script>
 
 <template>
   <div class="page-container">
-    <div class="page-header">
-      </div>
-    
-    <StationList />
+    <div class="page-header"></div>
   </div>
 </template>
 

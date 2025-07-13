@@ -1,0 +1,30 @@
+{
+  "source": {
+    "include": [
+      "models",
+      "routes",
+      "controllers",
+      "services",
+      "middleware"
+    ],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules|docs)"
+  },
+  "plugins": [],
+  "opts": {
+    "destination": "./docs/",
+    "encoding": "utf8",
+    "recurse": true,
+    "template": "./node_modules/clean-jsdoc-theme",
+    "theme_opts": {
+      "title": "Documentation Technique",
+      "menu": [
+        {
+          "title": "API Swagger",
+          "link": "/api-docs",
+          "target": "_blank"
+        }
+      ]
+    }
+  }
+}

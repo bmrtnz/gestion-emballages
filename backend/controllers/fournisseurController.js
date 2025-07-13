@@ -1,106 +1,166 @@
 // backend/controllers/fournisseurController.js
-const Fournisseur = require('../models/fournisseurModel');
+const Fournisseur = require("../models/fournisseurModel");
+const { NotFoundError, BadRequestError } = require('../utils/appError');
+const asyncHandler = require('../utils/asyncHandler');
 
-// @desc    Créer un nouveau fournisseur
-exports.createFournisseur = async (req, res) => {
-    try {
-        const fournisseur = await Fournisseur.create(req.body);
-        res.status(201).json(fournisseur);
-    } catch (error) {
-        res.status(400).json({ message: 'Erreur lors de la création du fournisseur', error: error.message });
+/**
+ * @description Créer un nouveau fournisseur.
+ * @route POST /api/fournisseurs
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.createFournisseur = asyncHandler(async (req, res, next) => {
+  const fournisseur = await Fournisseur.create(req.body);
+  res.status(201).json(fournisseur);
+});
+
+/**
+ * @description Obtenir tous les fournisseurs actifs, triés par nom.
+ * @route GET /api/fournisseurs
+ * @access Privé
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.getFournisseurs = asyncHandler(async (req, res, next) => {
+  const fournisseurs = await Fournisseur.find({ isActive: true }).sort({ nom: 1 });
+  res.json(fournisseurs);
+});
+
+/**
+ * @description Mettre à jour un fournisseur par son ID.
+ * @route PUT /api/fournisseurs/:id
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.updateFournisseur = asyncHandler(async (req, res, next) => {
+  const fournisseur = await Fournisseur.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true, // Retourne le document mis à jour.
+      runValidators: true, // Exécute les validateurs du schéma Mongoose.
     }
-};
+  );
+  if (!fournisseur) {
+    return next(new NotFoundError("Fournisseur non trouvé"));
+  }
+  res.json(fournisseur);
+});
 
-// @desc    Obtenir tous les fournisseurs
-exports.getFournisseurs = async (req, res) => {
-    try {
-        const fournisseurs = await Fournisseur.find({ isActive: true });
-        res.json(fournisseurs);
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur du serveur' });
-    }
-};
+/**
+ * @description Désactiver un fournisseur (suppression logique ou "soft delete").
+ * @route DELETE /api/fournisseurs/:id
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.deactivateFournisseur = asyncHandler(async (req, res, next) => {
+  const fournisseur = await Fournisseur.findById(req.params.id);
 
-// @desc    Mettre à jour un fournisseur
-exports.updateFournisseur = async (req, res) => {
-    try {
-        const fournisseur = await Fournisseur.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        });
-        if (!fournisseur) {
-            return res.status(404).json({ message: 'Fournisseur non trouvé' });
-        }
-        res.json(fournisseur);
-    } catch (error) {
-        res.status(400).json({ message: 'Erreur lors de la mise à jour', error: error.message });
-    }
-};
+  if (!fournisseur) {
+    return next(new NotFoundError("Fournisseur non trouvé"));
+  }
 
-// @desc    Désactiver un fournisseur
-exports.deleteFournisseur = async (req, res) => {
-    try {
-        const fournisseur = await Fournisseur.findByIdAndUpdate(req.params.id, { isActive: false });
-        if (!fournisseur) {
-            return res.status(404).json({ message: 'Fournisseur non trouvé' });
-        }
-        res.json({ message: 'Fournisseur désactivé avec succès' });
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur du serveur' });
-    }
-};
+  fournisseur.isActive = false;
+  await fournisseur.save();
+  res.json({ message: "Fournisseur désactivé avec succès" });
+});
 
-// @desc    Ajouter un site à un fournisseur existant
-exports.addSiteToFournisseur = async (req, res) => {
-    try {
-        const fournisseur = await Fournisseur.findById(req.params.id);
+/**
+ * @description Ajouter un site à un fournisseur existant.
+ * @route POST /api/fournisseurs/:id/sites
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.addSiteToFournisseur = asyncHandler(async (req, res, next) => {
+  const fournisseur = await Fournisseur.findById(req.params.id);
 
-        if (!fournisseur) {
-            return res.status(404).json({ message: 'Fournisseur non trouvé' });
-        }
+  if (!fournisseur) {
+    return next(new NotFoundError("Fournisseur non trouvé"));
+  }
 
-        const nouveauSite = req.body;
+  const nouveauSite = req.body;
 
-        // Logique pour s'assurer qu'il n'y a qu'un seul site principal
-        if (nouveauSite.estPrincipal) {
-            fournisseur.sites.forEach(site => {
-                site.estPrincipal = false;
-            });
-        }
+  // S'assure qu'un seul site peut être marqué comme principal.
+  if (nouveauSite.estPrincipal) {
+    fournisseur.sites.forEach((site) => {
+      site.estPrincipal = false;
+    });
+  }
 
-        fournisseur.sites.push(nouveauSite);
-        
-        await fournisseur.save();
-        res.status(201).json(fournisseur);
+  fournisseur.sites.push(nouveauSite);
+  await fournisseur.save();
+  res.status(201).json(fournisseur);
+});
 
-    } catch (error) {
-        res.status(400).json({ message: 'Erreur lors de l\'ajout du site', error: error.message });
-    }
-};
+/**
+ * @description Supprimer un site d'un fournisseur.
+ * @route DELETE /api/fournisseurs/:id/sites/:siteId
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.deleteSiteFromFournisseur = asyncHandler(async (req, res, next) => {
+  const { id: fournisseurId, siteId } = req.params;
+  const fournisseur = await Fournisseur.findById(fournisseurId);
 
-// @desc    Supprimer un site d'un fournisseur
-exports.deleteSiteFromFournisseur = async (req, res) => {
-    try {
-        const { id: fournisseurId, siteId } = req.params;
+  if (!fournisseur) {
+    return next(new NotFoundError("Fournisseur non trouvé"));
+  }
 
-        const fournisseur = await Fournisseur.findById(fournisseurId);
+  // Empêche la suppression du dernier site d'un fournisseur.
+  if (fournisseur.sites.length <= 1) {
+    return next(new BadRequestError("Impossible de supprimer le dernier site d'un fournisseur."));
+  }
 
-        if (!fournisseur) {
-            return res.status(404).json({ message: 'Fournisseur non trouvé' });
-        }
+  // Retire le sous-document du tableau des sites.
+  fournisseur.sites.pull({ _id: siteId });
+  await fournisseur.save();
+  res.json({ message: "Site supprimé avec succès" });
+});
 
-        // Empêcher la suppression du dernier site
-        if (fournisseur.sites.length <= 1) {
-            return res.status(400).json({ message: 'Impossible de supprimer le dernier site d\'un fournisseur.' });
-        }
+/**
+ * @description Mettre à jour un site spécifique d'un fournisseur.
+ * @route PUT /api/fournisseurs/:id/sites/:siteId
+ * @access Privé (Manager, Gestionnaire)
+ * @param {object} req - L'objet de requête Express.
+ * @param {object} res - L'objet de réponse Express.
+ * @param {function} next - Le prochain middleware Express.
+ */
+exports.updateSiteInFournisseur = asyncHandler(async (req, res, next) => {
+  const { id: fournisseurId, siteId } = req.params;
+  const fournisseur = await Fournisseur.findById(fournisseurId);
 
-        // Tirer (pull) le sous-document du tableau des sites
-        fournisseur.sites.pull({ _id: siteId });
+  if (!fournisseur) {
+    return next(new NotFoundError("Fournisseur non trouvé"));
+  }
 
-        await fournisseur.save();
-        res.json({ message: 'Site supprimé avec succès' });
+  const site = fournisseur.sites.id(siteId);
+  if (!site) {
+    return next(new NotFoundError("Site non trouvé"));
+  }
 
-    } catch (error) {
-        res.status(500).json({ message: 'Erreur lors de la suppression du site', error: error.message });
-    }
-};
+  // Si le site actuel est défini comme principal, tous les autres sont désactivés.
+  if (req.body.estPrincipal === true) {
+    fournisseur.sites.forEach((s) => {
+      if (s._id.toString() !== siteId) {
+        s.estPrincipal = false;
+      }
+    });
+  }
+
+  // Applique les modifications au sous-document.
+  site.set(req.body);
+  await fournisseur.save();
+  res.json(fournisseur);
+});
+

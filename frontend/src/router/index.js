@@ -6,6 +6,14 @@ import LoginPage from "../components/LoginPage.vue";
 import DashboardPage from "../components/DashboardPage.vue";
 import FournisseurPage from "../views/FournisseurPage.vue";
 import ArticlePage from "../views/ArticlePage.vue";
+import CommandePage from "../views/CommandePage.vue";
+import ListeAchatPage from "../views/ListeAchatPage.vue";
+import CommandeDetailPage from "../views/CommandeDetailPage.vue";
+import StockPage from "../views/StockPage.vue";
+import TransfertPage from "../views/TransfertPage.vue";
+import PrevisionPage from "../views/PrevisionPage.vue";
+import ContratPage from "../views/ContratPage.vue";
+import StationPage from "../views/StationPage.vue";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
@@ -24,6 +32,46 @@ const routes = [
     path: "/articles",
     component: ArticlePage,
     meta: { title: "Articles" },
+  },
+  {
+    path: "/commandes",
+    component: CommandePage,
+    meta: { title: "Suivi des Commandes" },
+  },
+  {
+    path: "/liste-achat",
+    component: ListeAchatPage,
+    meta: { title: "Ma Liste d'Achat" },
+  },
+  {
+    path: "/commandes/:id", // Le :id est un paramètre dynamique
+    component: CommandeDetailPage,
+    meta: { title: "Détail de la Commande" },
+  },
+  {
+    path: "/stocks",
+    component: StockPage,
+    meta: { title: "Stocks" },
+  },
+  {
+    path: "/transferts",
+    component: TransfertPage,
+    meta: { title: "Transferts" },
+  },
+  {
+    path: "/previsions",
+    component: PrevisionPage,
+    meta: { title: "Prévisions" },
+  },
+  {
+    path: "/contrats",
+    component: ContratPage,
+    meta: { title: "Contrats Cadre" },
+  },
+  {
+    path: "/stations",
+    component: StationPage,
+    meta: { title: "Stations" },
   },
 ];
 

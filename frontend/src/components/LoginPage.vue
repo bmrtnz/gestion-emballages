@@ -1,21 +1,21 @@
 <script setup>
-import { ref, reactive } from 'vue';
-import { useAuthStore } from '../stores/authStore'; // Importer le store
-import { MailOutlined, LockOutlined } from '@ant-design/icons-vue';
+import { ref, reactive } from "vue";
+import { useAuthStore } from "../stores/authStore"; // Importer le store
+import { MailOutlined, LockOutlined } from "@ant-design/icons-vue";
 
 const authStore = useAuthStore(); // Utiliser le store
-const formState = reactive({ email: '', password: '' });
-const errorMessage = ref('');
+const formState = reactive({ email: "", password: "password123" });
+const errorMessage = ref("");
 const isLoading = ref(false);
 
 const handleLogin = async () => {
   isLoading.value = true;
-  errorMessage.value = '';
+  errorMessage.value = "";
   try {
     // Appeler l'action 'login' du store
     await authStore.login(formState);
   } catch (error) {
-    errorMessage.value = 'Email ou mot de passe invalide.';
+    errorMessage.value = "Email ou mot de passe invalide.";
   } finally {
     isLoading.value = false;
   }
@@ -25,29 +25,55 @@ const handleLogin = async () => {
 <template>
   <div class="login-page">
     <div class="login-form-container">
-            <div class="login-header">
-        <img src="@/assets/favicon.png" alt="Logo" style="width: 50%; height: auto;" />
-        <h3>&nbsp;OctoLINK</h3>        
+      <div class="login-header">
+        <img
+          src="@/assets/favicon.png"
+          alt="Logo"
+          style="width: 50%; height: auto"
+        />
+        <h3>La Platforme</h3>
       </div>
       <p class="subtitle">Connectez-vous à votre compte</p>
-      
+
       <a-form :model="formState" @finish="handleLogin">
-        <a-form-item name="email" :rules="[{ required: true, message: 'Veuillez entrer votre email!' }]">
+        <a-form-item
+          name="email"
+          :rules="[{ required: true, message: 'Veuillez entrer votre email!' }]"
+        >
           <a-input v-model:value="formState.email" placeholder="Adresse email">
             <template #prefix><MailOutlined /></template>
           </a-input>
         </a-form-item>
 
-        <a-form-item name="password" :rules="[{ required: true, message: 'Veuillez entrer votre mot de passe!' }]">
-          <a-input-password v-model:value="formState.password" placeholder="Mot de passe">
+        <a-form-item
+          name="password"
+          :rules="[
+            { required: true, message: 'Veuillez entrer votre mot de passe!' },
+          ]"
+        >
+          <a-input-password
+            v-model:value="formState.password"
+            placeholder="Mot de passe"
+          >
             <template #prefix><LockOutlined /></template>
           </a-input-password>
         </a-form-item>
-        
-        <a-alert v-if="errorMessage" :message="errorMessage" type="error" show-icon style="margin-bottom: 24px;" />
+
+        <a-alert
+          v-if="errorMessage"
+          :message="errorMessage"
+          type="error"
+          show-icon
+          style="margin-bottom: 24px"
+        />
 
         <a-form-item>
-          <a-button type="primary" html-type="submit" block :loading="isLoading">
+          <a-button
+            type="primary"
+            html-type="submit"
+            block
+            :loading="isLoading"
+          >
             Se connecter
           </a-button>
         </a-form-item>
@@ -92,5 +118,8 @@ h1 {
   text-align: center;
   color: var(--text-color-light);
   margin-bottom: 2.5rem;
+}
+:deep(.ant-input-prefix) {
+  margin-right: 12px;
 }
 </style>
