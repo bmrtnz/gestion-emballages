@@ -1,7 +1,6 @@
 <script>
-// Ce bloc est nécessaire pour nommer le composant pour KeepAlive
 export default {
-  name: "CommandePage",
+    name: "CommandePage",
 };
 </script>
 
@@ -14,31 +13,18 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  <div class="page-container">
-    <div class="page-header">
-      <h1>
-        <span v-if="authStore.userRole === 'Fournisseur'"
-          >Mes Commandes à Traiter</span
-        >
-        <span v-else>Suivi des Commandes</span>
-      </h1>
+    <div>
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">
+                <span v-if="authStore.userRole === 'Fournisseur'">Mes Commandes à Traiter</span>
+                <span v-else>Suivi des Commandes</span>
+            </h1>
+            <p class="mt-1 text-sm text-gray-500">Suivez et gérez toutes les commandes des stations ici.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-soft p-6">
+            <FournisseurCommandeList v-if="authStore.isAuthenticated && authStore.userRole === 'Fournisseur'" />
+            <CommandeList v-if="authStore.isAuthenticated && authStore.userRole !== 'Fournisseur'" />
+        </div>
     </div>
-
-    <FournisseurCommandeList
-      v-if="authStore.isAuthenticated && authStore.userRole === 'Fournisseur'"
-    />
-    <CommandeList
-      v-if="authStore.isAuthenticated && authStore.userRole !== 'Fournisseur'"
-    />
-  </div>
 </template>
-
-<style scoped>
-.page-header {
-  margin-bottom: 2rem;
-}
-h1 {
-  font-size: 1.5rem;
-  font-weight: 500;
-}
-</style>

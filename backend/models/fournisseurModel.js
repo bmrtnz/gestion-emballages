@@ -14,6 +14,7 @@ const siteSchema = new mongoose.Schema({
     // Un _id sera automatiquement ajouté par Mongoose
     nomSite: { type: String, required: true },
     estPrincipal: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
     adresse: {
         rue: String,
         codePostal: String,

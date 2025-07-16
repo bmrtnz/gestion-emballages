@@ -1,38 +1,38 @@
-version: '3.8'
+# version: '3.8'
 
 services:
-  # Service pour l'application backend (Node.js)
-  app:
-    build: ./backend # Construit l'image à partir du Dockerfile dans le dossier /backend
-    ports:
-      - "5000:5000" # Mappe le port 5000 du conteneur au port 5000 de votre machine
-    env_file:
-      - ./backend/.env # Charge les variables d'environnement
-    volumes:
-      - ./backend:/usr/src/app # Monte le code local dans le conteneur pour le développement
-    depends_on:
-      - mongodb # S'assure que la BDD est démarrée avant l'app
+    # Service pour l'application backend (Node.js)
+    app:
+        build: ./backend # Construit l'image à partir du Dockerfile dans le dossier /backend
+        ports:
+            - "5000:5000" # Mappe le port 5000 du conteneur au port 5000 de votre machine
+        env_file:
+            - ./backend/.env # Charge les variables d'environnement
+        volumes:
+            - ./backend:/usr/src/app # Monte le code local dans le conteneur pour le développement
+        depends_on:
+            - mongodb # S'assure que la BDD est démarrée avant l'app
 
-  # Service pour la base de données MongoDB
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
+    # Service pour la base de données MongoDB
+    mongodb:
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo-data:/data/db
 
-  # Service pour le stockage MinIO
-  minio:
-    image: minio/minio:latest
-    ports:
-      - "9000:9000" # API
-      - "9001:9001" # Console Web
-    env_file:
-      - ./backend/.env
-    command: server /data --console-address ":9001"
-    volumes:
-      - minio-data:/data
+    # Service pour le stockage MinIO
+    minio:
+        image: minio/minio:latest
+        ports:
+            - "9000:9000" # API
+            - "9001:9001" # Console Web
+        env_file:
+            - ./backend/.env
+        command: server /data --console-address ":9001"
+        volumes:
+            - minio-data:/data
 
 volumes:
-  mongo-data:
-  minio-data:
+    mongo-data:
+    minio-data:

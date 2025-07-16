@@ -33,10 +33,17 @@ class UnauthorizedError extends AppError {
   }
 }
 
+class ValidationError extends AppError {
+  constructor(message = 'Données de validation invalides') {
+    super(message, 400);
+  }
+}
+
 module.exports = {
   AppError,
   NotFoundError,
   BadRequestError,
   ForbiddenError,
   UnauthorizedError,
+  ValidationError,
 };

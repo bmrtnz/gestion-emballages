@@ -1,0 +1,105 @@
+# render.yaml
+# Blueprint for deploying the 'gestion-emballages' application on Render.
+# This file defines four services:
+# 1. A static site for the Vue.js frontend.
+# 2. A web service for the Node.js backend API.
+# 3. A private service for the MongoDB database with a persistent disk.
+# 4. A private service for the Minio object storage with a persistent disk.
+
+services:
+    # ------------------
+    #  Frontend Service
+    # ------------------
+    - type: static
+      name: frontend
+      env: vue
+      rootDir: ./frontend
+      buildCommand: npm install && npm run build
+      publishDir: ./dist
+      # Rewrite rule to handle client-side routing for this Single Page App (SPA)
+      # and proxy API requests to the backend to avoid CORS issues.
+      routes:
+          - type: rewrite
+            source: /api/*
+            destination: https://gestion-emballages-backend.onrender.com/api/* # This uses the backend's public URL
+          - type: rewrite
+            source: /*
+            destination: /index.html
+
+    # ------------------
+    #  Backend Service
+    # ------------------
+    - type: web
+      name: backend
+      env: node
+      rootDir: ./backend
+      # Render will build and run the service using the Dockerfile found in the rootDir.
+      dockerfilePath: ./Dockerfile
+      healthCheckPath: /api/health # Add a health check endpoint to your app for better reliability
+      envVars:
+          - key: PORT
+            value: 8080 # The port your Node.js app listens on
+          # --- Database Connection ---
+          # Render provides the internal hostname for the mongodb service.
+          - key: MONGODB_URI
+            value: "mongodb://mongodb:27017/gestion-emballages"
+          # --- Minio Connection ---
+          # Render provides the internal hostname for the minio service.
+          - key: MINIO_ENDPOINT
+            value: "minio"
+          - key: MINIO_PORT
+            value: 9000
+          - key: MINIO_USE_SSL
+            value: false
+          # --- Minio Secrets ---
+          # IMPORTANT: Set these values in the Render Dashboard under Environment.
+          - key: MINIO_ACCESS_KEY
+            sync: false # Prevents the value from being stored in render.yaml
+          - key: MINIO_SECRET_KEY
+            sync: false # Prevents the value from being stored in render.yaml
+          # --- Other Secrets ---
+          - key: JWT_SECRET
+            sync: false
+
+    # --------------------
+    #  Database Service
+    # --------------------
+    - type: pserv # Private Service
+      name: mongodb
+      env: docker
+      image:
+          url: mongo:5.0 # Using a specific version is better for production
+      # Persistent disk to store MongoDB data across deploys and restarts.
+      disk:
+          name: mongo-data
+          mountPath: /data/db
+          sizeGB: 5 # Adjust size as needed
+
+    # --------------------
+    #  Storage Service
+    # --------------------
+    - type: pserv # Private Service
+      name: minio
+      env: docker
+      image:
+          url: minio/minio:latest
+      # Command to start the Minio server.
+      dockerCommand: "server /data --console-address :9001"
+      # Persistent disk to store uploaded files across deploys and restarts.
+      disk:
+          name: minio-data
+          mountPath: /data
+          sizeGB: 10 # Adjust size as needed
+      envVars:
+          # IMPORTANT: Set these values in the Render Dashboard.
+          # They must match the keys used in the backend service.
+          - key: MINIO_ROOT_USER
+            fromService:
+                type: web
+                name: backend
+                envVarKey: MINIO_ACCESS_KEY
+          - key: MINIO_ROOT_PASSWORD
+            fromService:
+                type: web
+                name: backend
+                envVarKey: MINIO_SECRET_KEY

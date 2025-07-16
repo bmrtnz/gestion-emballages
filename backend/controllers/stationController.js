@@ -1,67 +1,167 @@
+/**
+ * @fileoverview Contrôleur pour la gestion des stations
+ * @module controllers/stationController
+ * @requires models/stationModel
+ * @requires utils/appError
+ * @author Gestion Emballages Team
+ * @since 1.0.0
+ */
+
 // backend/controllers/stationController.js
 const Station = require('../models/stationModel');
 const { NotFoundError } = require('../utils/appError');
-const asyncHandler = require('../utils/asyncHandler');
+// Removed asyncHandler for cleaner testing and error handling
 
 /**
- * @description Créer une nouvelle station.
- * @route POST /api/stations
- * @access Privé (Manager, Gestionnaire)
- * @param {object} req - L'objet de requête Express.
- * @param {object} res - L'objet de réponse Express.
- * @param {function} next - Le prochain middleware Express.
+ * Créer une nouvelle station.
+ * @function createStation
+ * @memberof module:controllers/stationController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.body - Corps de la requête
+ * @param {string} req.body.nom - Nom de la station
+ * @param {string} req.body.identifiantInterne - Identifiant interne de la station
+ * @param {string} req.body.adresse - Adresse de la station
+ * @param {string} [req.body.contactPrincipal] - Contact principal de la station
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la station créée avec le statut 201
+ * @since 1.0.0
+ * @example
+ * // POST /api/stations
+ * // Body: { "nom": "Station Nord", "identifiantInterne": "STN001", "adresse": "123 Rue de la Station", "contactPrincipal": "Jean Dupont" }
+ * // Response: { "_id": "...", "nom": "Station Nord", "identifiantInterne": "STN001", "adresse": "123 Rue de la Station", "isActive": true }
  */
-exports.createStation = asyncHandler(async (req, res, next) => {
-    const { nom, identifiantInterne, adresse, contactPrincipal } = req.body;
-    const station = await Station.create({ nom, identifiantInterne, adresse, contactPrincipal });
-    res.status(201).json(station);
-});
-
-/**
- * @description Obtenir toutes les stations actives.
- * @route GET /api/stations
- * @access Privé (Tous les utilisateurs connectés)
- * @param {object} req - L'objet de requête Express.
- * @param {object} res - L'objet de réponse Express.
- * @param {function} next - Le prochain middleware Express.
- */
-exports.getStations = asyncHandler(async (req, res, next) => {
-    const stations = await Station.find({ isActive: true });
-    res.json(stations);
-});
-
-/**
- * @description Mettre à jour une station par son ID.
- * @route PUT /api/stations/:id
- * @access Privé (Manager, Gestionnaire)
- * @param {object} req - L'objet de requête Express.
- * @param {object} res - L'objet de réponse Express.
- * @param {function} next - Le prochain middleware Express.
- */
-exports.updateStation = asyncHandler(async (req, res, next) => {
-    const station = await Station.findByIdAndUpdate(req.params.id, req.body, {
-        new: true, // Renvoie le document mis à jour.
-        runValidators: true, // Exécute les validateurs du schéma.
-    });
-    if (!station) {
-        return next(new NotFoundError('Station non trouvée'));
+exports.createStation = async (req, res, next) => {
+    try {
+        const { nom, identifiantInterne, adresse, contactPrincipal } = req.body;
+        const station = await Station.create({ nom, identifiantInterne, adresse, contactPrincipal });
+        res.status(201).json(station);
+    } catch (error) {
+        next(error);
     }
-    res.json(station);
-});
+};
 
 /**
- * @description Désactiver une station (suppression logique).
- * @route DELETE /api/stations/:id
- * @access Privé (Manager, Gestionnaire)
- * @param {object} req - L'objet de requête Express.
- * @param {object} res - L'objet de réponse Express.
- * @param {function} next - Le prochain middleware Express.
+ * Obtenir toutes les stations actives.
+ * @function getStations
+ * @memberof module:controllers/stationController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la liste de toutes les stations actives
+ * @since 1.0.0
+ * @example
+ * // GET /api/stations
+ * // Response: [{ "_id": "...", "nom": "Station Nord", "identifiantInterne": "STN001", "adresse": "123 Rue de la Station", "isActive": true }]
  */
-exports.deleteStation = asyncHandler(async (req, res, next) => {
-    // La station n'est pas supprimée de la base, mais marquée comme inactive.
-    const station = await Station.findByIdAndUpdate(req.params.id, { isActive: false });
-    if (!station) {
-        return next(new NotFoundError('Station non trouvée'));
+exports.getStations = async (req, res, next) => {
+    try {
+        const stations = await Station.find({});
+        res.json(stations);
+    } catch (error) {
+        next(error);
     }
-    res.json({ message: 'Station désactivée avec succès' });
-});
+};
+
+/**
+ * Mettre à jour une station par son ID.
+ * @function updateStation
+ * @memberof module:controllers/stationController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la station à mettre à jour
+ * @param {Object} req.body - Corps de la requête
+ * @param {string} [req.body.nom] - Nouveau nom de la station
+ * @param {string} [req.body.identifiantInterne] - Nouvel identifiant interne
+ * @param {string} [req.body.adresse] - Nouvelle adresse
+ * @param {string} [req.body.contactPrincipal] - Nouveau contact principal
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la station mise à jour
+ * @throws {NotFoundError} Si la station n'est pas trouvée
+ * @since 1.0.0
+ * @example
+ * // PUT /api/stations/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Body: { "nom": "Station Nord Rénovée", "contactPrincipal": "Marie Martin" }
+ * // Response: { "_id": "...", "nom": "Station Nord Rénovée", "contactPrincipal": "Marie Martin", ... }
+ */
+exports.updateStation = async (req, res, next) => {
+    try {
+        const station = await Station.findByIdAndUpdate(req.params.id, req.body, {
+            new: true, // Renvoie le document mis à jour.
+            runValidators: true, // Exécute les validateurs du schéma.
+        });
+        if (!station) {
+            return next(new NotFoundError('Station non trouvée'));
+        }
+        res.json(station);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Désactiver une station (suppression logique).
+ * @function deleteStation
+ * @memberof module:controllers/stationController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la station à désactiver
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie un message de confirmation de désactivation
+ * @throws {NotFoundError} Si la station n'est pas trouvée
+ * @since 1.0.0
+ * @example
+ * // DELETE /api/stations/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Response: { "message": "Station désactivée avec succès" }
+ */
+exports.deactivateStation = async (req, res, next) => {
+    try {
+        const station = await Station.findById(req.params.id);
+        
+        if (!station) {
+            return next(new NotFoundError('Station non trouvée'));
+        }
+        
+        station.isActive = false;
+        await station.save();
+        
+        res.json({ message: 'Station désactivée avec succès' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Réactiver une station (annuler la suppression logique).
+ * @function reactivateStation
+ * @memberof module:controllers/stationController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la station à réactiver
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie un message de confirmation de réactivation
+ * @throws {NotFoundError} Si la station n'est pas trouvée
+ * @since 1.0.0
+ * @example
+ * // PATCH /api/stations/64f5a1b2c3d4e5f6a7b8c9d0/reactivate
+ * // Response: { "message": "Station réactivée avec succès" }
+ */
+exports.reactivateStation = async (req, res, next) => {
+    try {
+        const station = await Station.findById(req.params.id);
+        
+        if (!station) {
+            return next(new NotFoundError('Station non trouvée'));
+        }
+        
+        station.isActive = true;
+        await station.save();
+        
+        res.json({ message: 'Station réactivée avec succès' });
+    } catch (error) {
+        next(error);
+    }
+};

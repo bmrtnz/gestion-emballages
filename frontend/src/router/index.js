@@ -2,7 +2,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "../stores/authStore";
 
-import LoginPage from "../components/LoginPage.vue";
+import LoginPage from "../views/LoginPage.vue";
 import DashboardPage from "../components/DashboardPage.vue";
 import FournisseurPage from "../views/FournisseurPage.vue";
 import ArticlePage from "../views/ArticlePage.vue";
@@ -14,6 +14,7 @@ import TransfertPage from "../views/TransfertPage.vue";
 import PrevisionPage from "../views/PrevisionPage.vue";
 import ContratPage from "../views/ContratPage.vue";
 import StationPage from "../views/StationPage.vue";
+import UserPage from "../views/UserPage.vue";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
@@ -72,6 +73,11 @@ const routes = [
     path: "/stations",
     component: StationPage,
     meta: { title: "Stations" },
+  },
+  {
+    path: "/users",
+    component: UserPage,
+    meta: { title: "Utilisateurs" },
   },
 ];
 

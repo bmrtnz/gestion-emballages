@@ -5,7 +5,8 @@ const {
     createStation,
     getStations,
     updateStation,
-    deleteStation,
+    deactivateStation,
+    reactivateStation,
 } = require("../controllers/stationController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require("../middleware/validationMiddleware");
@@ -110,6 +111,29 @@ router
      *       200:
      *         description: Station désactivée avec succès.
      */
-    .delete(...managerOnly, deleteStation);
+    .delete(...managerOnly, deactivateStation);
+
+router
+    .route("/:id/reactivate")
+    /**
+     * @swagger
+     * /stations/{id}/reactivate:
+     *   patch:
+     *     summary: Réactiver une station (annuler la soft delete)
+     *     tags: [Stations]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID de la station
+     *     responses:
+     *       200:
+     *         description: Station réactivée avec succès.
+     */
+    .patch(...managerOnly, reactivateStation);
 
 module.exports = router;

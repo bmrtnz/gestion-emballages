@@ -1,6 +1,8 @@
 // frontend/src/stores/listeAchatStore.js
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
+import { useLoading } from "../composables/useLoading";
+import { useErrorHandler } from "../composables/useErrorHandler";
 import api from "../api/axios";
 import { message } from "ant-design-vue";
 
@@ -8,37 +10,50 @@ export const useListeAchatStore = defineStore("listeAchat", () => {
   // STATE
   const activeList = ref(null);
 
+  // Composables
+  const { isLoading: fetchLoading, execute: executeFetch } = useLoading();
+  const { isLoading: actionLoading, execute: executeAction } = useLoading();
+  const { withErrorHandling } = useErrorHandler();
+
   // GETTERS
   const itemCount = computed(() => activeList.value?.articles?.length || 0);
+  const isLoading = computed(() => fetchLoading.value || actionLoading.value);
 
   // ACTIONS
   async function fetchActiveList() {
-    try {
-      const response = await api.get("/listes-achat");
+    return executeFetch(async () => {
+      const response = await withErrorHandling(
+        () => api.get("/listes-achat"),
+        "Impossible de charger la liste d'achat active",
+        false // Ne pas afficher de notification d'erreur par défaut
+      );
       activeList.value = response.data;
-    } catch (error) {
-      console.error("Impossible de charger la liste d'achat active.", error);
-    }
+      return response.data;
+    });
   }
 
   async function addItem(itemData) {
-    try {
-      const response = await api.post("/listes-achat", itemData);
-      activeList.value = response.data; // Mettre à jour le state
+    return executeAction(async () => {
+      const response = await withErrorHandling(
+        () => api.post("/listes-achat", itemData),
+        "Erreur lors de l'ajout de l'article"
+      );
+      activeList.value = response.data;
       message.success("Article ajouté à la liste.");
-    } catch (err) {
-      message.error("Erreur lors de l'ajout de l'article.");
-    }
+      return response.data;
+    });
   }
 
   async function removeItem(itemId) {
-    try {
-      const response = await api.delete(`/listes-achat/items/${itemId}`);
-      activeList.value = response.data; // Mettre à jour le state
+    return executeAction(async () => {
+      const response = await withErrorHandling(
+        () => api.delete(`/listes-achat/items/${itemId}`),
+        "Erreur lors de la suppression de l'article"
+      );
+      activeList.value = response.data;
       message.success("Article retiré de la liste.");
-    } catch (err) {
-      message.error("Erreur lors de la suppression de l'article.");
-    }
+      return response.data;
+    });
   }
 
   function clearList() {
@@ -48,6 +63,9 @@ export const useListeAchatStore = defineStore("listeAchat", () => {
   return {
     activeList,
     itemCount,
+    isLoading,
+    fetchLoading,
+    actionLoading,
     fetchActiveList,
     clearList,
     addItem,

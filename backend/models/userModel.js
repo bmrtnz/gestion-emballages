@@ -25,7 +25,11 @@ const userSchema = new mongoose.Schema({
     telephone: String,
     entiteId: {
         type: mongoose.Schema.Types.ObjectId,
-        refPath: 'role', // Référence dynamique au modèle Station ou Fournisseur
+        refPath: 'entiteModel', // Référence dynamique au modèle Station ou Fournisseur
+    },
+    entiteModel: {
+        type: String,
+        enum: ['Station', 'Fournisseur']
     },
     isActive: {
         type: Boolean,
@@ -40,6 +44,14 @@ userSchema.pre('save', async function(next) {
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
+// Middleware pour définir entiteModel en fonction du rôle
+userSchema.pre('save', function(next) {
+    if (this.role === 'Station' || this.role === 'Fournisseur') {
+        this.entiteModel = this.role;
+    }
     next();
 });
 

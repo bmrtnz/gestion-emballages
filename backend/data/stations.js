@@ -13,7 +13,8 @@ const stations = [
             nom: 'Franck Lagasse',
             email: 'f.lagasse@stanor.fr',
             telephone: '0563046010'
-        }
+        },
+        isActive: true
     },
     {
         nom: 'Trois Domaines',
@@ -28,7 +29,8 @@ const stations = [
             nom: 'Lucas Grard',
             email: 'l.grard@3d.fr',
             telephone: '0553964700'
-        }
+        },
+        isActive: true
     },
 ];
 module.exports = stations;

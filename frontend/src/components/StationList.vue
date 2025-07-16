@@ -1,206 +1,184 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { message } from 'ant-design-vue';
+import { ref, computed, onMounted } from 'vue';
+import { useLoading } from '../composables/useLoading';
+import { useErrorHandler } from '../composables/useErrorHandler';
 import api from '../api/axios';
-import { useAuthStore } from '../stores/authStore';
+import { PencilSquareIcon, PauseIcon, PlayIcon } from '@heroicons/vue/24/outline';
+import StationEditForm from './stations/StationEditForm.vue';
+import SlidePanel from './ui/SlidePanel.vue';
 
-const authStore = useAuthStore();
-
-// --- Gestion de la liste ---
+// State
 const stations = ref([]);
-const isLoading = ref(true);
-const error = ref(null);
+const showInactive = ref(false);
+const isEditPanelOpen = ref(false);
+const selectedStation = ref(null);
 
-const columns = [
-  { title: 'Nom', dataIndex: 'nom', key: 'nom' },
-  { title: 'Identifiant Interne', dataIndex: 'identifiantInterne', key: 'identifiantInterne' },
-  { title: 'Ville', dataIndex: ['adresse', 'ville'], key: 'ville' },
-];
+// Computed property to filter stations based on active/inactive toggle
+const filteredStations = computed(() => {
+  if (!showInactive.value) {
+    return stations.value.filter(station => station.isActive);
+  }
+  return stations.value;
+});
 
+// Loading and error handling
+const { isLoading, execute } = useLoading();
+const { withErrorHandling } = useErrorHandler();
+
+// Fetch data
 const fetchStations = async () => {
-  isLoading.value = true;
-  try {
-    const response = await api.get('/stations');
+  await execute(async () => {
+    const response = await withErrorHandling(
+      () => api.get('/stations'),
+      'Failed to load stations'
+    );
     stations.value = response.data;
-  } catch (err) {
-    error.value = 'Erreur lors du chargement des stations.';
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// --- Gestion du Drawer de création ---
-const isDrawerVisible = ref(false); // On renomme la variable pour plus de clarté
-const isSubmitting = ref(false);
-// État initial complet du formulaire
-const initialFormState = {
-  nom: '',
-  identifiantInterne: '',
-  adresse: {
-    rue: '',
-    codePostal: '',
-    ville: '',
-    pays: 'France', // On peut mettre une valeur par défaut
-  },
-  contactPrincipal: {
-    nom: '',
-    email: '',
-    telephone: ''
-  }
-};
-
-// Utiliser reactive pour l'objet du formulaire
-const formState = reactive({ ...initialFormState });
-
-const showDrawer = () => {
-  // Réinitialiser le formulaire à chaque ouverture
-  Object.assign(formState, initialFormState);
-  isDrawerVisible.value = true;
-};
-
-const closeDrawer = () => {
-  isDrawerVisible.value = false;
-};
-
-const handleCreateStation = async () => {
-  isSubmitting.value = true;
-  try {
-    await api.post('/stations', formState);
-    message.success('Station créée avec succès !');
-    closeDrawer();
-    await fetchStations(); // Rafraîchir la liste
-  } catch (err) {
-    message.error('Erreur lors de la création de la station.');
-  } finally {
-    isSubmitting.value = false;
-  }
+  });
 };
 
 onMounted(fetchStations);
+
+// Expose fetchStations function for parent component
+defineExpose({ fetchStations });
+
+const formatAddress = (adresse) => {
+    if (!adresse) return '';
+    return `${adresse.rue}, ${adresse.codePostal} ${adresse.ville}, ${adresse.pays}`;
+};
+
+const openEditPanel = (station) => {
+    selectedStation.value = station;
+    isEditPanelOpen.value = true;
+};
+
+const handleStationUpdated = () => {
+    isEditPanelOpen.value = false;
+    selectedStation.value = null;
+    fetchStations();
+};
+
+const closeEditPanel = () => {
+    isEditPanelOpen.value = false;
+    selectedStation.value = null;
+};
+
+const deactivateStation = async (stationId) => {
+    await execute(async () => {
+        await withErrorHandling(
+            () => api.delete(`/stations/${stationId}`),
+            'Failed to deactivate station'
+        );
+        await fetchStations(); // Refresh the list
+    });
+};
+
+const reactivateStation = async (stationId) => {
+    await execute(async () => {
+        await withErrorHandling(
+            () => api.patch(`/stations/${stationId}/reactivate`),
+            'Failed to reactivate station'
+        );
+        await fetchStations(); // Refresh the list
+    });
+};
 </script>
 
 <template>
-  <div class="panel">
-    <div class="panel-header">
-      <h3>Liste des Stations</h3>
-      <a-button v-if="authStore.userRole === 'Manager' || authStore.userRole === 'Gestionnaire'" type="primary"
-        @click="showDrawer">Ajouter une Station</a-button>
+  <div>
+    <!-- Controls -->
+    <div class="flex items-center justify-end mb-4">
+      <!-- Show inactive toggle -->
+      <div class="flex items-center">
+        <input 
+          id="show-inactive-stations" 
+          v-model="showInactive" 
+          type="checkbox" 
+          class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+        />
+        <label for="show-inactive-stations" class="ml-2 block text-sm text-gray-900">
+          <span class="hidden sm:inline">Afficher les stations inactives</span>
+          <span class="sm:hidden">Afficher les inactifs</span>
+        </label>
+      </div>
     </div>
 
-    <div class="panel-body">
-      <a-table :columns="columns" :data-source="stations" :loading="isLoading" row-key="_id">
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'ville'">
-            {{ record.adresse?.ville || 'N/A' }}
-          </template>
-        </template>
-      </a-table>
+    <div class="flow-root">
+    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div class="relative">
+          <table class="min-w-full table-fixed divide-y divide-gray-300">
+            <thead>
+              <tr>
+                <th scope="col" class="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">Nom</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Identifiant Interne</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Adresse</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Contact</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <tr v-for="station in filteredStations" :key="station._id">
+                <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">{{ station.nom }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ station.identifiantInterne }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatAddress(station.adresse) }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <div v-if="station.contactPrincipal">
+                    <div>{{ station.contactPrincipal.nom }}</div>
+                    <div class="text-gray-400">
+                      <a v-if="station.contactPrincipal.email" :href="`mailto:${station.contactPrincipal.email}`" class="text-blue-600 hover:text-blue-800 underline">{{ station.contactPrincipal.email }}</a>
+                      <span v-if="station.contactPrincipal.email && station.contactPrincipal.telephone"> / </span>
+                      <span v-if="station.contactPrincipal.telephone">{{ station.contactPrincipal.telephone }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm">
+                  <span v-if="station.isActive" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                    Actif
+                  </span>
+                  <span v-else class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                    Inactif
+                  </span>
+                </td>
+                <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                    <div class="flex items-center justify-end gap-x-2">
+                        <button @click="openEditPanel(station)" class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" title="Modifier">
+                          <PencilSquareIcon class="h-5 w-5" />
+                        </button>
+                        <button v-if="station.isActive" @click="deactivateStation(station._id)" class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" title="Désactiver">
+                          <PauseIcon class="h-5 w-5" />
+                        </button>
+                        <button v-else @click="reactivateStation(station._id)" class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" title="Réactiver">
+                          <PlayIcon class="h-5 w-5" />
+                        </button>
+                    </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-if="isLoading" class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <a-drawer title="Ajouter une nouvelle station" :width="500" :open="isDrawerVisible" @close="closeDrawer">
-    <a-form :model="formState" layout="vertical">
-      <a-form-item label="Nom de la station" name="nom" :rules="[{ required: true }]">
-        <a-input v-model:value="formState.nom" />
-      </a-form-item>
-      <a-form-item label="Identifiant Interne" name="identifiantInterne" :rules="[{ required: true }]">
-        <a-input v-model:value="formState.identifiantInterne" />
-      </a-form-item>
-
-      <a-divider>Adresse</a-divider>
-
-      <a-form-item label="Rue">
-        <a-input v-model:value="formState.adresse.rue" />
-      </a-form-item>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Code Postal">
-            <a-input v-model:value="formState.adresse.codePostal" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Ville">
-            <a-input v-model:value="formState.adresse.ville" />
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-form-item label="Pays">
-        <a-input v-model:value="formState.adresse.pays" />
-      </a-form-item>
-
-      <a-divider>Contact Principal</a-divider>
-
-      <a-form-item label="Nom du contact">
-        <a-input v-model:value="formState.contactPrincipal.nom" />
-      </a-form-item>
-      <a-row :gutter="16">
-        <a-col :span="12">
-          <a-form-item label="Email du contact">
-            <a-input v-model:value="formState.contactPrincipal.email" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Téléphone du contact">
-            <a-input v-model:value="formState.contactPrincipal.telephone" />
-          </a-form-item>
-        </a-col>
-      </a-row>
-    </a-form>
-
-    <template #footer>
-      <a-space>
-        <a-button @click="closeDrawer">Annuler</a-button>
-        <a-button type="primary" @click="handleCreateStation" :loading="isSubmitting">Créer</a-button>
-      </a-space>
-    </template>
-  </a-drawer>
+  <!-- Edit Panel -->
+  <SlidePanel 
+    :open="isEditPanelOpen" 
+    @close="closeEditPanel" 
+    title="Modifier la station"
+    size="md"
+  >
+    <StationEditForm 
+      v-if="selectedStation"
+      :station="selectedStation"
+      @updated="handleStationUpdated"
+      @close="closeEditPanel"
+    />
+  </SlidePanel>
+  </div>
 </template>
-
-<style scoped>
-.panel {
-  background-color: #fff;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-h3 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.panel-body {
-  padding: 1.5rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th, td {
-  border-bottom: 1px solid var(--border-color);
-  padding: 1rem;
-  text-align: left;
-}
-th {
-  background-color: var(--content-bg);
-  color: var(--text-color-light);
-  font-size: 0.9rem; /* <-- Police des en-têtes légèrement agrandie */
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-td {
-  font-size: 1rem; /* Assure que la police des cellules est à la taille de base */
-}
-.error-message {
-  color: red;
-}
-</style>

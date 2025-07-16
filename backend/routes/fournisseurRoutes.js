@@ -6,9 +6,12 @@ const {
   getFournisseurs,
   updateFournisseur,
   deactivateFournisseur,
+  reactivateFournisseur,
   addSiteToFournisseur,
   deleteSiteFromFournisseur,
   updateSiteInFournisseur,
+  deactivateSite,
+  reactivateSite,
 } = require("../controllers/fournisseurController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require('../middleware/validationMiddleware');
@@ -109,6 +112,85 @@ router.route("/:id")
    *         description: Fournisseur désactivé avec succès.
    */
   .delete(...managerOnly, deactivateFournisseur);
+
+router.route("/:id/reactivate")
+  /**
+   * @swagger
+   * /fournisseurs/{id}/reactivate:
+   *   patch:
+   *     summary: Réactiver un fournisseur
+   *     tags: [Fournisseurs]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID du fournisseur
+   *     responses:
+   *       200:
+   *         description: Fournisseur réactivé avec succès.
+   */
+  .patch(...managerOnly, reactivateFournisseur);
+
+// Specific routes first (to avoid route conflicts)
+router.route("/:id/sites/:siteId/deactivate")
+  /**
+   * @swagger
+   * /fournisseurs/{id}/sites/{siteId}/deactivate:
+   *   patch:
+   *     summary: Désactiver un site spécifique
+   *     tags: [Fournisseurs]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID du fournisseur
+   *       - in: path
+   *         name: siteId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID du site
+   *     responses:
+   *       200:
+   *         description: Site désactivé avec succès.
+   */
+  .patch(...managerOnly, deactivateSite);
+
+router.route("/:id/sites/:siteId/reactivate")
+  /**
+   * @swagger
+   * /fournisseurs/{id}/sites/{siteId}/reactivate:
+   *   patch:
+   *     summary: Réactiver un site spécifique
+   *     tags: [Fournisseurs]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID du fournisseur
+   *       - in: path
+   *         name: siteId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID du site
+   *     responses:
+   *       200:
+   *         description: Site réactivé avec succès.
+   */
+  .patch(...managerOnly, reactivateSite);
 
 router.route("/:id/sites")
   /**

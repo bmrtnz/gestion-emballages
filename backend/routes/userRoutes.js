@@ -5,6 +5,10 @@ const {
     createUser,
     loginUser,
     getUserProfile,
+    getUsers,
+    updateUser,
+    deactivateUser,
+    reactivateUser,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
 const {
@@ -75,5 +79,17 @@ router.post("/login", loginUserValidator, validate, loginUser);
  */
 // Route pour obtenir le profil de l'utilisateur actuellement connecté.
 router.get("/profile", protect, getUserProfile);
+
+// Route pour obtenir tous les utilisateurs (protection avec authentification).
+router.get("/", protect, getUsers);
+
+// Route pour mettre à jour un utilisateur.
+router.put("/:id", protect, updateUser);
+
+// Route pour désactiver un utilisateur (suppression logique).
+router.delete("/:id", protect, deactivateUser);
+
+// Route pour réactiver un utilisateur.
+router.patch("/:id/reactivate", protect, reactivateUser);
 
 module.exports = router;

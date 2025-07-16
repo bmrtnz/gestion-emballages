@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --config ./config/jest.config.js --verbose",
     "start": "node server.js",
     "data:import": "node data/seeder.js",
     "data:destroy": "node data/seeder.js -d",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "clean-jsdoc-theme": "^4.3.0",
+    "jest": "^30.0.4",
     "jsdoc": "^4.0.4"
   }
 }
