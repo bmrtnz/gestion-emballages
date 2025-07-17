@@ -8,6 +8,13 @@
     "start": "node server.js",
     "data:import": "node data/seeder.js",
     "data:destroy": "node data/seeder.js -d",
+    "data:generate-suppliers": "node data/generateSuppliers.js",
+    "data:generate-articles": "node data/generateArticles.js",
+    "data:generate-all": "npm run data:generate-suppliers && npm run data:generate-articles",
+    "data:test-cascade": "node data/testCascadeDeactivation.js",
+    "data:check-links": "node data/checkUserSupplierLinks.js",
+    "data:check-users": "node data/checkUserStats.js",
+    "data:create-inactive-users": "node data/createInactiveUsers.js",
     "docs:generate": "jsdoc -c jsdoc.json"
   },
   "keywords": [],

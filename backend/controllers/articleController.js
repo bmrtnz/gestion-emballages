@@ -12,7 +12,79 @@
 const Article = require("../models/articleModel");
 const Fournisseur = require("../models/fournisseurModel");
 // Removed asyncHandler for cleaner testing and error handling
-const { NotFoundError, ValidationError } = require("../utils/appError");
+const { NotFoundError, ValidationError, BadRequestError } = require("../utils/appError");
+const { ARTICLE_CATEGORIES } = require("../utils/constants");
+const { minioClient, bucketName } = require('../config/minioClient');
+const config = require('../config/env');
+const { normalizeImageUrl } = require('../utils/urlHelper');
+const multer = require('multer');
+const path = require('path');
+
+/**
+ * Normalize image URLs in articles for frontend access
+ * @param {Array|Object} articles - Article(s) to normalize
+ * @returns {Array|Object} - Normalized article(s)
+ */
+const normalizeArticleImageUrls = (articles) => {
+    const normalizeArticle = (article) => {
+        if (article.fournisseurs && Array.isArray(article.fournisseurs)) {
+            article.fournisseurs.forEach(fournisseur => {
+                if (fournisseur.imageUrl) {
+                    fournisseur.imageUrl = normalizeImageUrl(fournisseur.imageUrl);
+                }
+            });
+        }
+        return article;
+    };
+
+    if (Array.isArray(articles)) {
+        return articles.map(normalizeArticle);
+    } else if (articles && typeof articles === 'object') {
+        return normalizeArticle(articles);
+    }
+    
+    return articles;
+};
+
+// Configure multer for image uploads
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new BadRequestError('Seuls les fichiers image (JPEG, PNG, GIF, WebP) sont autorisés'), false);
+    }
+  }
+});
+
+exports.uploadImageMiddleware = upload.single('image');
+
+/**
+ * Obtenir toutes les catégories d'articles disponibles.
+ * @function getCategories
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la liste des catégories disponibles
+ * @since 1.0.0
+ * @example
+ * // GET /api/articles/categories
+ * // Response: ["Barquette", "Cagette", "Plateau", ...]
+ */
+exports.getCategories = async (req, res, next) => {
+    try {
+        res.json(ARTICLE_CATEGORIES);
+    } catch (error) {
+        next(error);
+    }
+};
 
 /**
  * Créer un nouvel article.
@@ -51,25 +123,367 @@ exports.createArticle = async (req, res, next) => {
 };
 
 /**
- * Obtenir tous les articles actifs.
+ * Obtenir tous les articles actifs avec pagination, recherche et filtres.
  * @function getArticles
  * @memberof module:controllers/articleController
  * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.pagination - Paramètres de pagination ajoutés par le middleware
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
- * @returns {Promise<void>} Renvoie la liste de tous les articles actifs avec leurs fournisseurs
+ * @returns {Promise<void>} Renvoie la liste paginée des articles avec métadonnées
  * @since 1.0.0
  * @example
- * // GET /api/articles
- * // Response: [{ "_id": "...", "codeArticle": "ART001", "designation": "Carton 40x30x20", "categorie": "Emballage", "fournisseurs": [...] }]
+ * // GET /api/articles?page=2&limit=20&search=barquette&categorie=Emballage
+ * // Response: { data: [...], pagination: { currentPage: 2, totalPages: 5, ... }, filters: { search: 'barquette', ... } }
  */
 exports.getArticles = async (req, res, next) => {
     try {
-    // Recherche de tous les articles marqués comme actifs.
-    // Les post-hooks du modèle gèrent automatiquement la population des fournisseurs.
-    const articles = await Article.find({ isActive: true });
-    // Envoi de la liste des articles en réponse.
-    res.json(articles);
+        const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;
+        
+        // Construction de la query de base
+        let query = {};
+        
+        // Filter by supplier if user is a Fournisseur
+        if (req.user.role === 'Fournisseur') {
+            query['fournisseurs.fournisseurId'] = req.user.entiteId;
+        }
+        
+        // Gestion du filtre de statut
+        if (filters.status === 'active') {
+            query.isActive = true;
+        } else if (filters.status === 'inactive') {
+            query.isActive = false;
+        }
+        // Si status est vide ou 'tout', on ne filtre pas sur isActive (on affiche tout)
+        
+        // Ajout de la recherche textuelle
+        if (search) {
+            query.$or = [
+                { codeArticle: { $regex: search, $options: 'i' } },
+                { designation: { $regex: search, $options: 'i' } },
+                { categorie: { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        // Ajout des filtres
+        if (filters.categorie) {
+            query.categorie = filters.categorie;
+        }
+        
+        if (filters.fournisseur) {
+            // Filtrage par nom de fournisseur (nécessite une aggregation)
+            const fournisseurFilter = filters.fournisseur;
+            const articlesWithSuppliers = await Article.aggregate([
+                { $match: query },
+                { $lookup: {
+                    from: 'fournisseurs',
+                    localField: 'fournisseurs.fournisseurId',
+                    foreignField: '_id',
+                    as: 'fournisseurDetails'
+                }},
+                { $match: {
+                    'fournisseurDetails.nom': { $regex: fournisseurFilter, $options: 'i' }
+                }},
+                { $sort: { [sortBy]: sortOrder } },
+                { $skip: skip },
+                { $limit: limit }
+            ]);
+            
+            // Compter le total pour la pagination
+            const totalCount = await Article.aggregate([
+                { $match: query },
+                { $lookup: {
+                    from: 'fournisseurs',
+                    localField: 'fournisseurs.fournisseurId',
+                    foreignField: '_id',
+                    as: 'fournisseurDetails'
+                }},
+                { $match: {
+                    'fournisseurDetails.nom': { $regex: fournisseurFilter, $options: 'i' }
+                }},
+                { $count: 'total' }
+            ]);
+            
+            const total = totalCount.length > 0 ? totalCount[0].total : 0;
+            
+            // Récupérer les articles complets avec population
+            const articleIds = articlesWithSuppliers.map(a => a._id);
+            let articles = await Article.find({ _id: { $in: articleIds } })
+                .sort({ [sortBy]: sortOrder });
+            
+            // Filter supplier data if user is a Fournisseur
+            if (req.user.role === 'Fournisseur') {
+                articles = articles.map(article => {
+                    const filteredArticle = article.toObject();
+                    filteredArticle.fournisseurs = filteredArticle.fournisseurs.filter(
+                        supplier => {
+                            // Handle both populated and non-populated fournisseurId
+                            const supplierId = supplier.fournisseurId?._id || supplier.fournisseurId;
+                            return supplierId && supplierId.toString() === req.user.entiteId.toString();
+                        }
+                    );
+                    return filteredArticle;
+                });
+            }
+            
+            // Get available suppliers for current filter context (excluding supplier filter)
+            let supplierQuery = {};
+            
+            // Apply status filter
+            if (filters.status === 'active') {
+                supplierQuery.isActive = true;
+            } else if (filters.status === 'inactive') {
+                supplierQuery.isActive = false;
+            }
+            // If status is empty or 'tout', don't filter on isActive (show all)
+            
+            // Apply search filter
+            if (search) {
+                supplierQuery.$or = [
+                    { codeArticle: { $regex: search, $options: 'i' } },
+                    { designation: { $regex: search, $options: 'i' } },
+                    { categorie: { $regex: search, $options: 'i' } }
+                ];
+            }
+            
+            // Apply category filter
+            if (filters.categorie) {
+                supplierQuery.categorie = filters.categorie;
+            }
+            
+            // Note: We intentionally exclude the supplier filter here
+            const availableSuppliers = await Article.aggregate([
+                { $match: supplierQuery },
+                { $unwind: '$fournisseurs' },
+                { $lookup: {
+                    from: 'fournisseurs',
+                    localField: 'fournisseurs.fournisseurId',
+                    foreignField: '_id',
+                    as: 'supplierInfo'
+                }},
+                { $unwind: '$supplierInfo' },
+                { $group: {
+                    _id: '$supplierInfo.nom',
+                    count: { $sum: 1 }
+                }},
+                { $sort: { _id: 1 } }
+            ]);
+            
+            const supplierNames = availableSuppliers.map(s => s._id);
+            
+            
+            const normalizedArticles = normalizeArticleImageUrls(articles);
+            return res.json(req.pagination.buildResponse(normalizedArticles, total, { availableSuppliers: supplierNames }));
+        }
+        
+        // Requête standard sans filtrage par fournisseur
+        let articles = await Article.find(query)
+            .sort({ [sortBy]: sortOrder })
+            .skip(skip)
+            .limit(limit);
+        
+        // Filter supplier data if user is a Fournisseur
+        if (req.user.role === 'Fournisseur') {
+            articles = articles.map(article => {
+                const filteredArticle = article.toObject();
+                filteredArticle.fournisseurs = filteredArticle.fournisseurs.filter(
+                    supplier => {
+                        // Handle both populated and non-populated fournisseurId
+                        const supplierId = supplier.fournisseurId?._id || supplier.fournisseurId;
+                        return supplierId && supplierId.toString() === req.user.entiteId.toString();
+                    }
+                );
+                return filteredArticle;
+            });
+        }
+        
+        const totalCount = await Article.countDocuments(query);
+        
+        // Get available suppliers for current filter context (excluding supplier filter)
+        let supplierQuery = {};
+        
+        // Apply status filter
+        if (filters.status === 'active') {
+            supplierQuery.isActive = true;
+        } else if (filters.status === 'inactive') {
+            supplierQuery.isActive = false;
+        }
+        // If status is empty or 'tout', don't filter on isActive (show all)
+        
+        // Apply search filter
+        if (search) {
+            supplierQuery.$or = [
+                { codeArticle: { $regex: search, $options: 'i' } },
+                { designation: { $regex: search, $options: 'i' } },
+                { categorie: { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        // Apply category filter
+        if (filters.categorie) {
+            supplierQuery.categorie = filters.categorie;
+        }
+        
+        // Note: We intentionally exclude the supplier filter here
+        const availableSuppliers = await Article.aggregate([
+            { $match: supplierQuery },
+            { $unwind: '$fournisseurs' },
+            { $lookup: {
+                from: 'fournisseurs',
+                localField: 'fournisseurs.fournisseurId',
+                foreignField: '_id',
+                as: 'supplierInfo'
+            }},
+            { $unwind: '$supplierInfo' },
+            { $group: {
+                _id: '$supplierInfo.nom',
+                count: { $sum: 1 }
+            }},
+            { $sort: { _id: 1 } }
+        ]);
+        
+        const supplierNames = availableSuppliers.map(s => s._id);
+        
+        
+        const normalizedArticles = normalizeArticleImageUrls(articles);
+        res.json(req.pagination.buildResponse(normalizedArticles, totalCount, { availableSuppliers: supplierNames }));
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Obtenir un article par son ID.
+ * @function getArticleById
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de l'article
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie l'article avec ses fournisseurs
+ * @throws {NotFoundError} Si l'article n'est pas trouvé
+ * @since 1.0.0
+ * @example
+ * // GET /api/articles/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Response: { "_id": "...", "codeArticle": "ART001", "designation": "Carton 40x30x20", "fournisseurs": [...] }
+ */
+exports.getArticleById = async (req, res, next) => {
+    try {
+        let article = await Article.findById(req.params.id);
+        
+        if (!article) {
+            return next(new NotFoundError("Article non trouvé"));
+        }
+        
+        // For Fournisseur users, check if they are linked to this article
+        if (req.user.role === 'Fournisseur') {
+            const hasAccess = article.fournisseurs.some(
+                supplier => {
+                    const supplierId = supplier.fournisseurId?._id || supplier.fournisseurId;
+                    return supplierId && supplierId.toString() === req.user.entiteId.toString();
+                }
+            );
+            
+            if (!hasAccess) {
+                return next(new NotFoundError("Article non trouvé"));
+            }
+            
+            // Filter to show only their supplier data
+            const filteredArticle = article.toObject();
+            filteredArticle.fournisseurs = filteredArticle.fournisseurs.filter(
+                supplier => {
+                    const supplierId = supplier.fournisseurId?._id || supplier.fournisseurId;
+                    return supplierId && supplierId.toString() === req.user.entiteId.toString();
+                }
+            );
+            article = filteredArticle;
+        }
+        
+        const normalizedArticle = normalizeArticleImageUrls(article);
+        res.json(normalizedArticle);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Mettre à jour un article.
+ * @function updateArticle
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de l'article
+ * @param {Object} req.body - Corps de la requête
+ * @param {string} [req.body.codeArticle] - Nouveau code de l'article
+ * @param {string} [req.body.designation] - Nouvelle désignation
+ * @param {string} [req.body.categorie] - Nouvelle catégorie
+ * @param {boolean} [req.body.isActive] - Statut actif/inactif
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie l'article mis à jour
+ * @throws {NotFoundError} Si l'article n'est pas trouvé
+ * @since 1.0.0
+ * @example
+ * // PUT /api/articles/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Body: { "designation": "Nouveau nom", "categorie": "Nouvelle catégorie" }
+ * // Response: { "_id": "...", "codeArticle": "ART001", "designation": "Nouveau nom", ... }
+ */
+exports.updateArticle = async (req, res, next) => {
+    try {
+        const { codeArticle, designation, categorie, isActive } = req.body;
+        
+        const updatedArticle = await Article.findByIdAndUpdate(
+            req.params.id,
+            { 
+                ...(codeArticle && { codeArticle }),
+                ...(designation && { designation }),
+                ...(categorie && { categorie }),
+                ...(isActive !== undefined && { isActive })
+            },
+            { new: true, runValidators: true }
+        );
+        
+        if (!updatedArticle) {
+            return next(new NotFoundError("Article non trouvé"));
+        }
+        
+        const normalizedArticle = normalizeArticleImageUrls(updatedArticle);
+        res.json(normalizedArticle);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Supprimer un article (désactivation).
+ * @function deleteArticle
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de l'article
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Confirmation de la suppression
+ * @throws {NotFoundError} Si l'article n'est pas trouvé
+ * @since 1.0.0
+ * @example
+ * // DELETE /api/articles/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Response: { "message": "Article supprimé avec succès" }
+ */
+exports.deleteArticle = async (req, res, next) => {
+    try {
+        const article = await Article.findByIdAndUpdate(
+            req.params.id,
+            { isActive: false },
+            { new: true }
+        );
+        
+        if (!article) {
+            return next(new NotFoundError("Article non trouvé"));
+        }
+        
+        res.json({ message: "Article supprimé avec succès" });
     } catch (error) {
         next(error);
     }
@@ -179,6 +593,28 @@ exports.removeFournisseurFromArticle = async (req, res, next) => {
     // Extraction de l'ID de l'article et de l'ID de l'information fournisseur.
     const { id: articleId, fournisseurInfoId } = req.params;
 
+    // D'abord, récupérer l'article pour vérifier s'il y a une image à supprimer
+    const article = await Article.findById(articleId);
+    if (!article) {
+        return next(new NotFoundError("Article non trouvé"));
+    }
+
+    // Trouver le lien fournisseur pour vérifier s'il a une image
+    const supplierLink = article.fournisseurs.find(f => f._id.toString() === fournisseurInfoId);
+    
+    // Si le lien a une image, la supprimer de MinIO
+    if (supplierLink && supplierLink.imageUrl) {
+        const urlParts = supplierLink.imageUrl.split(`/${bucketName}/`);
+        if (urlParts.length > 1) {
+            const objectName = urlParts[1];
+            try {
+                await minioClient.removeObject(bucketName, objectName);
+            } catch (error) {
+                console.warn('Erreur lors de la suppression de l\'image:', error);
+            }
+        }
+    }
+
     // Utilisation de findByIdAndUpdate avec l'opérateur $pull pour retirer
     // l'objet correspondant du tableau 'fournisseurs'.
     const updatedArticle = await Article.findByIdAndUpdate(
@@ -186,11 +622,6 @@ exports.removeFournisseurFromArticle = async (req, res, next) => {
         { $pull: { fournisseurs: { _id: fournisseurInfoId } } },
         { new: true } // 'new: true' assure que le document retourné est la version mise à jour.
     );
-
-    // Si l'article n'est pas trouvé, une erreur 404 est levée.
-    if (!updatedArticle) {
-        return next(new NotFoundError("Article non trouvé"));
-    }
 
     // Les post-hooks gèrent automatiquement la population des fournisseurs.
     // Envoi de l'article mis à jour.
@@ -257,6 +688,141 @@ exports.updateFournisseurForArticle = async (req, res, next) => {
 
     // Envoi de l'article mis à jour.
     res.json(updatedArticle);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Uploader une image pour un fournisseur d'article spécifique.
+ * @function uploadFournisseurImage
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de l'article
+ * @param {string} req.params.fournisseurId - ID du fournisseur
+ * @param {Object} req.file - Fichier uploadé (ajouté par le middleware multer)
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie l'URL de l'image uploadée
+ * @throws {NotFoundError} Si l'article ou le fournisseur n'est pas trouvé
+ * @throws {BadRequestError} Si aucun fichier n'est fourni
+ * @since 1.0.0
+ */
+exports.uploadFournisseurImage = async (req, res, next) => {
+    try {
+        const { id: articleId, fournisseurId } = req.params;
+        
+        // Vérifier si un fichier a été uploadé
+        if (!req.file) {
+            return next(new BadRequestError('Aucun fichier image fourni'));
+        }
+        
+        // Rechercher l'article
+        const article = await Article.findById(articleId);
+        if (!article) {
+            return next(new NotFoundError('Article non trouvé'));
+        }
+        
+        // Trouver le lien fournisseur
+        const supplierLink = article.fournisseurs.find(f => f._id.toString() === fournisseurId);
+        if (!supplierLink) {
+            return next(new NotFoundError('Lien fournisseur non trouvé'));
+        }
+        
+        // Si une image existe déjà, la supprimer
+        if (supplierLink.imageUrl) {
+            // Extract the object path from the URL (e.g., "article-images/filename.png")
+            const urlParts = supplierLink.imageUrl.split(`/${bucketName}/`);
+            if (urlParts.length > 1) {
+                const objectName = urlParts[1];
+                try {
+                    await minioClient.removeObject(bucketName, objectName);
+                } catch (error) {
+                    console.warn('Erreur lors de la suppression de l\'ancienne image:', error);
+                }
+            }
+        }
+        
+        // Créer un nom de fichier unique
+        const fileExtension = path.extname(req.file.originalname);
+        const fileName = `article-${articleId}-supplier-${fournisseurId}-${Date.now()}${fileExtension}`;
+        const objectName = `article-images/${fileName}`;
+        
+        // Uploader vers MinIO
+        await minioClient.putObject(bucketName, objectName, req.file.buffer, req.file.size);
+        
+        // Construire l'URL de l'image
+        const imageUrl = `${config.minio.useSSL ? 'https' : 'http'}://${config.minio.externalHost}:${config.minio.port}/${bucketName}/${objectName}`;
+        
+        // Mettre à jour l'article avec l'URL de l'image
+        supplierLink.imageUrl = imageUrl;
+        await article.save();
+        
+        res.json({
+            message: 'Image uploadée avec succès',
+            imageUrl: imageUrl
+        });
+        
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Supprimer l'image d'un fournisseur d'article spécifique.
+ * @function deleteFournisseurImage
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de l'article
+ * @param {string} req.params.fournisseurId - ID du fournisseur
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Confirmation de la suppression
+ * @throws {NotFoundError} Si l'article ou le fournisseur n'est pas trouvé
+ * @since 1.0.0
+ */
+exports.deleteFournisseurImage = async (req, res, next) => {
+    try {
+        const { id: articleId, fournisseurId } = req.params;
+        
+        // Rechercher l'article
+        const article = await Article.findById(articleId);
+        if (!article) {
+            return next(new NotFoundError('Article non trouvé'));
+        }
+        
+        // Trouver le lien fournisseur
+        const supplierLink = article.fournisseurs.find(f => f._id.toString() === fournisseurId);
+        if (!supplierLink) {
+            return next(new NotFoundError('Lien fournisseur non trouvé'));
+        }
+        
+        // Vérifier si une image existe
+        if (!supplierLink.imageUrl) {
+            return next(new NotFoundError('Aucune image trouvée pour ce fournisseur'));
+        }
+        
+        // Extract the object path from the URL (e.g., "article-images/filename.png")
+        const urlParts = supplierLink.imageUrl.split(`/${bucketName}/`);
+        if (urlParts.length > 1) {
+            const objectName = urlParts[1];
+            try {
+                await minioClient.removeObject(bucketName, objectName);
+            } catch (error) {
+                console.warn('Erreur lors de la suppression de l\'image:', error);
+            }
+        }
+        
+        // Mettre à jour l'article
+        supplierLink.imageUrl = null;
+        await article.save();
+        
+        res.json({
+            message: 'Image supprimée avec succès'
+        });
+        
     } catch (error) {
         next(error);
     }

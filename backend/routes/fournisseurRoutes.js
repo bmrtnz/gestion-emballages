@@ -15,6 +15,7 @@ const {
 } = require("../controllers/fournisseurController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require('../middleware/validationMiddleware');
+const paginationMiddleware = require("../middleware/paginationMiddleware");
 const { createFournisseurValidator, addSiteValidator } = require('../validators/fournisseurValidators');
 
 /**
@@ -44,7 +45,7 @@ router.route("/")
    *       200:
    *         description: Une liste de fournisseurs.
    */
-  .get(protect, getFournisseurs)
+  .get(protect, paginationMiddleware, getFournisseurs)
   /**
    * @swagger
    * /fournisseurs:

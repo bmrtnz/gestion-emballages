@@ -1,5 +1,6 @@
 // backend/models/articleModel.js
 const mongoose = require("mongoose");
+const { ARTICLE_CATEGORIES } = require("../utils/constants");
 
 const fournisseurInfoSchema = new mongoose.Schema({
     fournisseurId: {
@@ -11,6 +12,7 @@ const fournisseurInfoSchema = new mongoose.Schema({
     prixUnitaire: { type: Number, required: true },
     uniteConditionnement: String,
     quantiteParConditionnement: Number,
+    imageUrl: String, // URL de l'image du produit chez ce fournisseur
     documents: [
         {
             nomDocument: String,
@@ -34,7 +36,11 @@ const articleSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
-        categorie: String,
+        categorie: {
+            type: String,
+            enum: ARTICLE_CATEGORIES,
+            required: false
+        },
         isActive: { type: Boolean, default: true },
         fournisseurs: [fournisseurInfoSchema],
     },

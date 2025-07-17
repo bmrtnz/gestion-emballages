@@ -10,6 +10,7 @@ const {
 } = require("../controllers/stationController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require("../middleware/validationMiddleware");
+const paginationMiddleware = require("../middleware/paginationMiddleware");
 const {
     createStationValidator,
     updateStationValidator,
@@ -43,7 +44,7 @@ router
      *       200:
      *         description: Une liste de stations.
      */
-    .get(protect, getStations)
+    .get(protect, paginationMiddleware, getStations)
     /**
      * @swagger
      * /stations:

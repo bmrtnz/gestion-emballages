@@ -34,7 +34,7 @@ const sidebarOpen = ref(false);
     <div class="lg:pl-72">
       <main class="py-10">
         <div class="px-4 sm:px-6 lg:px-8">
-          <router-view />
+          <slot />
         </div>
       </main>
     </div>

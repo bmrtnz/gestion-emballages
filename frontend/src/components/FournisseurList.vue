@@ -1,217 +1,162 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
-import { useAuthStore } from '../stores/authStore';
-import { useLoading } from '../composables/useLoading';
-import { useErrorHandler } from '../composables/useErrorHandler';
-import { useTreeState } from '../composables/useTreeState';
-import api from '../api/axios';
-import { PencilSquareIcon, PlusIcon, ChevronRightIcon, PlayIcon, PauseIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline';
+import { useFournisseurList } from '../composables/useFournisseurList';
+import { PencilSquareIcon, PlusIcon, ChevronRightIcon, PlayIcon, PauseIcon, ChevronDownIcon, ChevronUpIcon, MagnifyingGlassIcon, FunnelIcon, ChevronDoubleDownIcon, ChevronDoubleUpIcon } from '@heroicons/vue/24/outline';
 import SlidePanel from './ui/SlidePanel.vue';
 import SiteCreateForm from './fournisseurs/SiteCreateForm.vue';
 import FournisseurEditForm from './fournisseurs/FournisseurEditForm.vue';
 import SiteEditForm from './fournisseurs/SiteEditForm.vue';
+import Button from './ui/Button.vue';
+import Select from './ui/Select.vue';
 
-const authStore = useAuthStore();
-
-// State
-const fournisseurs = ref([]);
-const showInactive = ref(false);
-const isSiteCreatePanelOpen = ref(false);
-const isEditPanelOpen = ref(false);
-const isSiteEditPanelOpen = ref(false);
-const selectedFournisseurForSite = ref(null);
-const selectedFournisseurForEdit = ref(null);
-const selectedSiteForEdit = ref(null);
-const selectedFournisseurIdForSiteEdit = ref(null);
-
-// Loading and error handling
-const { isLoading, execute } = useLoading();
-const { withErrorHandling } = useErrorHandler();
-
-// Tree state management
-const { isExpanded, toggleExpanded, initializeItems, expandAll, collapseAll } = useTreeState('fournisseurs-tree-state', true);
-
-// Fetch data
-const fetchFournisseurs = async () => {
-  await execute(async () => {
-    const response = await withErrorHandling(
-      () => api.get('/fournisseurs'),
-      'Failed to load fournisseurs'
-    );
-    fournisseurs.value = response.data;
-  });
-};
-
-onMounted(fetchFournisseurs);
-
-// Keep the hierarchical structure for tree view with filtering
-const tableDataSource = computed(() => {
-  let filteredFournisseurs = fournisseurs.value;
+// Use the main fournisseur list composable
+const {
+  // Data
+  fournisseurs,
+  transformedTableData,
+  isLoading,
   
-  // Filter based on active/inactive toggle
-  if (!showInactive.value) {
-    filteredFournisseurs = fournisseurs.value.filter(f => f.isActive);
-  }
+  // Filters
+  searchQuery,
+  statusFilter,
+  showFilters,
+  activeFiltersCount,
+  statusOptions,
   
-  return filteredFournisseurs.map(f => ({
-    ...f,
-    key: f._id,
-    children: f.sites || []
-  }));
-});
-
-// Initialize tree state when data changes
-watch(tableDataSource, (data) => {
-  if (data.length > 0) {
-    initializeItems(data);
-  }
-}, { immediate: true });
-
-const editFournisseur = (fournisseur) => {
-  selectedFournisseurForEdit.value = fournisseur;
-  isEditPanelOpen.value = true;
-};
-
-const openSiteCreatePanel = (fournisseur) => {
-  selectedFournisseurForSite.value = fournisseur;
-  isSiteCreatePanelOpen.value = true;
-};
-
-const handleSiteCreated = () => {
-  isSiteCreatePanelOpen.value = false;
-  selectedFournisseurForSite.value = null;
-  fetchFournisseurs(); // Refresh the list to show the new site
-};
-
-const handleFournisseurUpdated = () => {
-  isEditPanelOpen.value = false;
-  selectedFournisseurForEdit.value = null;
-  fetchFournisseurs(); // Refresh the list to show the updated fournisseur
-};
-
-const softDeleteFournisseur = async (fournisseurId) => {
-  await execute(async () => {
-    try {
-      await withErrorHandling(
-        () => api.delete(`/fournisseurs/${fournisseurId}`),
-        'Impossible de supprimer ce fournisseur'
-      );
-      await fetchFournisseurs();
-    } catch (error) {
-      // Error already handled by withErrorHandling, just log it
-      console.log('Supplier deletion failed:', error.response?.data?.message || error.message);
-    }
-  });
-};
-
-const reactivateFournisseur = async (fournisseurId) => {
-  await execute(async () => {
-    try {
-      await withErrorHandling(
-        () => api.patch(`/fournisseurs/${fournisseurId}/reactivate`),
-        'Impossible de réactiver ce fournisseur'
-      );
-      await fetchFournisseurs();
-    } catch (error) {
-      // Error already handled by withErrorHandling, just log it
-      console.log('Supplier reactivation failed:', error.response?.data?.message || error.message);
-    }
-  });
-};
+  // Pagination
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  hasNextPage,
+  hasPrevPage,
+  paginationPages,
+  
+  // Tree state
+  isExpanded,
+  toggleExpanded,
+  computedIsTreeExpanded,
+  toggleTreeState,
+  handleExpandAll,
+  handleCollapseAll,
+  
+  // UI state
+  isSiteCreatePanelOpen,
+  isEditPanelOpen,
+  isSiteEditPanelOpen,
+  selectedFournisseurForSite,
+  selectedFournisseurForEdit,
+  selectedSiteForEdit,
+  selectedFournisseurIdForSiteEdit,
+  
+  // Methods
+  handlePageChange,
+  handlePageSizeChangeWithRefresh,
+  handleClearFilters,
+  formatAddress,
+  editFournisseur,
+  openSiteCreatePanel,
+  editSite,
+  handleSiteCreatedWithRefresh,
+  handleFournisseurUpdatedWithRefresh,
+  handleSiteUpdatedWithRefresh,
+  handleSoftDeleteFournisseur,
+  handleReactivateFournisseur,
+  handleDeactivateSite,
+  handleReactivateSite,
+  closeAllPanels,
+  
+  // Expose for parent component
+  fetchFournisseurs,
+  goToPrevPage,
+  goToNextPage
+} = useFournisseurList();
 
 // Expose fetchFournisseurs function for parent component
 defineExpose({ fetchFournisseurs });
-
-const formatAddress = (adresse) => {
-    if (!adresse) return '';
-    return `${adresse.rue}, ${adresse.codePostal} ${adresse.ville}, ${adresse.pays}`;
-};
-
-// Tree control functions
-const handleExpandAll = () => {
-  expandAll(tableDataSource.value);
-};
-
-const handleCollapseAll = () => {
-  collapseAll();
-};
-
-const editSite = (site, fournisseurId) => {
-  selectedSiteForEdit.value = site;
-  selectedFournisseurIdForSiteEdit.value = fournisseurId;
-  isSiteEditPanelOpen.value = true;
-};
-
-const handleSiteUpdated = () => {
-  isSiteEditPanelOpen.value = false;
-  selectedSiteForEdit.value = null;
-  selectedFournisseurIdForSiteEdit.value = null;
-  fetchFournisseurs();
-};
-
-const deactivateSite = async (fournisseurId, siteId) => {
-  await execute(async () => {
-    try {
-      await withErrorHandling(
-        () => api.patch(`/fournisseurs/${fournisseurId}/sites/${siteId}/deactivate`),
-        'Impossible de désactiver ce site'
-      );
-      await fetchFournisseurs();
-    } catch (error) {
-      console.log('Site deactivation failed:', error.response?.data?.message || error.message);
-    }
-  });
-};
-
-const reactivateSite = async (fournisseurId, siteId) => {
-  await execute(async () => {
-    try {
-      await withErrorHandling(
-        () => api.patch(`/fournisseurs/${fournisseurId}/sites/${siteId}/reactivate`),
-        'Impossible de réactiver ce site'
-      );
-      await fetchFournisseurs();
-    } catch (error) {
-      console.log('Site reactivation failed:', error.response?.data?.message || error.message);
-    }
-  });
-};
 </script>
 
 <template>
-  <div>
-    <!-- Mobile tree view controls -->
-    <div class="block md:hidden mb-4 space-y-3">
-      <div class="flex items-center justify-start gap-x-2">
-        <button 
-          @click="handleExpandAll"
-          class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors"
-          title="Tout déplier"
+  <div class="space-y-6">
+    <!-- Search and Filters -->
+    <div class="space-y-4">
+      <!-- Search Bar and Filter Toggle -->
+      <div class="flex items-center space-x-4">
+        <!-- Tree toggle button -->
+        <button
+          @click="toggleTreeState"
+          class="flex-shrink-0 inline-flex items-center justify-center p-2 border border-gray-300 shadow-sm rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          :title="computedIsTreeExpanded ? 'Tout replier' : 'Tout déplier'"
         >
-          <ChevronDownIcon class="h-3 w-3 mr-1" />
-          Déplier
+          <ChevronDoubleUpIcon v-if="computedIsTreeExpanded" class="h-4 w-4" />
+          <ChevronDoubleDownIcon v-else class="h-4 w-4" />
         </button>
-        <button 
-          @click="handleCollapseAll"
-          class="inline-flex items-center px-2 py-1 text-xs font-medium text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors"
-          title="Tout replier"
+        
+        <button
+          @click="showFilters = !showFilters"
+          class="flex-shrink-0 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
         >
-          <ChevronUpIcon class="h-3 w-3 mr-1" />
-          Replier
+          <FunnelIcon class="h-4 w-4 mr-2" />
+          Filtres
+          <span v-if="activeFiltersCount > 0" class="ml-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-primary-600 bg-primary-100 rounded-full">
+            {{ activeFiltersCount }}
+          </span>
+          <ChevronDownIcon 
+            class="ml-2 h-4 w-4 transition-transform duration-200" 
+            :class="{ 'rotate-180': showFilters }"
+          />
         </button>
+        
+        <div class="flex-1 relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            v-model="searchQuery"
+            type="text"
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+            placeholder="Rechercher par nom, spécialisation, sites ou contacts..."
+          />
+        </div>
       </div>
-      
-      <!-- Show inactive toggle for mobile -->
-      <div class="flex items-center">
-        <input 
-          id="show-inactive-mobile" 
-          v-model="showInactive" 
-          type="checkbox" 
-          class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-        />
-        <label for="show-inactive-mobile" class="ml-2 block text-sm text-gray-900">
-          Afficher les inactifs
-        </label>
+
+      <!-- Filters -->
+      <div v-if="showFilters" class="p-4 bg-gray-50 rounded-lg">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+            <Select
+              v-model="statusFilter"
+              :options="statusOptions"
+              placeholder="Sélectionner un statut"
+            />
+          </div>
+          
+          <!-- Three empty columns for future filters -->
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        
+        <div class="flex justify-end">
+          <Button variant="secondary" size="sm" @click="handleClearFilters">
+            Réinitialiser les filtres
+          </Button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Mobile tree view controls -->
+    <div class="block md:hidden mb-4">
+      <div class="flex items-center justify-start">
+        <button 
+          @click="toggleTreeState"
+          class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors"
+          :title="computedIsTreeExpanded ? 'Tout replier' : 'Tout déplier'"
+        >
+          <ChevronDoubleUpIcon v-if="isTreeExpanded" class="h-4 w-4 mr-2" />
+          <ChevronDoubleDownIcon v-else class="h-4 w-4 mr-2" />
+          {{ computedIsTreeExpanded ? 'Replier tout' : 'Déplier tout' }}
+        </button>
       </div>
     </div>
     
@@ -219,7 +164,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
     <div class="block md:hidden">
       <div class="space-y-3">
         <div
-          v-for="fournisseur in tableDataSource"
+          v-for="fournisseur in transformedTableData"
           :key="fournisseur.key"
           class="p-4 rounded-lg border bg-white border-gray-200"
         >
@@ -262,7 +207,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
             </button>
             <button 
               v-if="fournisseur.isActive"
-              @click="softDeleteFournisseur(fournisseur._id)" 
+              @click="handleSoftDeleteFournisseur(fournisseur._id)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Désactiver"
             >
@@ -270,7 +215,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
             </button>
             <button 
               v-else
-              @click="reactivateFournisseur(fournisseur._id)" 
+              @click="handleReactivateFournisseur(fournisseur._id)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Réactiver"
             >
@@ -305,7 +250,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                   </button>
                   <button 
                     v-if="site.isActive !== false"
-                    @click="deactivateSite(fournisseur._id, site._id)"
+                    @click="handleDeactivateSite(fournisseur._id, site._id)"
                     class="p-1 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                     title="Désactiver"
                   >
@@ -313,7 +258,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                   </button>
                   <button 
                     v-else
-                    @click="reactivateSite(fournisseur._id, site._id)"
+                    @click="handleReactivateSite(fournisseur._id, site._id)"
                     class="p-1 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                     title="Réactiver"
                   >
@@ -331,41 +276,6 @@ const reactivateSite = async (fournisseurId, siteId) => {
       </div>
     </div>
 
-    <!-- Tree view controls -->
-    <div class="hidden md:flex items-center justify-between mb-4">
-      <div class="flex items-center gap-x-2">
-        <button 
-          @click="handleExpandAll"
-          class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-md transition-colors"
-          title="Tout déplier"
-        >
-          <ChevronDownIcon class="h-4 w-4 mr-1" />
-          Tout déplier
-        </button>
-        <button 
-          @click="handleCollapseAll"
-          class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-md transition-colors"
-          title="Tout replier"
-        >
-          <ChevronUpIcon class="h-4 w-4 mr-1" />
-          Tout replier
-        </button>
-      </div>
-      
-      <!-- Show inactive toggle -->
-      <div class="flex items-center">
-        <input 
-          id="show-inactive" 
-          v-model="showInactive" 
-          type="checkbox" 
-          class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-        />
-        <label for="show-inactive" class="ml-2 block text-sm text-gray-900">
-          Afficher les fournisseurs inactifs
-        </label>
-      </div>
-    </div>
-    
     <!-- Desktop table view -->
     <div class="hidden md:block flow-root">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -385,7 +295,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                 </tr>
               </thead>
               <tbody class="bg-white">
-                <template v-for="parentItem in tableDataSource" :key="parentItem.key">
+                <template v-for="parentItem in transformedTableData" :key="parentItem.key">
                   <!-- Parent row (Fournisseur) -->
                   <tr class="border-b border-gray-200 bg-gray-50">
                     <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">
@@ -438,7 +348,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                         </button>
                         <button 
                           v-if="parentItem.isActive"
-                          @click="softDeleteFournisseur(parentItem._id)" 
+                          @click="handleSoftDeleteFournisseur(parentItem._id)" 
                           class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                           title="Désactiver"
                         >
@@ -446,7 +356,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                         </button>
                         <button 
                           v-else
-                          @click="reactivateFournisseur(parentItem._id)" 
+                          @click="handleReactivateFournisseur(parentItem._id)" 
                           class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                           title="Réactiver"
                         >
@@ -499,7 +409,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                           </button>
                           <button 
                             v-if="childItem.isActive !== false"
-                            @click="deactivateSite(parentItem._id, childItem._id)"
+                            @click="handleDeactivateSite(parentItem._id, childItem._id)"
                             class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                             title="Désactiver"
                           >
@@ -507,7 +417,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
                           </button>
                           <button 
                             v-else
-                            @click="reactivateSite(parentItem._id, childItem._id)"
+                            @click="handleReactivateSite(parentItem._id, childItem._id)"
                             class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                             title="Réactiver"
                           >
@@ -528,6 +438,123 @@ const reactivateSite = async (fournisseurId, siteId) => {
       </div>
     </div>
     
+    <!-- Pagination controls -->
+    <div v-if="totalPages > 1" class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+      <div class="flex items-center justify-between w-full">
+        <!-- Mobile pagination -->
+        <div class="flex justify-between flex-1 sm:hidden">
+          <button
+            @click="goToPrevPage"
+            :disabled="!hasPrevPage"
+            class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Précédent
+          </button>
+          <button
+            @click="goToNextPage"
+            :disabled="!hasNextPage"
+            class="relative ml-3 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Suivant
+          </button>
+        </div>
+        
+        <!-- Desktop pagination -->
+        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              Affichage de <span class="font-medium">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span> à 
+              <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, totalItems) }}</span> sur 
+              <span class="font-medium">{{ totalItems }}</span> résultats
+            </p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <label for="page-size" class="text-sm text-gray-700">Afficher:</label>
+            <select
+              id="page-size"
+              @change="handlePageSizeChangeWithRefresh($event.target.value)"
+              :value="itemsPerPage"
+              class="rounded-md border-gray-300 py-1 text-sm"
+            >
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            <span class="text-sm text-gray-700">par page</span>
+          </div>
+          <div>
+            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+              <!-- First page button -->
+              <button
+                @click="handlePageChange(1)"
+                :disabled="currentPage === 1"
+                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Première page"
+              >
+                <span class="sr-only">Première page</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M15.79 14.77a.75.75 0 01-1.06.02l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 111.04 1.08L11.832 10l3.938 3.71a.75.75 0 01.02 1.06zm-6 0a.75.75 0 01-1.06.02l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 111.04 1.08L5.832 10l3.938 3.71a.75.75 0 01.02 1.06z" clip-rule="evenodd" />
+                </svg>
+              </button>
+
+              <!-- Previous page button -->
+              <button
+                @click="goToPrevPage"
+                :disabled="!hasPrevPage"
+                class="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Page précédente"
+              >
+                <span class="sr-only">Précédent</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                </svg>
+              </button>
+              
+              <template v-for="page in paginationPages" :key="page">
+                <button
+                  @click="handlePageChange(page)"
+                  :class="[
+                    page === currentPage
+                      ? 'relative z-10 inline-flex items-center bg-primary-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600'
+                      : 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                  ]"
+                >
+                  {{ page }}
+                </button>
+              </template>
+              
+              <!-- Next page button -->
+              <button
+                @click="goToNextPage"
+                :disabled="!hasNextPage"
+                class="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Page suivante"
+              >
+                <span class="sr-only">Suivant</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                </svg>
+              </button>
+
+              <!-- Last page button -->
+              <button
+                @click="handlePageChange(totalPages)"
+                :disabled="currentPage === totalPages"
+                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Dernière page"
+              >
+                <span class="sr-only">Dernière page</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M4.21 5.23a.75.75 0 011.06-.02l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08L8.168 10 4.23 6.29a.75.75 0 01-.02-1.06zm6 0a.75.75 0 011.06-.02l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08L14.168 10 10.23 6.29a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Site creation slide panel -->
     <SlidePanel 
       :open="isSiteCreatePanelOpen" 
@@ -538,7 +565,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
       <SiteCreateForm 
         v-if="selectedFournisseurForSite" 
         :fournisseur-id="selectedFournisseurForSite._id" 
-        @created="handleSiteCreated" 
+        @created="handleSiteCreatedWithRefresh" 
         @close="isSiteCreatePanelOpen = false" 
       />
     </SlidePanel>
@@ -553,7 +580,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
       <FournisseurEditForm 
         v-if="selectedFournisseurForEdit" 
         :fournisseur="selectedFournisseurForEdit" 
-        @updated="handleFournisseurUpdated" 
+        @updated="handleFournisseurUpdatedWithRefresh" 
         @close="isEditPanelOpen = false" 
       />
     </SlidePanel>
@@ -569,7 +596,7 @@ const reactivateSite = async (fournisseurId, siteId) => {
         v-if="selectedSiteForEdit && selectedFournisseurIdForSiteEdit" 
         :fournisseur-id="selectedFournisseurIdForSiteEdit"
         :site="selectedSiteForEdit" 
-        @updated="handleSiteUpdated" 
+        @updated="handleSiteUpdatedWithRefresh" 
         @close="isSiteEditPanelOpen = false" 
       />
     </SlidePanel>

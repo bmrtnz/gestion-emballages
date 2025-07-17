@@ -17,6 +17,7 @@ const jwt = require('jsonwebtoken');
 // Removed asyncHandler for cleaner testing and error handling
 const { BadRequestError, UnauthorizedError, ValidationError, NotFoundError } = require('../utils/appError');
 const config = require('../config/env');
+const { USER_ROLES } = require('../utils/constants');
 
 /**
  * Créer un nouvel utilisateur.
@@ -61,8 +62,7 @@ exports.createUser = async (req, res, next) => {
     }
 
     // Validation du rôle
-    const validRoles = ['Manager', 'Gestionnaire', 'Station', 'Fournisseur'];
-    if (!validRoles.includes(role)) {
+    if (!USER_ROLES.includes(role)) {
         return next(new ValidationError('Rôle invalide'));
     }
 
@@ -190,53 +190,119 @@ exports.getUserProfile = async (req, res, next) => {
 };
 
 /**
- * Obtenir tous les utilisateurs actifs.
+ * Obtenir tous les utilisateurs avec pagination, recherche et filtres.
  * @function getUsers
  * @memberof module:controllers/userController
  * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.pagination - Paramètres de pagination ajoutés par le middleware
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
- * @returns {Promise<void>} Renvoie la liste de tous les utilisateurs actifs (sans mot de passe)
+ * @returns {Promise<void>} Renvoie la liste paginée des utilisateurs avec métadonnées
  * @since 1.0.0
  * @example
- * // GET /api/users
- * // Response: [{ "_id": "...", "email": "user1@example.com", "nomComplet": "User 1", "role": "Station" }, ...]
+ * // GET /api/users?page=2&limit=20&search=thomas&role=Station&showInactive=false
+ * // Recherche par nom complet, email ou nom d'entité (station/fournisseur)
+ * // Response: { data: [...], pagination: { currentPage: 2, totalPages: 3, ... }, filters: { search: 'thomas', ... } }
  */
 exports.getUsers = async (req, res, next) => {
     try {
-    const users = await User.find({})
-        .select('_id nomComplet email role isActive entiteId entiteModel')
-        .exec();
-    
-    // Manually populate based on role since refPath might not work properly
-    const populatedUsers = [];
-    for (const user of users) {
-        let populatedUser = user.toObject();
+        const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;
         
-        if (user.entiteId && (user.role === 'Station' || user.role === 'Fournisseur')) {
-            let EntityModel;
-            if (user.role === 'Station') {
-                EntityModel = require('../models/stationModel');
-            } else if (user.role === 'Fournisseur') {
-                EntityModel = require('../models/fournisseurModel');
-            }
-            
-            if (EntityModel) {
-                const entity = await EntityModel.findById(user.entiteId).select('nom');
-                if (entity) {
-                    // Keep the original entiteId for form functionality and add entity info
-                    populatedUser.entiteId = {
-                        _id: user.entiteId,
-                        nom: entity.nom
-                    };
-                }
-            }
+        // Construction de la query de base
+        let query = {};
+        
+        // Gestion du filtre de statut
+        if (filters.status === 'active') {
+            query.isActive = true;
+        } else if (filters.status === 'inactive') {
+            query.isActive = false;
+        }
+        // Si status est vide ou 'tout', on ne filtre pas sur isActive
+        
+        // Ajout du filtre par rôle
+        if (filters.role) {
+            query.role = filters.role;
         }
         
-        populatedUsers.push(populatedUser);
-    }
-    
-    res.json(populatedUsers);
+        let users;
+        let totalCount;
+        
+        // Si une recherche est effectuée, nous devons chercher aussi dans les noms d'entités
+        if (search) {
+            // Recherche dans les stations
+            const Station = require('../models/stationModel');
+            const matchingStations = await Station.find({ 
+                nom: { $regex: search, $options: 'i' } 
+            }).select('_id');
+            const stationIds = matchingStations.map(s => s._id);
+            
+            // Recherche dans les fournisseurs
+            const Fournisseur = require('../models/fournisseurModel');
+            const matchingFournisseurs = await Fournisseur.find({ 
+                nom: { $regex: search, $options: 'i' } 
+            }).select('_id');
+            const fournisseurIds = matchingFournisseurs.map(f => f._id);
+            
+            // Construire la query avec recherche dans les entités
+            const searchQuery = {
+                ...query,
+                $or: [
+                    { nomComplet: { $regex: search, $options: 'i' } },
+                    { email: { $regex: search, $options: 'i' } },
+                    { entiteId: { $in: [...stationIds, ...fournisseurIds] } }
+                ]
+            };
+            
+            users = await User.find(searchQuery)
+                .select('_id nomComplet email role isActive entiteId entiteModel')
+                .sort({ [sortBy]: sortOrder })
+                .skip(skip)
+                .limit(limit)
+                .exec();
+            
+            totalCount = await User.countDocuments(searchQuery);
+        } else {
+            // Requête standard sans recherche
+            users = await User.find(query)
+                .select('_id nomComplet email role isActive entiteId entiteModel')
+                .sort({ [sortBy]: sortOrder })
+                .skip(skip)
+                .limit(limit)
+                .exec();
+            
+            totalCount = await User.countDocuments(query);
+        }
+        
+        // Population manuelle basée sur le rôle
+        const populatedUsers = [];
+        for (const user of users) {
+            let populatedUser = user.toObject();
+            
+            if (user.entiteId && (user.role === 'Station' || user.role === 'Fournisseur')) {
+                let EntityModel;
+                if (user.role === 'Station') {
+                    EntityModel = require('../models/stationModel');
+                } else if (user.role === 'Fournisseur') {
+                    EntityModel = require('../models/fournisseurModel');
+                }
+                
+                if (EntityModel) {
+                    const entity = await EntityModel.findById(user.entiteId).select('nom isActive');
+                    if (entity) {
+                        // Conserver l'entiteId original pour la fonctionnalité des formulaires et ajouter les infos d'entité
+                        populatedUser.entiteId = {
+                            _id: user.entiteId,
+                            nom: entity.nom,
+                            isActive: entity.isActive
+                        };
+                    }
+                }
+            }
+            
+            populatedUsers.push(populatedUser);
+        }
+        
+        res.json(req.pagination.buildResponse(populatedUsers, totalCount));
     } catch (error) {
         next(error);
     }

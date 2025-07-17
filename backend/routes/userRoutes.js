@@ -11,6 +11,7 @@ const {
     reactivateUser,
 } = require("../controllers/userController");
 const { protect } = require("../middleware/authMiddleware");
+const paginationMiddleware = require("../middleware/paginationMiddleware");
 const {
     createUserValidator,
     loginUserValidator,
@@ -81,7 +82,7 @@ router.post("/login", loginUserValidator, validate, loginUser);
 router.get("/profile", protect, getUserProfile);
 
 // Route pour obtenir tous les utilisateurs (protection avec authentification).
-router.get("/", protect, getUsers);
+router.get("/", protect, paginationMiddleware, getUsers);
 
 // Route pour mettre à jour un utilisateur.
 router.put("/:id", protect, updateUser);

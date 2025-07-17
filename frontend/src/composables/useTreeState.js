@@ -49,61 +49,68 @@ export function useTreeState(storageKey = 'tree-state', defaultOpen = true) {
     // Mark that we now have stored state
     hasStoredState.value = true;
     
-    if (expandedItems.value.has(itemId)) {
-      expandedItems.value.delete(itemId);
+    const newSet = new Set(expandedItems.value);
+    if (newSet.has(itemId)) {
+      newSet.delete(itemId);
     } else {
-      expandedItems.value.add(itemId);
+      newSet.add(itemId);
     }
+    expandedItems.value = newSet;
   };
 
   // Set expansion state for item
   const setExpanded = (itemId, expanded) => {
     hasStoredState.value = true;
     
+    const newSet = new Set(expandedItems.value);
     if (expanded) {
-      expandedItems.value.add(itemId);
+      newSet.add(itemId);
     } else {
-      expandedItems.value.delete(itemId);
+      newSet.delete(itemId);
     }
+    expandedItems.value = newSet;
   };
 
   // Initialize items with default state (only for new items without stored state)
   const initializeItems = (items) => {
     if (hasStoredState.value) return; // Don't initialize if we have stored state
     
+    const newSet = new Set(expandedItems.value);
     items.forEach(item => {
       const itemId = item.key || item._id;
       if (itemId && defaultOpen) {
-        expandedItems.value.add(itemId);
+        newSet.add(itemId);
       }
     });
     
+    expandedItems.value = newSet;
     // Mark that we now have state (even if it's just the default)
     hasStoredState.value = true;
   };
 
   // Clear all state
   const clearState = () => {
-    expandedItems.value.clear();
+    expandedItems.value = new Set();
     hasStoredState.value = false;
-    saveState();
   };
 
   // Expand all items
   const expandAll = (items) => {
     hasStoredState.value = true;
+    const newSet = new Set(expandedItems.value);
     items.forEach(item => {
       const itemId = item.key || item._id;
       if (itemId) {
-        expandedItems.value.add(itemId);
+        newSet.add(itemId);
       }
     });
+    expandedItems.value = newSet;
   };
 
   // Collapse all items
   const collapseAll = () => {
     hasStoredState.value = true;
-    expandedItems.value.clear();
+    expandedItems.value = new Set();
   };
 
   // Restore user state (reload from localStorage)
@@ -116,12 +123,12 @@ export function useTreeState(storageKey = 'tree-state', defaultOpen = true) {
         hasStoredState.value = true;
       } else {
         // If no saved state, reset to default
-        expandedItems.value.clear();
+        expandedItems.value = new Set();
         hasStoredState.value = false;
       }
     } catch (error) {
       console.warn('Failed to restore tree state:', error);
-      expandedItems.value.clear();
+      expandedItems.value = new Set();
       hasStoredState.value = false;
     }
   };

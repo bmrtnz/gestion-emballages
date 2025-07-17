@@ -1,0 +1,2824 @@
+[
+  {
+    "nom": "Smurfit Westrock",
+    "siret": "172 006 347 35347",
+    "specialisation": "Emballage transport",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "163 Chemin de la République",
+          "codePostal": "78000",
+          "ville": "Versailles",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Laurent Dubois",
+          "email": "laurent.dubois@smurfitwes.com",
+          "telephone": "0390238464"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Raja",
+    "siret": "112 481 209 33278",
+    "specialisation": "Emballage luxe",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "6 Chemin des Lilas",
+          "codePostal": "14000",
+          "ville": "Caen",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jean Lefebvre",
+          "email": "j.lefebvre@raja.fr",
+          "telephone": "0446398439"
+        }
+      },
+      {
+        "nomSite": "Site de Mulhouse",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "12 Boulevard de la Victoire",
+          "codePostal": "68100",
+          "ville": "Mulhouse",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Marie Guerin",
+          "email": "m.guerin@raja.fr",
+          "telephone": "0417002552"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Antalis Packaging",
+    "siret": "309 192 891 30164",
+    "specialisation": "Emballage cosmétique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "89 Impasse du Marché",
+          "codePostal": "42000",
+          "ville": "Saint-Étienne",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "François Henry",
+          "email": "francois.henry@antalispac.com",
+          "telephone": "0821686597"
+        }
+      },
+      {
+        "nomSite": "Site de Besançon",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "193 Allée des Écoles",
+          "codePostal": "25000",
+          "ville": "Besançon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Stéphane Bonnet",
+          "email": "bonnet@antalispac.fr",
+          "telephone": "0436798679"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Mondi Group",
+    "siret": "674 570 962 10789",
+    "specialisation": "Emballage électronique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "122 Place du Moulin",
+          "codePostal": "31000",
+          "ville": "Toulouse",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Catherine Michel",
+          "email": "catherine@mondigroup.com",
+          "telephone": "0456626826"
+        }
+      },
+      {
+        "nomSite": "Site de Avignon",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "21 Boulevard de l'Église",
+          "codePostal": "84000",
+          "ville": "Avignon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Florence Chevalier",
+          "email": "chevalier@mondigroup.fr",
+          "telephone": "0612659146"
+        }
+      },
+      {
+        "nomSite": "Site de Créteil",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "41 Allée de la Paix",
+          "codePostal": "94000",
+          "ville": "Créteil",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Vincent Bertrand",
+          "email": "bertrand@mondigroup.fr",
+          "telephone": "0988369415"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": false
+  },
+  {
+    "nom": "International Paper",
+    "siret": "475 927 831 27009",
+    "specialisation": "Emballage écologique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "118 Impasse de la Victoire",
+          "codePostal": "64000",
+          "ville": "Pau",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Stéphane Mathieu",
+          "email": "s.mathieu@internatio.fr",
+          "telephone": "0576631859"
+        }
+      },
+      {
+        "nomSite": "Site de Orléans",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "180 Allée du Pont",
+          "codePostal": "45000",
+          "ville": "Orléans",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Julie Fournier",
+          "email": "fournier@internatio.fr",
+          "telephone": "0196935888"
+        }
+      },
+      {
+        "nomSite": "Site de Avignon",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "183 Impasse des Lilas",
+          "codePostal": "84000",
+          "ville": "Avignon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Émilie Leroy",
+          "email": "emilie@internatio.com",
+          "telephone": "0759867250"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Stora Enso",
+    "siret": "685 402 490 63240",
+    "specialisation": "Emballage écologique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "127 Impasse des Champs",
+          "codePostal": "21000",
+          "ville": "Dijon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Patrice Fontaine",
+          "email": "p.fontaine@storaenso.fr",
+          "telephone": "0766824907"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Krones AG",
+    "siret": "446 353 563 78196",
+    "specialisation": "Emballage protection",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "22 Place de la Fontaine",
+          "codePostal": "18000",
+          "ville": "Bourges",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Julie Perrin",
+          "email": "julie@kronesag.com",
+          "telephone": "0178582038"
+        }
+      },
+      {
+        "nomSite": "Site de Dunkerque",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "103 Allée du Général de Gaulle",
+          "codePostal": "59140",
+          "ville": "Dunkerque",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Éric Morin",
+          "email": "eric.morin@kronesag.com",
+          "telephone": "0935865298"
+        }
+      },
+      {
+        "nomSite": "Site de Nanterre",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "24 Impasse des Tilleuls",
+          "codePostal": "92000",
+          "ville": "Nanterre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascal Fontaine",
+          "email": "p.fontaine@kronesag.fr",
+          "telephone": "0857816213"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Amcor",
+    "siret": "330 088 160 54493",
+    "specialisation": "Emballage textile",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "26 Avenue de la Paix",
+          "codePostal": "35000",
+          "ville": "Rennes",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Émilie Lopez",
+          "email": "emilie@amcor.com",
+          "telephone": "0229791071"
+        }
+      },
+      {
+        "nomSite": "Site de Paris",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "54 Place des Champs",
+          "codePostal": "75001",
+          "ville": "Paris",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Alain Morin",
+          "email": "alain.morin@amcor.com",
+          "telephone": "0857891563"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Sonoco Products",
+    "siret": "109 925 945 52787",
+    "specialisation": "Emballage protection",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "148 Place des Champs",
+          "codePostal": "83000",
+          "ville": "Toulon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sandrine Robert",
+          "email": "sandrine.robert@sonocoprod.com",
+          "telephone": "0378157545"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Crown Holdings",
+    "siret": "255 883 866 42860",
+    "specialisation": "Emballage médical",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "123 Rue du Stade",
+          "codePostal": "59140",
+          "ville": "Dunkerque",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascal Lefevre",
+          "email": "pascal.lefevre@crownholdi.com",
+          "telephone": "0957489341"
+        }
+      },
+      {
+        "nomSite": "Site de Clermont-Ferrand",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "17 Allée des Platanes",
+          "codePostal": "63000",
+          "ville": "Clermont-Ferrand",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jacqueline Lopez",
+          "email": "lopez@crownholdi.fr",
+          "telephone": "0186080935"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Ball Corporation",
+    "siret": "889 457 506 49094",
+    "specialisation": "Emballage alimentaire",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "175 Chemin de la Victoire",
+          "codePostal": "34000",
+          "ville": "Montpellier",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Françoise Fontaine",
+          "email": "f.fontaine@ballcorpor.fr",
+          "telephone": "0798180497"
+        }
+      },
+      {
+        "nomSite": "Site de Saint-Maur-des-Fossés",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "21 Route du Stade",
+          "codePostal": "94100",
+          "ville": "Saint-Maur-des-Fossés",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Bernard Blanc",
+          "email": "blanc@ballcorpor.fr",
+          "telephone": "0620943677"
+        }
+      },
+      {
+        "nomSite": "Site de Angers",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "73 Avenue de la République",
+          "codePostal": "49000",
+          "ville": "Angers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Monique Bonnet",
+          "email": "bonnet@ballcorpor.fr",
+          "telephone": "0935666554"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "CCL Industries",
+    "siret": "758 609 592 33081",
+    "specialisation": "Emballage électronique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "198 Boulevard de la Mairie",
+          "codePostal": "69100",
+          "ville": "Villeurbanne",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascale Bonnet",
+          "email": "pascale.bonnet@cclindustr.com",
+          "telephone": "0787781179"
+        }
+      },
+      {
+        "nomSite": "Site de Le Havre",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "148 Allée de la Victoire",
+          "codePostal": "76600",
+          "ville": "Le Havre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sébastien Faure",
+          "email": "sebastien@cclindustr.com",
+          "telephone": "0742370104"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Sealed Air",
+    "siret": "183 743 891 22296",
+    "specialisation": "Emballage pharmaceutique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "13 Boulevard du Commerce",
+          "codePostal": "94000",
+          "ville": "Créteil",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Isabelle Rousseau",
+          "email": "isabelle.rousseau@sealedair.com",
+          "telephone": "0264764439"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.295Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Huhtamaki",
+    "siret": "292 246 661 92416",
+    "specialisation": "Emballage e-commerce",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "12 Chemin du Général de Gaulle",
+          "codePostal": "42000",
+          "ville": "Saint-Étienne",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Monique Morel",
+          "email": "monique.morel@huhtamaki.com",
+          "telephone": "0965116374"
+        }
+      },
+      {
+        "nomSite": "Site de Perpignan",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "146 Boulevard du Commerce",
+          "codePostal": "66000",
+          "ville": "Perpignan",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Brigitte Fontaine",
+          "email": "brigitte@huhtamaki.com",
+          "telephone": "0511198187"
+        }
+      },
+      {
+        "nomSite": "Site de Caen",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "172 Place des Écoles",
+          "codePostal": "14000",
+          "ville": "Caen",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Nathalie Lefebvre",
+          "email": "lefebvre@huhtamaki.fr",
+          "telephone": "0734423876"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Schott AG",
+    "siret": "434 584 100 92294",
+    "specialisation": "Emballage pharmaceutique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "69 Place des Jardins",
+          "codePostal": "92700",
+          "ville": "Colombes",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascal Richard",
+          "email": "p.richard@schottag.fr",
+          "telephone": "0319242551"
+        }
+      },
+      {
+        "nomSite": "Site de Bordeaux",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "10 Impasse du Pont",
+          "codePostal": "33000",
+          "ville": "Bordeaux",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascale Bertrand",
+          "email": "bertrand@schottag.fr",
+          "telephone": "0825960701"
+        }
+      },
+      {
+        "nomSite": "Site de Montpellier",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "61 Chemin de la Mairie",
+          "codePostal": "34000",
+          "ville": "Montpellier",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascale Guerin",
+          "email": "p.guerin@schottag.fr",
+          "telephone": "0842261878"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Gerresheimer",
+    "siret": "855 612 961 15900",
+    "specialisation": "Emballage écologique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "68 Avenue du Général de Gaulle",
+          "codePostal": "75001",
+          "ville": "Paris",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Claude Blanc",
+          "email": "claude@gerresheim.com",
+          "telephone": "0641901490"
+        }
+      },
+      {
+        "nomSite": "Site de Roubaix",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "97 Avenue des Tilleuls",
+          "codePostal": "59100",
+          "ville": "Roubaix",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Nathalie Roux",
+          "email": "nathalie@gerresheim.com",
+          "telephone": "0518131246"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Sidel",
+    "siret": "257 746 775 85769",
+    "specialisation": "Emballage chimique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "139 Avenue des Tilleuls",
+          "codePostal": "51100",
+          "ville": "Reims",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Alain Petit",
+          "email": "alain@sidel.com",
+          "telephone": "0215884622"
+        }
+      },
+      {
+        "nomSite": "Site de Nanterre",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "38 Chemin du Marché",
+          "codePostal": "92000",
+          "ville": "Nanterre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sandrine David",
+          "email": "sandrine@sidel.com",
+          "telephone": "0774887084"
+        }
+      },
+      {
+        "nomSite": "Site de Lille",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "154 Impasse du Moulin",
+          "codePostal": "59000",
+          "ville": "Lille",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Chantal Nicolas",
+          "email": "chantal@sidel.com",
+          "telephone": "0389192674"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Tetra Pak",
+    "siret": "550 038 331 77352",
+    "specialisation": "Emballage transport",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "161 Avenue des Lilas",
+          "codePostal": "14000",
+          "ville": "Caen",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Serge Gauthier",
+          "email": "serge@tetrapak.com",
+          "telephone": "0288258655"
+        }
+      },
+      {
+        "nomSite": "Site de Tourcoing",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "121 Avenue des Champs",
+          "codePostal": "59200",
+          "ville": "Tourcoing",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Valérie Fournier",
+          "email": "valerie@tetrapak.com",
+          "telephone": "0636214594"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Constantia Flexibles",
+    "siret": "204 328 909 17089",
+    "specialisation": "Emballage électronique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "94 Allée de l'Église",
+          "codePostal": "51100",
+          "ville": "Reims",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "David Fontaine",
+          "email": "fontaine@constantia.fr",
+          "telephone": "0189412990"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Clondalkin Group",
+    "siret": "171 406 004 61836",
+    "specialisation": "Emballage alimentaire",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "143 Avenue de la Poste",
+          "codePostal": "63000",
+          "ville": "Clermont-Ferrand",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Monique Garnier",
+          "email": "monique.garnier@clondalkin.com",
+          "telephone": "0899052302"
+        }
+      },
+      {
+        "nomSite": "Site de Orléans",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "9 Impasse du Moulin",
+          "codePostal": "45000",
+          "ville": "Orléans",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jeanne Petit",
+          "email": "j.petit@clondalkin.fr",
+          "telephone": "0535364882"
+        }
+      },
+      {
+        "nomSite": "Site de Caen",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "19 Avenue de la Forêt",
+          "codePostal": "14000",
+          "ville": "Caen",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Isabelle Chevalier",
+          "email": "isabelle@clondalkin.com",
+          "telephone": "0788964809"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Coveris",
+    "siret": "197 997 425 94239",
+    "specialisation": "Emballage automobile",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "78 Route du Moulin",
+          "codePostal": "76600",
+          "ville": "Le Havre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Patrice Fournier",
+          "email": "fournier@coveris.fr",
+          "telephone": "0363361116"
+        }
+      },
+      {
+        "nomSite": "Site de Tourcoing",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "26 Avenue des Roses",
+          "codePostal": "59200",
+          "ville": "Tourcoing",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Catherine Morel",
+          "email": "catherine@coveris.com",
+          "telephone": "0450271820"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Plastipak",
+    "siret": "451 800 088 98457",
+    "specialisation": "Emballage industriel",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "104 Impasse du Château",
+          "codePostal": "49000",
+          "ville": "Angers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Julie Michel",
+          "email": "j.michel@plastipak.fr",
+          "telephone": "0520312997"
+        }
+      },
+      {
+        "nomSite": "Site de Marseille",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "74 Avenue de la Paix",
+          "codePostal": "13000",
+          "ville": "Marseille",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Stéphane Bonnet",
+          "email": "stephane@plastipak.com",
+          "telephone": "0684408092"
+        }
+      },
+      {
+        "nomSite": "Site de Tours",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "19 Route des Roses",
+          "codePostal": "37000",
+          "ville": "Tours",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Céline Mathieu",
+          "email": "celine.mathieu@plastipak.com",
+          "telephone": "0877661781"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Berry Global",
+    "siret": "253 780 809 21590",
+    "specialisation": "Emballage industriel",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "38 Boulevard de la Liberté",
+          "codePostal": "51100",
+          "ville": "Reims",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Françoise Richard",
+          "email": "francoise.richard@berrygloba.com",
+          "telephone": "0692769024"
+        }
+      },
+      {
+        "nomSite": "Site de Saint-Étienne",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "77 Route des Champs",
+          "codePostal": "42000",
+          "ville": "Saint-Étienne",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Martine Laurent",
+          "email": "laurent@berrygloba.fr",
+          "telephone": "0210810056"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Silgan Holdings",
+    "siret": "941 075 584 61790",
+    "specialisation": "Emballage textile",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "88 Allée du Stade",
+          "codePostal": "64000",
+          "ville": "Pau",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Laurent Thomas",
+          "email": "l.thomas@silganhold.fr",
+          "telephone": "0883568673"
+        }
+      },
+      {
+        "nomSite": "Site de Calais",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "75 Allée des Lilas",
+          "codePostal": "62100",
+          "ville": "Calais",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sandrine Dumont",
+          "email": "s.dumont@silganhold.fr",
+          "telephone": "0377632102"
+        }
+      },
+      {
+        "nomSite": "Site de Caen",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "15 Rue des Lilas",
+          "codePostal": "14000",
+          "ville": "Caen",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "André Bertrand",
+          "email": "bertrand@silganhold.fr",
+          "telephone": "0862087732"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "AeroCanada",
+    "siret": "470 241 334 37793",
+    "specialisation": "Emballage luxe",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "54 Place du Moulin",
+          "codePostal": "51100",
+          "ville": "Reims",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Florence Fournier",
+          "email": "florence@aerocanada.com",
+          "telephone": "0232063459"
+        }
+      },
+      {
+        "nomSite": "Site de Marseille",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "89 Chemin des Champs",
+          "codePostal": "13000",
+          "ville": "Marseille",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Daniel Lefevre",
+          "email": "daniel@aerocanada.com",
+          "telephone": "0573175888"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Orora Packaging",
+    "siret": "352 238 897 45846",
+    "specialisation": "Emballage sur mesure",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "73 Boulevard du Château",
+          "codePostal": "31000",
+          "ville": "Toulouse",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Philippe Bernard",
+          "email": "philippe.bernard@ororapacka.com",
+          "telephone": "0832804727"
+        }
+      },
+      {
+        "nomSite": "Site de Tourcoing",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "44 Chemin des Champs",
+          "codePostal": "59200",
+          "ville": "Tourcoing",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Didier Petit",
+          "email": "d.petit@ororapacka.fr",
+          "telephone": "0717171613"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Packaging Corporation",
+    "siret": "175 092 396 33591",
+    "specialisation": "Emballage e-commerce",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "56 Place de la Paix",
+          "codePostal": "94100",
+          "ville": "Saint-Maur-des-Fossés",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Christine Richard",
+          "email": "christine.richard@packagingc.com",
+          "telephone": "0134444122"
+        }
+      },
+      {
+        "nomSite": "Site de Paris",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "132 Route de la Mairie",
+          "codePostal": "75001",
+          "ville": "Paris",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascal Martinez",
+          "email": "p.martinez@packagingc.fr",
+          "telephone": "0253086009"
+        }
+      },
+      {
+        "nomSite": "Site de Nancy",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "114 Rue du Château",
+          "codePostal": "54000",
+          "ville": "Nancy",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Éric Chevalier",
+          "email": "eric@packagingc.com",
+          "telephone": "0641829092"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "WestRock Company",
+    "siret": "360 866 696 61549",
+    "specialisation": "Emballage transport",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "39 Avenue des Champs",
+          "codePostal": "84000",
+          "ville": "Avignon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Véronique Morel",
+          "email": "morel@westrockco.fr",
+          "telephone": "0433616324"
+        }
+      },
+      {
+        "nomSite": "Site de Poitiers",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "197 Rue du Pont",
+          "codePostal": "86000",
+          "ville": "Poitiers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Laurence Lefebvre",
+          "email": "l.lefebvre@westrockco.fr",
+          "telephone": "0120987426"
+        }
+      },
+      {
+        "nomSite": "Site de Saint-Maur-des-Fossés",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "111 Chemin des Jardins",
+          "codePostal": "94100",
+          "ville": "Saint-Maur-des-Fossés",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Brigitte Martinez",
+          "email": "martinez@westrockco.fr",
+          "telephone": "0382445953"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Graphic Packaging",
+    "siret": "920 188 790 38640",
+    "specialisation": "Emballage luxe",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "29 Place du Moulin",
+          "codePostal": "35000",
+          "ville": "Rennes",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sandrine Chevalier",
+          "email": "sandrine@graphicpac.com",
+          "telephone": "0866449845"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Reynolds Group",
+    "siret": "246 888 242 64510",
+    "specialisation": "Emballage électronique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "58 Rue de la Poste",
+          "codePostal": "92100",
+          "ville": "Boulogne-Billancourt",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "André Henry",
+          "email": "henry@reynoldsgr.fr",
+          "telephone": "0472878500"
+        }
+      },
+      {
+        "nomSite": "Site de Le Havre",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "47 Boulevard de la Victoire",
+          "codePostal": "76600",
+          "ville": "Le Havre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Philippe François",
+          "email": "philippe.francois@reynoldsgr.com",
+          "telephone": "0951866928"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Ampac Holdings",
+    "siret": "864 866 531 30061",
+    "specialisation": "Emballage logistique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "53 Impasse de la Mairie",
+          "codePostal": "44000",
+          "ville": "Nantes",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Véronique Lopez",
+          "email": "v.lopez@ampacholdi.fr",
+          "telephone": "0419867611"
+        }
+      },
+      {
+        "nomSite": "Site de Poitiers",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "103 Allée des Écoles",
+          "codePostal": "86000",
+          "ville": "Poitiers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jean Bertrand",
+          "email": "bertrand@ampacholdi.fr",
+          "telephone": "0847006033"
+        }
+      },
+      {
+        "nomSite": "Site de Reims",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "93 Rue des Écoles",
+          "codePostal": "51100",
+          "ville": "Reims",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pierre Gauthier",
+          "email": "pierre@ampacholdi.com",
+          "telephone": "0326234581"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Genpak",
+    "siret": "363 241 926 57885",
+    "specialisation": "Emballage chimique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "168 Impasse des Platanes",
+          "codePostal": "67000",
+          "ville": "Strasbourg",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Gérard Dupont",
+          "email": "gerard.dupont@genpak.com",
+          "telephone": "0362635603"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": false
+  },
+  {
+    "nom": "Printpack",
+    "siret": "398 008 551 97413",
+    "specialisation": "Emballage chimique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "121 Avenue des Champs",
+          "codePostal": "35000",
+          "ville": "Rennes",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pierre Girard",
+          "email": "pierre.girard@printpack.com",
+          "telephone": "0857362440"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Pactiv Evergreen",
+    "siret": "222 718 025 58942",
+    "specialisation": "Emballage automobile",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "14 Boulevard des Lilas",
+          "codePostal": "93300",
+          "ville": "Aubervilliers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Michel Faure",
+          "email": "michel.faure@pactivever.com",
+          "telephone": "0460781080"
+        }
+      },
+      {
+        "nomSite": "Site de Mulhouse",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "194 Boulevard des Roses",
+          "codePostal": "68100",
+          "ville": "Mulhouse",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Stéphane Garnier",
+          "email": "stephane@pactivever.com",
+          "telephone": "0286428937"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": false
+  },
+  {
+    "nom": "Tekni-Plex",
+    "siret": "969 936 914 83041",
+    "specialisation": "Emballage logistique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "79 Impasse de la Poste",
+          "codePostal": "75001",
+          "ville": "Paris",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sandrine Morel",
+          "email": "morel@tekniplex.fr",
+          "telephone": "0626078034"
+        }
+      },
+      {
+        "nomSite": "Site de Strasbourg",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "132 Avenue des Champs",
+          "codePostal": "67000",
+          "ville": "Strasbourg",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Céline Guerin",
+          "email": "guerin@tekniplex.fr",
+          "telephone": "0686485547"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Winpak",
+    "siret": "248 190 060 10926",
+    "specialisation": "Emballage automobile",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "15 Avenue des Champs",
+          "codePostal": "51100",
+          "ville": "Reims",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jeanne Simon",
+          "email": "jeanne.simon@winpak.com",
+          "telephone": "0211169905"
+        }
+      },
+      {
+        "nomSite": "Site de Perpignan",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "108 Avenue du Château",
+          "codePostal": "66000",
+          "ville": "Perpignan",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Serge Faure",
+          "email": "faure@winpak.fr",
+          "telephone": "0887201548"
+        }
+      },
+      {
+        "nomSite": "Site de Pau",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "194 Route du Commerce",
+          "codePostal": "64000",
+          "ville": "Pau",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Nicolas Garcia",
+          "email": "nicolas@winpak.com",
+          "telephone": "0138765112"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Bemis Company",
+    "siret": "169 971 876 38234",
+    "specialisation": "Emballage cosmétique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "88 Boulevard du Moulin",
+          "codePostal": "67000",
+          "ville": "Strasbourg",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Christophe Henry",
+          "email": "c.henry@bemiscompa.fr",
+          "telephone": "0630826891"
+        }
+      },
+      {
+        "nomSite": "Site de Marseille",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "86 Avenue du Général de Gaulle",
+          "codePostal": "13000",
+          "ville": "Marseille",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "François Legrand",
+          "email": "francois.legrand@bemiscompa.com",
+          "telephone": "0766146811"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Flextrus",
+    "siret": "718 235 530 94253",
+    "specialisation": "Emballage pharmaceutique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "44 Boulevard des Lilas",
+          "codePostal": "68100",
+          "ville": "Mulhouse",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Dominique Perrin",
+          "email": "dominique.perrin@flextrus.com",
+          "telephone": "0873898471"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Multi-Color Corporation",
+    "siret": "514 033 227 26691",
+    "specialisation": "Emballage cosmétique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "6 Route du Stade",
+          "codePostal": "93100",
+          "ville": "Montreuil",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Émilie Guerin",
+          "email": "emilie@multicolor.com",
+          "telephone": "0427786369"
+        }
+      },
+      {
+        "nomSite": "Site de Nanterre",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "19 Chemin des Tilleuls",
+          "codePostal": "92000",
+          "ville": "Nanterre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Stéphane Dupont",
+          "email": "s.dupont@multicolor.fr",
+          "telephone": "0238557664"
+        }
+      },
+      {
+        "nomSite": "Site de Aubervilliers",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "74 Chemin du Pont",
+          "codePostal": "93300",
+          "ville": "Aubervilliers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Christine Lopez",
+          "email": "christine.lopez@multicolor.com",
+          "telephone": "0768183315"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "CCL Label",
+    "siret": "731 783 545 54186",
+    "specialisation": "Emballage e-commerce",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "188 Rue du Moulin",
+          "codePostal": "13000",
+          "ville": "Marseille",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Laurent Legrand",
+          "email": "l.legrand@ccllabel.fr",
+          "telephone": "0399618596"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Schur Flexibles",
+    "siret": "768 962 995 87067",
+    "specialisation": "Emballage écologique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "135 Avenue du Château",
+          "codePostal": "13000",
+          "ville": "Marseille",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "David Moreau",
+          "email": "david.moreau@schurflexi.com",
+          "telephone": "0197754379"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Attestation d'assurance",
+        "typeDocument": "Assurance",
+        "urlStockage": "placeholder_attestation_d'assurance.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Uflex Limited",
+    "siret": "517 261 378 42100",
+    "specialisation": "Emballage luxe",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "150 Allée des Champs",
+          "codePostal": "76600",
+          "ville": "Le Havre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jean Michel",
+          "email": "jean.michel@uflexlimit.com",
+          "telephone": "0385276105"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Nihon Dixie",
+    "siret": "945 975 417 29423",
+    "specialisation": "Emballage alimentaire",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "83 Route des Lilas",
+          "codePostal": "21000",
+          "ville": "Dijon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "André Henry",
+          "email": "henry@nihondixie.fr",
+          "telephone": "0370948557"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Toppan Printing",
+    "siret": "300 366 629 52160",
+    "specialisation": "Emballage logistique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "137 Allée de la Gare",
+          "codePostal": "92700",
+          "ville": "Colombes",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Céline Petit",
+          "email": "petit@toppanprin.fr",
+          "telephone": "0342491747"
+        }
+      },
+      {
+        "nomSite": "Site de Argenteuil",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "88 Boulevard de la Poste",
+          "codePostal": "95100",
+          "ville": "Argenteuil",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Frédéric Martin",
+          "email": "frederic@toppanprin.com",
+          "telephone": "0661080423"
+        }
+      },
+      {
+        "nomSite": "Site de Nanterre",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "163 Rue du Moulin",
+          "codePostal": "92000",
+          "ville": "Nanterre",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Frédéric Morel",
+          "email": "f.morel@toppanprin.fr",
+          "telephone": "0592646477"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Dai Nippon Printing",
+    "siret": "690 202 374 97186",
+    "specialisation": "Emballage logistique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "107 Avenue du Marché",
+          "codePostal": "14000",
+          "ville": "Caen",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "François David",
+          "email": "david@dainipponp.fr",
+          "telephone": "0291870205"
+        }
+      },
+      {
+        "nomSite": "Site de Angers",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "78 Boulevard de la Poste",
+          "codePostal": "49000",
+          "ville": "Angers",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Didier Vincent",
+          "email": "didier.vincent@dainipponp.com",
+          "telephone": "0189720099"
+        }
+      },
+      {
+        "nomSite": "Site de Versailles",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "124 Chemin des Champs",
+          "codePostal": "78000",
+          "ville": "Versailles",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Éric Roux",
+          "email": "eric@dainipponp.com",
+          "telephone": "0321428194"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Toyo Seikan",
+    "siret": "812 395 488 51834",
+    "specialisation": "Emballage chimique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "114 Impasse des Tilleuls",
+          "codePostal": "80000",
+          "ville": "Amiens",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Laurence Lopez",
+          "email": "lopez@toyoseikan.fr",
+          "telephone": "0734668536"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 9001",
+        "typeDocument": "Qualité",
+        "urlStockage": "placeholder_certification_iso_9001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Quadpack",
+    "siret": "106 337 215 69505",
+    "specialisation": "Emballage transport",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "162 Place des Jardins",
+          "codePostal": "21000",
+          "ville": "Dijon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Catherine Girard",
+          "email": "catherine@quadpack.com",
+          "telephone": "0984276853"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Agrément sanitaire",
+        "typeDocument": "Santé",
+        "urlStockage": "placeholder_agrément_sanitaire.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Alpla Group",
+    "siret": "756 961 629 74940",
+    "specialisation": "Emballage luxe",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "35 Avenue du Pont",
+          "codePostal": "80000",
+          "ville": "Amiens",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Serge Perrin",
+          "email": "perrin@alplagroup.fr",
+          "telephone": "0595810898"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification FSC",
+        "typeDocument": "Développement durable",
+        "urlStockage": "placeholder_certification_fsc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Plastipak Holdings",
+    "siret": "431 585 707 98664",
+    "specialisation": "Emballage pharmaceutique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "48 Chemin des Champs",
+          "codePostal": "94100",
+          "ville": "Saint-Maur-des-Fossés",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Laurent Thomas",
+          "email": "laurent@plastipakh.com",
+          "telephone": "0836805999"
+        }
+      },
+      {
+        "nomSite": "Site de Pau",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "66 Allée de la Fontaine",
+          "codePostal": "64000",
+          "ville": "Pau",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Pascale Vincent",
+          "email": "pascale@plastipakh.com",
+          "telephone": "0783295823"
+        }
+      },
+      {
+        "nomSite": "Site de Strasbourg",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "124 Place de la Poste",
+          "codePostal": "67000",
+          "ville": "Strasbourg",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Sandrine André",
+          "email": "andre@plastipakh.fr",
+          "telephone": "0276039809"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification PEFC",
+        "typeDocument": "Foresterie",
+        "urlStockage": "placeholder_certification_pefc.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certificat BRC",
+        "typeDocument": "Sécurité alimentaire",
+        "urlStockage": "placeholder_certificat_brc.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2026-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  },
+  {
+    "nom": "Nampak Limited",
+    "siret": "775 507 888 56341",
+    "specialisation": "Emballage logistique",
+    "sites": [
+      {
+        "nomSite": "Site principal",
+        "estPrincipal": true,
+        "adresse": {
+          "rue": "108 Allée de la Poste",
+          "codePostal": "83000",
+          "ville": "Toulon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Jacqueline Durand",
+          "email": "durand@nampaklimi.fr",
+          "telephone": "0661838194"
+        }
+      },
+      {
+        "nomSite": "Site de Toulon",
+        "estPrincipal": false,
+        "adresse": {
+          "rue": "193 Rue de la République",
+          "codePostal": "83000",
+          "ville": "Toulon",
+          "pays": "France"
+        },
+        "contact": {
+          "nom": "Patrice Robin",
+          "email": "patrice.robin@nampaklimi.com",
+          "telephone": "0269186532"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "nomDocument": "Certification ISO 14001",
+        "typeDocument": "Environnement",
+        "urlStockage": "placeholder_certification_iso_14001.pdf",
+        "dateExpiration": "2028-07-16T08:12:14.296Z"
+      },
+      {
+        "nomDocument": "Fiche de sécurité",
+        "typeDocument": "Sécurité",
+        "urlStockage": "placeholder_fiche_de_sécurité.pdf",
+        "dateExpiration": "2027-07-16T08:12:14.296Z"
+      }
+    ],
+    "isActive": true
+  }
+]

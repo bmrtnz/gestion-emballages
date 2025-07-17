@@ -1,15 +1,13 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import { TrashIcon, PencilSquareIcon, PlusIcon } from '@heroicons/vue/24/outline';
+import { PlusIcon } from '@heroicons/vue/24/outline';
 import { useFormValidation, commonValidationRules } from '../../composables/useFormValidation';
 import { useErrorHandler } from '../../composables/useErrorHandler';
 import { useLoading } from '../../composables/useLoading';
 import { message } from 'ant-design-vue';
-import FormField from '../forms/FormField.vue';
 import FormGroup from '../forms/FormGroup.vue';
 import Select from '../ui/Select.vue';
 import Button from '../ui/Button.vue';
-import Card from '../ui/Card.vue';
 import api from '../../api/axios';
 
 const props = defineProps({
@@ -23,8 +21,6 @@ const emit = defineEmits(['updated', 'close']);
 
 // State
 const availableSuppliers = ref([]);
-const isEditModalVisible = ref(false);
-const editingSupplierLink = ref(null);
 
 // Chargement des fournisseurs
 const { isLoading: suppliersLoading, execute: executeSuppliers } = useLoading();
@@ -33,10 +29,16 @@ const { withErrorHandling } = useErrorHandler();
 const fetchSuppliers = async () => {
   await executeSuppliers(async () => {
     const response = await withErrorHandling(
-      () => api.get('/fournisseurs'),
+      () => api.get('/fournisseurs', { 
+        params: { 
+          status: 'active',
+          limit: 1000 // Get all active suppliers
+        } 
+      }),
       'Impossible de charger la liste des fournisseurs'
     );
-    availableSuppliers.value = response.data;
+    // Extract data from paginated response
+    availableSuppliers.value = response.data.data || [];
   });
 };
 
@@ -45,7 +47,9 @@ const { formData: addForm, validateForm: validateAddForm, resetForm: resetAddFor
   {
     fournisseurId: null,
     prixUnitaire: 0,
-    referenceFournisseur: ''
+    referenceFournisseur: '',
+    uniteConditionnement: '',
+    quantiteParConditionnement: 1
   },
   {
     fournisseurId: [
@@ -54,32 +58,47 @@ const { formData: addForm, validateForm: validateAddForm, resetForm: resetAddFor
     prixUnitaire: commonValidationRules.prix,
     referenceFournisseur: [
       (value) => value && value.length > 50 ? 'Maximum 50 caractères' : null
+    ],
+    uniteConditionnement: [
+      (value) => !value || !value.trim() ? 'Unité de conditionnement requise' : null,
+      (value) => value && value.length > 30 ? 'Maximum 30 caractères' : null
+    ],
+    quantiteParConditionnement: [
+      (value) => !value || value <= 0 ? 'La quantité doit être supérieure à 0' : null,
+      (value) => value && value > 10000 ? 'Maximum 10000' : null
     ]
   }
 );
 
-// Formulaire d'édition
-const { formData: editForm, validateForm: validateEditForm, getFieldMessage: getEditFieldMessage } = useFormValidation(
-  {
-    prixUnitaire: 0,
-    referenceFournisseur: ''
-  },
-  {
-    prixUnitaire: commonValidationRules.prix,
-    referenceFournisseur: [
-      (value) => value && value.length > 50 ? 'Maximum 50 caractères' : null
-    ]
-  }
-);
 
 // Fournisseurs disponibles pour liaison (non encore liés)
 const availableSuppliersToLink = computed(() => {
-  if (!props.article || !availableSuppliers.value) return [];
+  if (!props.article || !availableSuppliers.value || !Array.isArray(availableSuppliers.value)) return [];
   const linkedSupplierIds = props.article.fournisseurs?.map(f => f.fournisseurId?._id) || [];
   return availableSuppliers.value
-    .filter(s => !linkedSupplierIds.includes(s._id))
-    .map(s => ({ value: s._id, label: s.nom }));
+    .filter(s => s.isActive && !linkedSupplierIds.includes(s._id))
+    .map(s => ({ value: s._id, label: s.nom }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 });
+
+// Helper function to format conditionnement (same as in ArticleList)
+const formatConditionnement = (supplier) => {
+  if (!supplier.quantiteParConditionnement || !supplier.uniteConditionnement) {
+    return supplier.uniteConditionnement || '';
+  }
+  
+  const quantity = supplier.quantiteParConditionnement;
+  const unit = supplier.uniteConditionnement;
+  
+  // Special case for 'Unité'
+  if (unit === 'Unité') {
+    return `${quantity} par ${unit}`;
+  }
+  
+  // Handle pluralization of 'unités'
+  const unitText = quantity === 1 ? 'unité' : 'unités';
+  return `${quantity} ${unitText} par ${unit}`;
+};
 
 // Actions
 const { isLoading: actionLoading, execute: executeAction } = useLoading();
@@ -102,42 +121,6 @@ const handleAddSupplierLink = async () => {
   });
 };
 
-const handleRemoveSupplierLink = async (fournisseurInfoId) => {
-  await executeAction(async () => {
-    await withErrorHandling(
-      () => api.delete(`/articles/${props.article._id}/fournisseurs/${fournisseurInfoId}`),
-      'Erreur lors de la suppression'
-    );
-    
-    message.success('Lien fournisseur supprimé.');
-    emit('updated');
-  });
-};
-
-const openEditModal = (supplierLink) => {
-  editingSupplierLink.value = supplierLink;
-  editForm.prixUnitaire = supplierLink.prixUnitaire;
-  editForm.referenceFournisseur = supplierLink.referenceFournisseur;
-  isEditModalVisible.value = true;
-};
-
-const handleUpdateSupplierLink = async () => {
-  if (!validateEditForm()) {
-    message.warning('Veuillez corriger les erreurs du formulaire');
-    return;
-  }
-
-  await executeAction(async () => {
-    await withErrorHandling(
-      () => api.put(`/articles/${props.article._id}/fournisseurs/${editingSupplierLink.value._id}`, editForm),
-      'Erreur lors de la mise à jour'
-    );
-    
-    message.success('Lien fournisseur mis à jour.');
-    isEditModalVisible.value = false;
-    emit('updated');
-  });
-};
 
 onMounted(fetchSuppliers);
 </script>
@@ -150,42 +133,31 @@ onMounted(fetchSuppliers);
         Aucun fournisseur n'est encore lié à cet article.
       </div>
       
-      <div v-else class="space-y-3">
-        <Card
+      <div v-else class="space-y-2">
+        <div
           v-for="item in article.fournisseurs"
           :key="item._id"
-          padding="md"
-          class="flex items-center justify-between"
+          class="py-3 border-b border-gray-200 last:border-b-0"
         >
-          <div>
-            <p class="font-medium text-gray-900">
-              {{ item.fournisseurId?.nom || 'Fournisseur introuvable' }}
-            </p>
-            <p class="text-sm text-gray-500">
-              Prix: {{ item.prixUnitaire }} € - Réf: {{ item.referenceFournisseur || 'N/A' }}
-            </p>
+          <div class="flex items-center justify-between">
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-gray-900 truncate">
+                {{ item.fournisseurId?.nom || 'Fournisseur introuvable' }}
+              </p>
+              <div class="flex items-center space-x-4 mt-1">
+                <span class="text-sm text-gray-500">
+                  Prix: {{ item.prixUnitaire }} €
+                </span>
+                <span class="text-sm text-gray-500">
+                  Réf: {{ item.referenceFournisseur || 'N/A' }}
+                </span>
+                <span class="text-sm text-gray-500">
+                  {{ formatConditionnement(item) }}
+                </span>
+              </div>
+            </div>
           </div>
-          
-          <div class="flex space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              @click="openEditModal(item)"
-              :loading="actionLoading"
-            >
-              <PencilSquareIcon class="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              @click="handleRemoveSupplierLink(item._id)"
-              :loading="actionLoading"
-              class="text-red-600 hover:text-red-700"
-            >
-              <TrashIcon class="h-4 w-4" />
-            </Button>
-          </div>
-        </Card>
+        </div>
       </div>
     </FormGroup>
 
@@ -206,23 +178,77 @@ onMounted(fetchSuppliers);
           />
         </div>
         
-        <FormField
-          name="referenceFournisseur"
-          label="Référence Fournisseur"
-          placeholder="Référence optionnelle"
-          :model-value="addForm.referenceFournisseur"
-          :error="getAddFieldMessage('referenceFournisseur')"
-          @update:model-value="value => addForm.referenceFournisseur = value"
-        />
+        <div>
+          <label for="referenceFournisseur" class="block text-sm font-medium text-gray-700">
+            Référence Fournisseur
+          </label>
+          <input 
+            type="text" 
+            v-model="addForm.referenceFournisseur" 
+            id="referenceFournisseur" 
+            name="referenceFournisseur"
+            placeholder="Référence optionnelle"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
+          />
+          <p v-if="getAddFieldMessage('referenceFournisseur')" class="mt-1 text-sm text-red-600">
+            {{ getAddFieldMessage('referenceFournisseur') }}
+          </p>
+        </div>
         
-        <FormField
-          name="prixUnitaire"
-          label="Prix Unitaire (€)"
-          type="number"
-          :model-value="addForm.prixUnitaire"
-          :error="getAddFieldMessage('prixUnitaire')"
-          @update:model-value="value => addForm.prixUnitaire = Number(value)"
-        />
+        <div>
+          <label for="uniteConditionnement" class="block text-sm font-medium text-gray-700">
+            Unité de Conditionnement <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            v-model="addForm.uniteConditionnement" 
+            id="uniteConditionnement" 
+            name="uniteConditionnement"
+            placeholder="Ex: carton, palette, kg"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
+            required
+          />
+          <p v-if="getAddFieldMessage('uniteConditionnement')" class="mt-1 text-sm text-red-600">
+            {{ getAddFieldMessage('uniteConditionnement') }}
+          </p>
+        </div>
+        
+        <div>
+          <label for="quantiteParConditionnement" class="block text-sm font-medium text-gray-700">
+            Quantité par Conditionnement <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="number" 
+            v-model="addForm.quantiteParConditionnement" 
+            id="quantiteParConditionnement" 
+            name="quantiteParConditionnement"
+            min="1"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
+            required
+          />
+          <p v-if="getAddFieldMessage('quantiteParConditionnement')" class="mt-1 text-sm text-red-600">
+            {{ getAddFieldMessage('quantiteParConditionnement') }}
+          </p>
+        </div>
+        
+        <div>
+          <label for="prixUnitaire" class="block text-sm font-medium text-gray-700">
+            Prix Unitaire (€) <span class="text-red-500">*</span>
+          </label>
+          <input 
+            type="number" 
+            v-model="addForm.prixUnitaire" 
+            id="prixUnitaire" 
+            name="prixUnitaire"
+            step="0.01"
+            min="0"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
+            required
+          />
+          <p v-if="getAddFieldMessage('prixUnitaire')" class="mt-1 text-sm text-red-600">
+            {{ getAddFieldMessage('prixUnitaire') }}
+          </p>
+        </div>
         
         <Button 
           variant="primary" 
@@ -236,53 +262,6 @@ onMounted(fetchSuppliers);
       </div>
     </FormGroup>
 
-    <!-- Modal d'édition -->
-    <div
-      v-if="isEditModalVisible"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      @click="isEditModalVisible = false"
-    >
-      <Card
-        padding="lg"
-        class="w-full max-w-md mx-4"
-        @click.stop
-      >
-        <h3 class="text-lg font-semibold mb-4">Modifier les informations du fournisseur</h3>
-        
-        <div class="space-y-4">
-          <FormField
-            name="referenceFournisseur"
-            label="Référence Fournisseur"
-            placeholder="Référence optionnelle"
-            :model-value="editForm.referenceFournisseur"
-            :error="getEditFieldMessage('referenceFournisseur')"
-            @update:model-value="value => editForm.referenceFournisseur = value"
-          />
-          
-          <FormField
-            name="prixUnitaire"
-            label="Prix Unitaire (€)"
-            type="number"
-            :model-value="editForm.prixUnitaire"
-            :error="getEditFieldMessage('prixUnitaire')"
-            @update:model-value="value => editForm.prixUnitaire = Number(value)"
-          />
-        </div>
-        
-        <div class="flex justify-end space-x-3 mt-6">
-          <Button variant="secondary" @click="isEditModalVisible = false">
-            Annuler
-          </Button>
-          <Button 
-            variant="primary" 
-            @click="handleUpdateSupplierLink"
-            :loading="actionLoading"
-          >
-            Mettre à jour
-          </Button>
-        </div>
-      </Card>
-    </div>
 
     <!-- Footer -->
     <div class="flex justify-end pt-6 border-t">

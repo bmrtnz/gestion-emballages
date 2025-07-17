@@ -42,22 +42,58 @@ exports.createStation = async (req, res, next) => {
 };
 
 /**
- * Obtenir toutes les stations actives.
+ * Obtenir toutes les stations avec pagination, recherche et filtres.
  * @function getStations
  * @memberof module:controllers/stationController
  * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.pagination - Paramètres de pagination ajoutés par le middleware
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
- * @returns {Promise<void>} Renvoie la liste de toutes les stations actives
+ * @returns {Promise<void>} Renvoie la liste paginée des stations avec métadonnées
  * @since 1.0.0
  * @example
- * // GET /api/stations
- * // Response: [{ "_id": "...", "nom": "Station Nord", "identifiantInterne": "STN001", "adresse": "123 Rue de la Station", "isActive": true }]
+ * // GET /api/stations?page=2&limit=10&search=nord&showInactive=false
+ * // Response: { data: [...], pagination: { currentPage: 2, totalPages: 3, ... }, filters: { search: 'nord', ... } }
  */
 exports.getStations = async (req, res, next) => {
     try {
-        const stations = await Station.find({});
-        res.json(stations);
+        const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;
+        
+        // Construction de la query de base
+        let query = {};
+        
+        // Gestion du filtre de statut
+        if (filters.status === 'active') {
+            query.isActive = true;
+        } else if (filters.status === 'inactive') {
+            query.isActive = false;
+        }
+        // Si status est vide ou 'tout', on ne filtre pas sur isActive
+        
+        // Ajout de la recherche sur nom, identifiantInterne, adresse et contact
+        if (search) {
+            query.$or = [
+                { nom: { $regex: search, $options: 'i' } },
+                { identifiantInterne: { $regex: search, $options: 'i' } },
+                { 'adresse.rue': { $regex: search, $options: 'i' } },
+                { 'adresse.ville': { $regex: search, $options: 'i' } },
+                { 'adresse.codePostal': { $regex: search, $options: 'i' } },
+                { 'adresse.pays': { $regex: search, $options: 'i' } },
+                { 'contactPrincipal.nom': { $regex: search, $options: 'i' } },
+                { 'contactPrincipal.email': { $regex: search, $options: 'i' } },
+                { 'contactPrincipal.telephone': { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        // Requête avec pagination
+        const stations = await Station.find(query)
+            .sort({ [sortBy]: sortOrder })
+            .skip(skip)
+            .limit(limit);
+        
+        const totalCount = await Station.countDocuments(query);
+        
+        res.json(req.pagination.buildResponse(stations, totalCount));
     } catch (error) {
         next(error);
     }

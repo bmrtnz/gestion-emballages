@@ -1,6 +1,7 @@
 // backend/models/userModel.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { USER_ROLES, ENTITY_MODELS } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -16,7 +17,7 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum: ['Manager', 'Gestionnaire', 'Station', 'Fournisseur'],
+        enum: USER_ROLES,
     },
     nomComplet: {
         type: String,
@@ -29,7 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     entiteModel: {
         type: String,
-        enum: ['Station', 'Fournisseur']
+        enum: ENTITY_MODELS
     },
     isActive: {
         type: Boolean,

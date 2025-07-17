@@ -3,7 +3,6 @@ import { useAuthStore } from "../stores/authStore";
 import { useFormValidation, commonValidationRules } from "../composables/useFormValidation";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/vue/24/outline";
 import Button from "../components/ui/Button.vue";
-import FormField from "../components/forms/FormField.vue";
 
 const authStore = useAuthStore();
 
@@ -67,39 +66,63 @@ const handleLogin = async () => {
                 </div>
 
                 <form @submit.prevent="handleLogin" class="space-y-6">
-                    <FormField
-                        name="email"
-                        label="Adresse e-mail"
-                        type="email"
-                        placeholder="vous@exemple.com"
-                        autocomplete="email"
-                        required
-                        :model-value="formData.email"
-                        :error="getFieldMessage('email')"
-                        @update:model-value="(value) => (formData.email = value)"
-                        @blur="() => getFieldProps('email').onBlur()"
-                    >
-                        <template #prefix>
-                            <EnvelopeIcon class="h-5 w-5" />
-                        </template>
-                    </FormField>
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                            Adresse e-mail
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <EnvelopeIcon class="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                v-model="formData.email"
+                                @blur="() => getFieldProps('email').onBlur()"
+                                placeholder="vous@exemple.com"
+                                autocomplete="email"
+                                required
+                                :class="[
+                                    'block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm',
+                                    getFieldMessage('email') ? 'border-red-300 text-red-900 placeholder-red-300' : 'border-gray-300 placeholder-gray-400'
+                                ]"
+                            />
+                        </div>
+                        <p v-if="getFieldMessage('email')" class="mt-1 text-sm text-red-600">
+                            {{ getFieldMessage('email') }}
+                        </p>
+                    </div>
 
-                    <FormField
-                        name="password"
-                        label="Mot de passe"
-                        type="password"
-                        placeholder="••••••••"
-                        autocomplete="current-password"
-                        required
-                        :model-value="formData.password"
-                        :error="getFieldMessage('password')"
-                        @update:model-value="(value) => (formData.password = value)"
-                        @blur="() => getFieldProps('password').onBlur()"
-                    >
-                        <template #prefix>
-                            <LockClosedIcon class="h-5 w-5" />
-                        </template>
-                    </FormField>
+                    <!-- Password Field -->
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
+                            Mot de passe
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <LockClosedIcon class="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                v-model="formData.password"
+                                @blur="() => getFieldProps('password').onBlur()"
+                                placeholder="••••••••"
+                                autocomplete="current-password"
+                                required
+                                :class="[
+                                    'block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm',
+                                    getFieldMessage('password') ? 'border-red-300 text-red-900 placeholder-red-300' : 'border-gray-300 placeholder-gray-400'
+                                ]"
+                            />
+                        </div>
+                        <p v-if="getFieldMessage('password')" class="mt-1 text-sm text-red-600">
+                            {{ getFieldMessage('password') }}
+                        </p>
+                    </div>
 
                     <div class="flex items-center justify-between">
                         <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">

@@ -41,22 +41,61 @@ exports.createFournisseur = async (req, res, next) => {
 };
 
 /**
- * Obtenir tous les fournisseurs actifs, triés par nom.
+ * Obtenir tous les fournisseurs avec pagination, recherche et filtres.
  * @function getFournisseurs
  * @memberof module:controllers/fournisseurController
  * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.pagination - Paramètres de pagination ajoutés par le middleware
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
- * @returns {Promise<void>} Renvoie la liste des fournisseurs actifs triés par nom
+ * @returns {Promise<void>} Renvoie la liste paginée des fournisseurs avec métadonnées
  * @since 1.0.0
  * @example
- * // GET /api/fournisseurs
- * // Response: [{ "_id": "...", "nom": "Fournisseur ABC", "email": "contact@abc.com", "isActive": true, "sites": [...] }]
+ * // GET /api/fournisseurs?page=2&limit=10&search=antalis&showInactive=false
+ * // Recherche par nom, spécialisation, sites et contacts
+ * // Response: { data: [...], pagination: { currentPage: 2, totalPages: 3, ... }, filters: { search: 'antalis', ... } }
  */
 exports.getFournisseurs = async (req, res, next) => {
   try {
-    const fournisseurs = await Fournisseur.find({}).sort({ nom: 1 });
-    res.json(fournisseurs);
+    const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;
+    
+    // Construction de la query de base
+    let query = {};
+    
+    // Gestion du filtre de statut
+    if (filters.status === 'active') {
+      query.isActive = true;
+    } else if (filters.status === 'inactive') {
+      query.isActive = false;
+    }
+    // Si status est vide ou 'tout', on ne filtre pas sur isActive
+    
+    // Ajout de la recherche sur nom, spécialisation, sites et contacts
+    if (search) {
+      query.$or = [
+        { nom: { $regex: search, $options: 'i' } },
+        { specialisation: { $regex: search, $options: 'i' } },
+        { siret: { $regex: search, $options: 'i' } },
+        { 'sites.nomSite': { $regex: search, $options: 'i' } },
+        { 'sites.adresse.rue': { $regex: search, $options: 'i' } },
+        { 'sites.adresse.ville': { $regex: search, $options: 'i' } },
+        { 'sites.adresse.codePostal': { $regex: search, $options: 'i' } },
+        { 'sites.adresse.pays': { $regex: search, $options: 'i' } },
+        { 'sites.contact.nom': { $regex: search, $options: 'i' } },
+        { 'sites.contact.email': { $regex: search, $options: 'i' } },
+        { 'sites.contact.telephone': { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Requête avec pagination
+    const fournisseurs = await Fournisseur.find(query)
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(limit);
+    
+    const totalCount = await Fournisseur.countDocuments(query);
+    
+    res.json(req.pagination.buildResponse(fournisseurs, totalCount));
   } catch (error) {
     next(error);
   }

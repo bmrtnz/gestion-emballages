@@ -4,14 +4,23 @@ const router = express.Router();
 const {
     createArticle,
     getArticles,
+    getArticleById,
+    updateArticle,
+    deleteArticle,
     addOrUpdateFournisseurForArticle,
     removeFournisseurFromArticle,
     updateFournisseurForArticle,
+    getCategories,
+    uploadFournisseurImage,
+    deleteFournisseurImage,
+    uploadImageMiddleware,
 } = require("../controllers/articleController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require("../middleware/validationMiddleware");
+const paginationMiddleware = require("../middleware/paginationMiddleware");
 const {
     createArticleValidator,
+    updateArticleValidator,
     addFournisseurValidator,
     updateFournisseurValidator,
 } = require("../validators/articleValidators");
@@ -29,6 +38,27 @@ const {
  */
 
 const managerOnly = [protect, authorize("Manager", "Gestionnaire")];
+
+/**
+ * @swagger
+ * /articles/categories:
+ *   get:
+ *     summary: Récupérer toutes les catégories d'articles disponibles
+ *     tags: [Articles]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des catégories disponibles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: string
+ *               example: ["Barquette", "Cagette", "Plateau"]
+ */
+router.get("/categories", protect, getCategories);
 
 router
     .route("/")
@@ -50,7 +80,7 @@ router
      *               items:
      *                 $ref: '#/components/schemas/Article'
      */
-    .get(protect, getArticles)
+    .get(protect, paginationMiddleware, getArticles)
     /**
      * @swagger
      * /articles:
@@ -72,6 +102,85 @@ router
      *         description: Données d'entrée invalides.
      */
     .post(...managerOnly, createArticleValidator, validate, createArticle);
+
+router
+    .route("/:id")
+    /**
+     * @swagger
+     * /articles/{id}:
+     *   get:
+     *     summary: Récupérer un article par son ID
+     *     tags: [Articles]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID de l'article
+     *     responses:
+     *       200:
+     *         description: Article trouvé.
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Article'
+     *       404:
+     *         description: Article non trouvé.
+     */
+    .get(protect, getArticleById)
+    /**
+     * @swagger
+     * /articles/{id}:
+     *   put:
+     *     summary: Mettre à jour un article
+     *     tags: [Articles]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID de l'article
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             $ref: '#/components/schemas/Article'
+     *     responses:
+     *       200:
+     *         description: Article mis à jour avec succès.
+     *       404:
+     *         description: Article non trouvé.
+     */
+    .put(...managerOnly, updateArticleValidator, validate, updateArticle)
+    /**
+     * @swagger
+     * /articles/{id}:
+     *   delete:
+     *     summary: Supprimer un article (désactivation)
+     *     tags: [Articles]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID de l'article
+     *     responses:
+     *       200:
+     *         description: Article supprimé avec succès.
+     *       404:
+     *         description: Article non trouvé.
+     */
+    .delete(...managerOnly, deleteArticle);
 
 router
     .route("/:id/fournisseurs")
@@ -178,5 +287,94 @@ router
      *         description: Article non trouvé.
      */
     .delete(...managerOnly, removeFournisseurFromArticle);
+
+// Image upload routes
+router
+    .route("/:id/fournisseurs/:fournisseurId/image")
+    /**
+     * @swagger
+     * /articles/{id}/fournisseurs/{fournisseurId}/image:
+     *   post:
+     *     summary: Uploader une image pour un fournisseur d'article
+     *     tags: [Articles]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID de l'article
+     *       - in: path
+     *         name: fournisseurId
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID du fournisseur
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         multipart/form-data:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               image:
+     *                 type: string
+     *                 format: binary
+     *                 description: Fichier image (JPEG, PNG, GIF, WebP)
+     *     responses:
+     *       200:
+     *         description: Image uploadée avec succès
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                 imageUrl:
+     *                   type: string
+     *       400:
+     *         description: Fichier invalide ou manquant
+     *       404:
+     *         description: Article ou fournisseur non trouvé
+     */
+    .post(...managerOnly, uploadImageMiddleware, uploadFournisseurImage)
+    /**
+     * @swagger
+     * /articles/{id}/fournisseurs/{fournisseurId}/image:
+     *   delete:
+     *     summary: Supprimer l'image d'un fournisseur d'article
+     *     tags: [Articles]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID de l'article
+     *       - in: path
+     *         name: fournisseurId
+     *         schema:
+     *           type: string
+     *         required: true
+     *         description: ID du fournisseur
+     *     responses:
+     *       200:
+     *         description: Image supprimée avec succès
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *       404:
+     *         description: Article, fournisseur ou image non trouvé
+     */
+    .delete(...managerOnly, deleteFournisseurImage);
 
 module.exports = router;

@@ -59,7 +59,7 @@ const gestionMenu = computed(() => [
 ]);
 
 const parametresMenu = computed(() => [
-    { name: "Articles", href: "/articles", icon: RectangleStackIcon, roles: ["Manager", "Gestionnaire", "Station"] },
+    { name: "Catalogue des articles", href: "/articles", icon: RectangleStackIcon, roles: ["Manager", "Gestionnaire", "Station"] },
     { name: "Fournisseurs", href: "/fournisseurs", icon: BuildingStorefrontIcon, roles: ["Manager", "Gestionnaire"] },
     { name: "Stations", href: "/stations", icon: HomeModernIcon, roles: ["Manager", "Gestionnaire"] },
     { name: "Utilisateurs", href: "/users", icon: UsersIcon, roles: ["Manager", "Gestionnaire"] },
@@ -73,7 +73,7 @@ const stationGestionMenu = computed(() => [
 ]);
 
 const stationParametresMenu = computed(() => [
-    { name: "Articles", href: "/articles", icon: RectangleStackIcon, roles: ["Station"] },
+    { name: "Catalogue des articles", href: "/articles", icon: RectangleStackIcon, roles: ["Station"] },
     { name: "Prévisions", href: "/previsions", icon: DocumentChartBarIcon, roles: ["Station"] },
 ]);
 
@@ -83,7 +83,7 @@ const fournisseurGestionMenu = computed(() => [
 ]);
 
 const fournisseurParametresMenu = computed(() => [
-    { name: "Articles", href: "/articles", icon: RectangleStackIcon, roles: ["Fournisseur"] },
+    { name: "Catalogue des articles", href: "/articles", icon: RectangleStackIcon, roles: ["Fournisseur"] },
     { name: "Prévisions", href: "/previsions", icon: DocumentChartBarIcon, roles: ["Fournisseur"] },
 ]);
 
