@@ -64,6 +64,23 @@ const supplierInfo = computed(() => {
   if (props.supplierReference) parts.push(`Réf: ${props.supplierReference}`);
   return parts.join(' - ');
 });
+
+// Process the image URL to handle MinIO storage
+const processedImageUrl = computed(() => {
+  if (!props.imageUrl) return null;
+  
+  // If it's already a full URL (http/https), return as is
+  if (props.imageUrl.startsWith('http://') || props.imageUrl.startsWith('https://')) {
+    return props.imageUrl;
+  }
+  
+  // Otherwise, construct MinIO URL
+  const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost';
+  const minioPort = import.meta.env.VITE_MINIO_PORT || '9000';
+  const bucketName = 'documents';
+  
+  return `http://${minioHost}:${minioPort}/${bucketName}/${props.imageUrl}`;
+});
 </script>
 
 <template>
@@ -111,9 +128,9 @@ const supplierInfo = computed(() => {
           <div class="flex-1 p-4 overflow-hidden">
             <div class="flex items-center justify-center h-full">
               <img
-                v-if="imageUrl"
-                :src="imageUrl"
-                :alt="modalTitle"
+                v-if="processedImageUrl"
+                :src="processedImageUrl"
+                :alt="supplierInfo || 'Image'"
                 class="max-w-full max-h-full object-contain rounded-lg shadow-sm"
                 @error="$emit('close')"
               />

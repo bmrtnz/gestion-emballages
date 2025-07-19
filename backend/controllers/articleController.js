@@ -87,6 +87,87 @@ exports.getCategories = async (req, res, next) => {
 };
 
 /**
+ * Récupérer les catégories distinctes disponibles dans le dataset filtré
+ * @function getDistinctCategories
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.query - Paramètres de requête
+ * @param {string} [req.query.search] - Terme de recherche
+ * @param {string} [req.query.status] - Filtre de statut (active/inactive)
+ * @param {string} [req.query.fournisseur] - Filtre par fournisseur
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie les catégories distinctes
+ * @since 1.0.0
+ */
+exports.getDistinctCategories = async (req, res, next) => {
+    try {
+        const { search, status, fournisseur } = req.query;
+        
+        // Construction de la query de base (sans filtre de catégorie)
+        let query = {};
+        
+        // Filter by supplier if user is a Fournisseur
+        if (req.user.role === 'Fournisseur') {
+            query['fournisseurs.fournisseurId'] = req.user.entiteId;
+        }
+        
+        // Gestion du filtre de statut
+        if (status === 'active') {
+            query.isActive = true;
+        } else if (status === 'inactive') {
+            query.isActive = false;
+        }
+        
+        // Ajout de la recherche textuelle
+        if (search) {
+            query.$or = [
+                { codeArticle: { $regex: search, $options: 'i' } },
+                { designation: { $regex: search, $options: 'i' } },
+                { categorie: { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        // Filtrage par fournisseur si spécifié
+        if (fournisseur) {
+            const articlesWithSuppliers = await Article.aggregate([
+                { $match: query },
+                { $lookup: {
+                    from: 'fournisseurs',
+                    localField: 'fournisseurs.fournisseurId',
+                    foreignField: '_id',
+                    as: 'fournisseurDetails'
+                }},
+                { $match: {
+                    'fournisseurDetails.nom': { $regex: fournisseur, $options: 'i' }
+                }},
+                { $group: {
+                    _id: '$categorie',
+                    count: { $sum: 1 }
+                }},
+                { $match: { _id: { $ne: null, $ne: '' } } },
+                { $sort: { _id: 1 } }
+            ]);
+            
+            const categories = articlesWithSuppliers.map(item => item._id);
+            return res.json({ categories });
+        }
+        
+        // Récupération des catégories distinctes
+        const distinctCategories = await Article.distinct('categorie', query);
+        
+        // Filtrer les valeurs null/vides et trier
+        const categories = distinctCategories
+            .filter(cat => cat && cat.trim())
+            .sort();
+        
+        res.json({ categories });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Créer un nouvel article.
  * @function createArticle
  * @memberof module:controllers/articleController

@@ -11,6 +11,7 @@ const {
     removeFournisseurFromArticle,
     updateFournisseurForArticle,
     getCategories,
+    getDistinctCategories,
     uploadFournisseurImage,
     deleteFournisseurImage,
     uploadImageMiddleware,
@@ -59,6 +60,47 @@ const managerOnly = [protect, authorize("Manager", "Gestionnaire")];
  *               example: ["Barquette", "Cagette", "Plateau"]
  */
 router.get("/categories", protect, getCategories);
+
+/**
+ * @swagger
+ * /articles/distinct-categories:
+ *   get:
+ *     summary: Récupérer les catégories distinctes disponibles dans le dataset filtré
+ *     tags: [Articles]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Terme de recherche
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, inactive]
+ *         description: Filtre de statut
+ *       - in: query
+ *         name: fournisseur
+ *         schema:
+ *           type: string
+ *         description: Filtre par fournisseur
+ *     responses:
+ *       200:
+ *         description: Catégories distinctes du dataset filtré
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 categories:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   example: ["Barquette", "Film"]
+ */
+router.get("/distinct-categories", protect, getDistinctCategories);
 
 router
     .route("/")

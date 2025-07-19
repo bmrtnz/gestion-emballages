@@ -10,6 +10,10 @@
 // backend/controllers/fournisseurController.js
 const Fournisseur = require("../models/fournisseurModel");
 const { NotFoundError, BadRequestError } = require('../utils/appError');
+const { minioClient, bucketName } = require('../config/minioClient');
+const crypto = require('crypto');
+const path = require('path');
+const config = require('../config/env');
 // Removed asyncHandler for cleaner testing and error handling
 
 /**
@@ -96,6 +100,34 @@ exports.getFournisseurs = async (req, res, next) => {
     const totalCount = await Fournisseur.countDocuments(query);
     
     res.json(req.pagination.buildResponse(fournisseurs, totalCount));
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Obtenir un fournisseur par son ID.
+ * @function getFournisseurById
+ * @memberof module:controllers/fournisseurController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID du fournisseur à récupérer
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie le fournisseur trouvé
+ * @throws {NotFoundError} Si le fournisseur n'est pas trouvé
+ * @since 1.0.0
+ * @example
+ * // GET /api/fournisseurs/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Response: { "_id": "...", "nom": "Fournisseur ABC", "sites": [...], "documents": [...] }
+ */
+exports.getFournisseurById = async (req, res, next) => {
+  try {
+    const fournisseur = await Fournisseur.findById(req.params.id);
+    if (!fournisseur) {
+      return next(new NotFoundError("Fournisseur non trouvé"));
+    }
+    res.json(fournisseur);
   } catch (error) {
     next(error);
   }
@@ -466,6 +498,126 @@ exports.reactivateSite = async (req, res, next) => {
     await fournisseur.save();
     
     res.json({ message });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Upload a document for a supplier
+ * @function uploadDocument
+ * @memberof module:controllers/fournisseurController
+ * @param {Express.Request} req - Request object
+ * @param {Express.Response} res - Response object
+ * @param {Function} next - Next middleware function
+ */
+exports.uploadDocument = async (req, res, next) => {
+  try {
+    const { id: fournisseurId } = req.params;
+    const { nomDocument, typeDocument, dateExpiration } = req.body;
+    
+    // Validate required fields
+    if (!nomDocument || !typeDocument || !dateExpiration) {
+      return next(new BadRequestError("Le nom, le type et la date d'expiration du document sont requis"));
+    }
+    
+    if (!req.file) {
+      return next(new BadRequestError("Aucun fichier fourni"));
+    }
+    
+    // Find the supplier
+    const fournisseur = await Fournisseur.findById(fournisseurId);
+    if (!fournisseur) {
+      return next(new NotFoundError("Fournisseur non trouvé"));
+    }
+    
+    // Generate unique filename
+    const fileExtension = path.extname(req.file.originalname);
+    const uniqueId = crypto.randomUUID();
+    const fileName = `documents/${fournisseurId}/${uniqueId}${fileExtension}`;
+    
+    // Upload file to MinIO
+    await minioClient.putObject(
+      bucketName,
+      fileName,
+      req.file.buffer,
+      req.file.size,
+      {
+        'Content-Type': req.file.mimetype,
+        'Content-Disposition': `inline; filename="${req.file.originalname}"`
+      }
+    );
+    
+    // Create full URL for document
+    const documentUrl = `${config.minio.useSSL ? 'https' : 'http'}://${config.minio.externalHost}:${config.minio.port}/documents/${fileName}`;
+    
+    // Create document object
+    const documentData = {
+      nomDocument: nomDocument.trim(),
+      typeDocument,
+      urlStockage: documentUrl,
+      dateExpiration: new Date(dateExpiration)
+    };
+    
+    // Add document to supplier
+    fournisseur.documents.push(documentData);
+    await fournisseur.save();
+    
+    // Get the added document (with generated _id)
+    const addedDocument = fournisseur.documents[fournisseur.documents.length - 1];
+    
+    res.status(201).json({
+      message: "Document ajouté avec succès",
+      document: addedDocument
+    });
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Delete a document from a supplier
+ * @function deleteDocument
+ * @memberof module:controllers/fournisseurController
+ * @param {Express.Request} req - Request object
+ * @param {Express.Response} res - Response object
+ * @param {Function} next - Next middleware function
+ */
+exports.deleteDocument = async (req, res, next) => {
+  try {
+    const { id: fournisseurId, documentId } = req.params;
+    
+    // Find the supplier
+    const fournisseur = await Fournisseur.findById(fournisseurId);
+    if (!fournisseur) {
+      return next(new NotFoundError("Fournisseur non trouvé"));
+    }
+    
+    // Find the document
+    const document = fournisseur.documents.id(documentId);
+    if (!document) {
+      return next(new NotFoundError("Document non trouvé"));
+    }
+    
+    // Delete file from MinIO
+    try {
+      // Extract filename from URL
+      const fileName = document.urlStockage.split('/documents/')[1];
+      await minioClient.removeObject(bucketName, fileName);
+    } catch (minioError) {
+      console.error('Erreur lors de la suppression du fichier MinIO:', minioError);
+      // Continue even if MinIO deletion fails
+    }
+    
+    // Remove document from supplier
+    fournisseur.documents.pull(documentId);
+    await fournisseur.save();
+    
+    res.json({
+      message: "Document supprimé avec succès"
+    });
+    
   } catch (error) {
     next(error);
   }

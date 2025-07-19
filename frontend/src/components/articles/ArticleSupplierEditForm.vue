@@ -43,8 +43,7 @@ const { formData, validateForm, resetForm, getFieldMessage } = useFormValidation
       (value) => value && value.length > 30 ? 'Maximum 30 caractères' : null
     ],
     quantiteParConditionnement: [
-      (value) => !value || value <= 0 ? 'La quantité doit être supérieure à 0' : null,
-      (value) => value && value > 10000 ? 'Maximum 10000' : null
+      (value) => !value || value <= 0 ? 'La quantité doit être supérieure à 0' : null
     ]
   }
 );

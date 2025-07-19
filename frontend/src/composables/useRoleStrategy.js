@@ -1,6 +1,6 @@
 import { computed, ref, watch } from 'vue';
 import { useAuthStore } from '../stores/authStore';
-import { RoleStrategyFactory } from '../strategies';
+import { ArticleRoleStrategyFactory } from '../strategies/articles';
 
 /**
  * Composable for managing role-based strategies
@@ -20,7 +20,7 @@ export function useRoleStrategy() {
       return null;
     }
     
-    return RoleStrategyFactory.createStrategy(
+    return ArticleRoleStrategyFactory.createStrategy(
       authStore.userRole,
       authStore.user?.entiteId
     );
@@ -181,21 +181,21 @@ export function useRoleStrategy() {
    * Get role hierarchy level
    */
   const roleHierarchy = computed(() => {
-    return RoleStrategyFactory.getRoleHierarchy(authStore.userRole);
+    return ArticleRoleStrategyFactory.getRoleHierarchy(authStore.userRole);
   });
   
   /**
    * Check if current role is admin
    */
   const isAdminRole = computed(() => {
-    return RoleStrategyFactory.isAdminRole(authStore.userRole);
+    return ArticleRoleStrategyFactory.isAdminRole(authStore.userRole);
   });
   
   /**
    * Check if current role is limited
    */
   const isLimitedRole = computed(() => {
-    return RoleStrategyFactory.isLimitedRole(authStore.userRole);
+    return ArticleRoleStrategyFactory.isLimitedRole(authStore.userRole);
   });
   
   return {

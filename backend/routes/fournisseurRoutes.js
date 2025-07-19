@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   createFournisseur,
   getFournisseurs,
+  getFournisseurById,
   updateFournisseur,
   deactivateFournisseur,
   reactivateFournisseur,
@@ -12,11 +13,31 @@ const {
   updateSiteInFournisseur,
   deactivateSite,
   reactivateSite,
+  uploadDocument,
+  deleteDocument,
 } = require("../controllers/fournisseurController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require('../middleware/validationMiddleware');
 const paginationMiddleware = require("../middleware/paginationMiddleware");
 const { createFournisseurValidator, addSiteValidator } = require('../validators/fournisseurValidators');
+const multer = require('multer');
+
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Allow only PDF files
+    const allowedTypes = ['application/pdf'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Type de fichier non autorisé. Seuls les fichiers PDF sont acceptés.'), false);
+    }
+  }
+});
 
 /**
  * @fileoverview Routes pour la gestion des fournisseurs et de leurs sites.
@@ -67,6 +88,28 @@ router.route("/")
   .post(...managerOnly, createFournisseurValidator, validate, createFournisseur);
 
 router.route("/:id")
+  /**
+   * @swagger
+   * /fournisseurs/{id}:
+   *   get:
+   *     summary: Récupérer un fournisseur par son ID
+   *     tags: [Fournisseurs]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID du fournisseur
+   *     responses:
+   *       200:
+   *         description: Fournisseur trouvé avec succès.
+   *       404:
+   *         description: Fournisseur non trouvé.
+   */
+  .get(protect, getFournisseurById)
   /**
    * @swagger
    * /fournisseurs/{id}:
@@ -280,6 +323,89 @@ router.route("/:id/sites/:siteId")
    *         description: Site supprimé avec succès.
    */
   .delete(...managerOnly, deleteSiteFromFournisseur);
+
+// Document management routes
+router.route("/:id/documents")
+  /**
+   * @swagger
+   * /fournisseurs/{id}/documents:
+   *   post:
+   *     summary: Upload a document for a supplier
+   *     tags: [Fournisseurs]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the supplier
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               document:
+   *                 type: string
+   *                 format: binary
+   *                 description: Document file (PDF only)
+   *               nomDocument:
+   *                 type: string
+   *                 description: Document name
+   *               typeDocument:
+   *                 type: string
+   *                 enum: [Certificat BRC, Autre type]
+   *                 description: Document type
+   *               dateExpiration:
+   *                 type: string
+   *                 format: date
+   *                 description: Document expiration date
+   *             required:
+   *               - document
+   *               - nomDocument
+   *               - typeDocument
+   *     responses:
+   *       201:
+   *         description: Document uploaded successfully
+   *       400:
+   *         description: Invalid file type (only PDF allowed) or missing data
+   *       404:
+   *         description: Supplier not found
+   */
+  .post(protect, upload.single('document'), uploadDocument);
+
+router.route("/:id/documents/:documentId")
+  /**
+   * @swagger
+   * /fournisseurs/{id}/documents/{documentId}:
+   *   delete:
+   *     summary: Delete a document from a supplier
+   *     tags: [Fournisseurs]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the supplier
+   *       - in: path
+   *         name: documentId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: ID of the document
+   *     responses:
+   *       200:
+   *         description: Document deleted successfully
+   *       404:
+   *         description: Supplier or document not found
+   */
+  .delete(protect, deleteDocument);
 
 module.exports = router;
 

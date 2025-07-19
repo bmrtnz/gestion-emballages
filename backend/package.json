@@ -1,42 +1,35 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "jest --config ./config/jest.config.js --verbose",
-    "start": "node server.js",
-    "data:import": "node data/seeder.js",
-    "data:destroy": "node data/seeder.js -d",
-    "data:generate-suppliers": "node data/generateSuppliers.js",
-    "data:generate-articles": "node data/generateArticles.js",
-    "data:generate-all": "npm run data:generate-suppliers && npm run data:generate-articles",
-    "data:test-cascade": "node data/testCascadeDeactivation.js",
-    "data:check-links": "node data/checkUserSupplierLinks.js",
-    "data:check-users": "node data/checkUserStats.js",
-    "data:create-inactive-users": "node data/createInactiveUsers.js",
-    "docs:generate": "jsdoc -c jsdoc.json"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "cors": "^2.8.5",
-    "dotenv": "^17.1.0",
-    "express": "^5.1.0",
-    "express-validator": "^7.2.1",
-    "jsonwebtoken": "^9.0.2",
-    "minio": "^8.0.5",
-    "mongoose": "^8.16.2",
-    "multer": "^2.0.1",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
-  },
-  "devDependencies": {
-    "clean-jsdoc-theme": "^4.3.0",
-    "jest": "^30.0.4",
-    "jsdoc": "^4.0.4"
-  }
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "test": "jest --config ./config/jest.config.js --verbose",
+        "start": "node server.js",
+        "data:import": "node data/seeder.js",
+        "data:destroy": "node data/seeder.js -d",
+        "docs:generate": "jsdoc -c jsdoc.json"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "bcryptjs": "^3.0.2",
+        "cors": "^2.8.5",
+        "dotenv": "^17.1.0",
+        "express": "^5.1.0",
+        "express-validator": "^7.2.1",
+        "jsonwebtoken": "^9.0.2",
+        "minio": "^8.0.5",
+        "mongoose": "^8.16.2",
+        "multer": "^2.0.1",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1"
+    },
+    "devDependencies": {
+        "clean-jsdoc-theme": "^4.3.0",
+        "jest": "^30.0.4",
+        "jsdoc": "^4.0.4"
+    }
 }

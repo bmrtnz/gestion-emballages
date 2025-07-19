@@ -59,17 +59,18 @@ const fetchEntities = async () => {
   try {
     const [stationsResponse, fournisseursResponse] = await Promise.all([
       withErrorHandling(
-        () => api.get('/stations'),
+        () => api.get('/stations', { params: { status: 'active', limit: 1000 } }),
         'Erreur lors du chargement des stations'
       ),
       withErrorHandling(
-        () => api.get('/fournisseurs'),
+        () => api.get('/fournisseurs', { params: { status: 'active', limit: 1000 } }),
         'Erreur lors du chargement des fournisseurs'
       )
     ]);
     
-    stations.value = stationsResponse.data;
-    fournisseurs.value = fournisseursResponse.data;
+    // Extract data from paginated response
+    stations.value = stationsResponse.data.data || stationsResponse.data;
+    fournisseurs.value = fournisseursResponse.data.data || fournisseursResponse.data;
   } catch (error) {
     console.error('Error fetching entities:', error);
   }
@@ -116,6 +117,7 @@ onMounted(fetchEntities);
       <div v-if="shouldShowEntitySelection">
         <label for="entiteId" class="block text-sm font-medium text-gray-700">{{ entityLabel }}</label>
         <select v-model="formState.entiteId" id="entiteId" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" required>
+            <option value="">Sélectionner {{ entityLabel.toLowerCase() }}</option>
             <option v-for="entity in entityOptions" :key="entity._id" :value="entity._id">{{ entity.nom }}</option>
         </select>
       </div>

@@ -10,16 +10,11 @@
  * @constant {string[]}
  */
 const ARTICLE_CATEGORIES = [
+    'Alvéole',
     'Barquette',
-    'Cagette', 
-    'Plateau',
-    'Film Plastique',
-    'Carton',
-    'Sac Plastique',
-    'Sac Papier',
-    'Emballage Isotherme',
     'Etiquette',
-    'Autre'
+    'Film',
+    'Plaques'
 ];
 
 /**

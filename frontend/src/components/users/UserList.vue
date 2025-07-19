@@ -1,206 +1,88 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
-import { useLoading } from '../../composables/useLoading';
-import { useErrorHandler } from '../../composables/useErrorHandler';
-import api from '../../api/axios';
-import { PencilSquareIcon, PlayIcon, PauseIcon, MagnifyingGlassIcon, FunnelIcon, ChevronDownIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
+import { ref } from 'vue';
+import { useUserList } from '../../composables/users/useUserList';
+import { PencilSquareIcon, PlayIcon, PauseIcon, MagnifyingGlassIcon, FunnelIcon, ChevronDownIcon } from '@heroicons/vue/24/outline';
 import SlidePanel from '../ui/SlidePanel.vue';
 import UserEditForm from './UserEditForm.vue';
 import Select from '../ui/Select.vue';
 import Button from '../ui/Button.vue';
 
-// State
-const users = ref([]);
-const statusFilter = ref(''); // '' = Tout, 'active' = Actif, 'inactive' = Inactif
+// Use the composable
+const {
+  // Data
+  transformedUsers,
+  selectedUser,
+  isLoading,
+  
+  // Filters
+  searchQuery,
+  statusFilter,
+  roleFilter,
+  showFilters,
+  statusOptions,
+  roleOptions,
+  activeFiltersCount,
+  showStatusFilter,
+  showRoleFilter,
+  
+  // Pagination
+  currentPage,
+  totalPages,
+  totalItems,
+  itemsPerPage,
+  hasNextPage,
+  hasPrevPage,
+  paginationInfo,
+  
+  // Strategy-based UI behavior
+  showCreateButton,
+  showAdvancedFilters,
+  
+  // Methods
+  fetchUsers,
+  deactivateUser,
+  reactivateUser,
+  toggleFilters,
+  clearFilters,
+  goToPage,
+  goToPrevPage,
+  goToNextPage,
+  goToFirstPage,
+  goToLastPage,
+  changePageSize,
+  selectUser,
+  
+  // Strategy-based action methods
+  getAvailableActions,
+  canEditUser,
+  canDeactivateUser,
+  canReactivateUser
+} = useUserList();
+
+// Local UI state
 const isEditPanelOpen = ref(false);
-const selectedUser = ref(null);
-const searchQuery = ref('');
-const roleFilter = ref('');
-const showFilters = ref(false);
+const editingUser = ref(null);
 
-// Pagination state
-const currentPage = ref(1);
-const totalPages = ref(0);
-const totalItems = ref(0);
-const itemsPerPage = ref(10);
-const hasNextPage = ref(false);
-const hasPrevPage = ref(false);
-const pagination = ref(null);
-const filters = ref({});
-
-// Loading and error handling
-const { isLoading, execute } = useLoading();
-const { withErrorHandling } = useErrorHandler();
-
-// Fetch data
-const fetchUsers = async () => {
-  await execute(async () => {
-    const params = {
-      page: currentPage.value,
-      limit: itemsPerPage.value,
-      search: searchQuery.value,
-      role: roleFilter.value,
-      status: statusFilter.value,
-      sortBy: 'nomComplet',
-      sortOrder: 'asc'
-    };
-    
-    const response = await withErrorHandling(
-      () => api.get('/users', { params }),
-      'Failed to load users'
-    );
-    
-    users.value = response.data.data;
-    pagination.value = response.data.pagination;
-    filters.value = response.data.filters;
-    
-    // Update pagination state
-    currentPage.value = pagination.value.currentPage;
-    totalPages.value = pagination.value.totalPages;
-    totalItems.value = pagination.value.totalItems;
-    itemsPerPage.value = pagination.value.itemsPerPage;
-    hasNextPage.value = pagination.value.hasNextPage;
-    hasPrevPage.value = pagination.value.hasPrevPage;
-  });
-};
-
+// UI methods
 const openEditPanel = (user) => {
-    selectedUser.value = user;
-    isEditPanelOpen.value = true;
+  editingUser.value = user;
+  isEditPanelOpen.value = true;
 };
 
 const handleUserUpdated = () => {
-    isEditPanelOpen.value = false;
-    fetchUsers();
-};
-
-const softDeleteUser = async (userId) => {
-    await execute(async () => {
-        await withErrorHandling(
-            () => api.delete(`/users/${userId}`),
-            'Failed to delete user'
-        );
-        await fetchUsers(); // Refresh the list
-    });
-};
-
-const reactivateUser = async (userId) => {
-    await execute(async () => {
-        await withErrorHandling(
-            () => api.patch(`/users/${userId}/reactivate`),
-            'Failed to reactivate user'
-        );
-        await fetchUsers(); // Refresh the list
-    });
-};
-
-onMounted(fetchUsers);
-
-// Role filter options
-const roleOptions = computed(() => {
-  const roles = ['Manager', 'Gestionnaire', 'Station', 'Fournisseur'];
-  return [
-    { value: '', label: 'Tous les rôles' },
-    ...roles.map(role => ({ value: role, label: role }))
-  ];
-});
-
-// Status filter options
-const statusOptions = [
-  { value: '', label: 'Tout' },
-  { value: 'active', label: 'Actif' },
-  { value: 'inactive', label: 'Inactif' }
-];
-
-// Since filtering is now handled server-side, we just return the users
-const filteredUsers = computed(() => {
-  return users.value;
-});
-
-// Clear all filters
-const clearFilters = () => {
-  searchQuery.value = '';
-  roleFilter.value = '';
-  statusFilter.value = '';
-  showFilters.value = false;
-  currentPage.value = 1;
+  isEditPanelOpen.value = false;
+  editingUser.value = null;
   fetchUsers();
 };
 
-// Watch for filter changes to refetch data
-const debouncedFetchUsers = (() => {
-  let timeout;
-  return () => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      currentPage.value = 1; // Reset to first page on filter change
-      fetchUsers();
-    }, 300);
-  };
-})();
-
-// Pagination methods
-const goToPage = (page) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page;
-    fetchUsers();
-  }
+const closeEditPanel = () => {
+  isEditPanelOpen.value = false;
+  editingUser.value = null;
 };
 
-const goToPrevPage = () => {
-  if (hasPrevPage.value) {
-    goToPage(currentPage.value - 1);
-  }
-};
-
-const goToNextPage = () => {
-  if (hasNextPage.value) {
-    goToPage(currentPage.value + 1);
-  }
-};
-
-const changePageSize = (newSize) => {
-  itemsPerPage.value = newSize;
-  currentPage.value = 1;
-  fetchUsers();
-};
-
-// Watch for changes
-watch(searchQuery, debouncedFetchUsers);
-watch(roleFilter, debouncedFetchUsers);
-watch(statusFilter, debouncedFetchUsers);
-
-// Count active filters
-const activeFiltersCount = computed(() => {
-  let count = 0;
-  if (searchQuery.value) count++;
-  if (roleFilter.value) count++;
-  if (statusFilter.value) count++;
-  return count;
-});
-
-// Helper function to check if linked entity is deactivated
-const isEntityDeactivated = (user) => {
-  if (!user.entiteId) return false;
-  
-  // Check if the linked entity (station or supplier) is deactivated
-  return user.entiteId.isActive === false;
-};
-
-// Helper function to get entity warning text
-const getEntityWarningText = (user) => {
-  if (!isEntityDeactivated(user)) return '';
-  
-  if (user.role === 'Station') {
-    return 'station désactivée';
-  } else if (user.role === 'Fournisseur') {
-    return 'fournisseur désactivé';
-  }
-  return 'entité désactivée';
-};
-
-// Expose fetchUsers function for parent component
+// Expose fetchUsers for parent component
 defineExpose({ fetchUsers });
+
 </script>
 
 <template>
@@ -210,7 +92,7 @@ defineExpose({ fetchUsers });
       <!-- Search Bar and Filter Toggle -->
       <div class="flex items-center space-x-4">
         <button
-          @click="showFilters = !showFilters"
+          @click="toggleFilters"
           class="flex-shrink-0 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
         >
           <FunnelIcon class="h-4 w-4 mr-2" />
@@ -274,7 +156,7 @@ defineExpose({ fetchUsers });
     <div class="block md:hidden">
       <div class="space-y-3">
         <div
-          v-for="user in filteredUsers"
+          v-for="user in transformedUsers"
           :key="user._id"
           class="bg-white p-4 rounded-lg border border-gray-200"
         >
@@ -284,22 +166,23 @@ defineExpose({ fetchUsers });
                 <h3 class="text-sm font-semibold text-gray-900 truncate">{{ user.nomComplet }}</h3>
                 <span 
                   class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ml-2"
-                  :class="user.isActive ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'"
+                  :class="user.statusClass"
                 >
-                  {{ user.isActive ? 'Actif' : 'Inactif' }}
+                  {{ user.displayStatus }}
                 </span>
               </div>
               <p class="text-sm text-gray-500 truncate">{{ user.email }}</p>
               <p class="text-xs text-gray-400 mt-1">
-                {{ user.role }}
-                <span v-if="user.entiteId && user.entiteId.nom">
-                  ({{ user.entiteId.nom }}<span v-if="isEntityDeactivated(user)" class="inline-flex items-center text-amber-600 cursor-help" :title="getEntityWarningText(user)"> <ExclamationTriangleIcon class="h-3 w-3 ml-1" /></span>)
+                {{ user.displayRole }}
+                <span v-if="user.displayEntity && user.displayEntity !== '-'">
+                  ({{ user.displayEntity }})
                 </span>
               </p>
             </div>
           </div>
           <div class="mt-3 flex justify-end gap-x-2">
             <button 
+              v-if="canEditUser(user)"
               @click="openEditPanel(user)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Modifier"
@@ -307,15 +190,15 @@ defineExpose({ fetchUsers });
               <PencilSquareIcon class="h-5 w-5" />
             </button>
             <button 
-              v-if="user.isActive"
-              @click="softDeleteUser(user._id)" 
+              v-if="canDeactivateUser(user)"
+              @click="deactivateUser(user._id)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Désactiver"
             >
               <PauseIcon class="h-5 w-5" />
             </button>
             <button 
-              v-else
+              v-if="canReactivateUser(user)"
               @click="reactivateUser(user._id)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Réactiver"
@@ -349,23 +232,24 @@ defineExpose({ fetchUsers });
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                <tr v-for="user in filteredUsers" :key="user._id">
+                <tr v-for="user in transformedUsers" :key="user._id">
                     <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">{{ user.nomComplet }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ user.email }}</td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {{ user.role }}
-                        <span v-if="user.entiteId && user.entiteId.nom" class="text-gray-400">
-                            ({{ user.entiteId.nom }}<span v-if="isEntityDeactivated(user)" class="inline-flex items-center text-amber-600 cursor-help" :title="getEntityWarningText(user)"> <ExclamationTriangleIcon class="h-4 w-4 ml-1" /></span>)
+                        {{ user.displayRole }}
+                        <span v-if="user.displayEntity && user.displayEntity !== '-'" class="text-gray-400">
+                            ({{ user.displayEntity }})
                         </span>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium" :class="user.isActive ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'">
-                            {{ user.isActive ? 'Actif' : 'Inactif' }}
+                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" :class="user.statusClass">
+                            {{ user.displayStatus }}
                         </span>
                     </td>
                     <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <div class="flex items-center justify-end gap-x-2">
                             <button 
+                                v-if="canEditUser(user)"
                                 @click="openEditPanel(user)" 
                                 class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
                                 title="Modifier"
@@ -373,15 +257,15 @@ defineExpose({ fetchUsers });
                                 <PencilSquareIcon class="h-5 w-5" />
                             </button>
                             <button 
-                                v-if="user.isActive"
-                                @click="softDeleteUser(user._id)" 
+                                v-if="canDeactivateUser(user)"
+                                @click="deactivateUser(user._id)" 
                                 class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
                                 title="Désactiver"
                             >
                                 <PauseIcon class="h-5 w-5" />
                             </button>
                             <button 
-                                v-else
+                                v-if="canReactivateUser(user)"
                                 @click="reactivateUser(user._id)" 
                                 class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
                                 title="Réactiver"
@@ -422,16 +306,16 @@ defineExpose({ fetchUsers });
       <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p class="text-sm text-gray-700">
-            Affichage de <span class="font-medium">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span> à 
-            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, totalItems) }}</span> sur 
-            <span class="font-medium">{{ totalItems }}</span> résultats
+            Affichage de <span class="font-medium">{{ paginationInfo.start }}</span> à 
+            <span class="font-medium">{{ paginationInfo.end }}</span> sur 
+            <span class="font-medium">{{ paginationInfo.total }}</span> résultats
           </p>
         </div>
         <div class="flex items-center space-x-2">
           <label for="page-size" class="text-sm text-gray-700">Afficher:</label>
           <select
             id="page-size"
-            @change="changePageSize($event.target.value)"
+            @change="changePageSize(parseInt($event.target.value))"
             :value="itemsPerPage"
             class="rounded-md border-gray-300 py-1 text-sm"
           >
@@ -444,10 +328,24 @@ defineExpose({ fetchUsers });
         </div>
         <div>
           <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <!-- First page button -->
+            <button
+              @click="goToFirstPage"
+              :disabled="currentPage === 1"
+              class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Première page"
+            >
+              <span class="sr-only">Première page</span>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M15.79 14.77a.75.75 0 01-1.06.02l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 111.04 1.08L11.832 10l3.938 3.71a.75.75 0 01.02 1.06zm-6 0a.75.75 0 01-1.06.02l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 111.04 1.08L5.832 10l3.938 3.71a.75.75 0 01.02 1.06z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            
+            <!-- Previous page button -->
             <button
               @click="goToPrevPage"
               :disabled="!hasPrevPage"
-              class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span class="sr-only">Précédent</span>
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -472,14 +370,28 @@ defineExpose({ fetchUsers });
               </button>
             </template>
             
+            <!-- Next page button -->
             <button
               @click="goToNextPage"
               :disabled="!hasNextPage"
-              class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span class="sr-only">Suivant</span>
               <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            
+            <!-- Last page button -->
+            <button
+              @click="goToLastPage"
+              :disabled="currentPage === totalPages"
+              class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Dernière page"
+            >
+              <span class="sr-only">Dernière page</span>
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M4.21 5.23a.75.75 0 011.06-.02l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.04-1.08L8.168 10 4.23 6.29a.75.75 0 01-.02-1.06zm6 0a.75.75 0 011.06-.02l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.04-1.08L14.168 10 10.23 6.29a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
               </svg>
             </button>
           </nav>
@@ -487,8 +399,8 @@ defineExpose({ fetchUsers });
       </div>
     </div>
 
-    <SlidePanel :open="isEditPanelOpen" @close="isEditPanelOpen = false" title="Modifier l'utilisateur" size="md">
-        <UserEditForm v-if="selectedUser" :user="selectedUser" @updated="handleUserUpdated" @close="isEditPanelOpen = false" />
+    <SlidePanel :open="isEditPanelOpen" @close="closeEditPanel" title="Modifier l'utilisateur" size="md">
+        <UserEditForm v-if="editingUser" :user="editingUser" @updated="handleUserUpdated" @close="closeEditPanel" />
     </SlidePanel>
   </div>
 </template>

@@ -31,9 +31,9 @@ const handleFileUpload = async (supplierLink, event) => {
   if (!file) return;
 
   // Validate file type
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
   if (!allowedTypes.includes(file.type)) {
-    message.error('Seuls les fichiers image (JPEG, PNG, GIF, WebP) sont autorisés');
+    message.error('Seuls les fichiers image (JPEG, PNG, GIF, WebP, SVG) sont autorisés');
     return;
   }
 
@@ -82,7 +82,20 @@ const handleDeleteImage = async (supplierLink) => {
 
 // Get image URL for a supplier
 const getImageUrl = (supplierLink) => {
-  return supplierLink.imageUrl || null;
+  if (!supplierLink.imageUrl) return null;
+  
+  // If it's already a full URL (http/https), return as is
+  if (supplierLink.imageUrl.startsWith('http://') || supplierLink.imageUrl.startsWith('https://')) {
+    return supplierLink.imageUrl;
+  }
+  
+  // Otherwise, construct MinIO URL
+  // Get MinIO endpoint from environment or use default
+  const minioHost = import.meta.env.VITE_MINIO_HOST || 'localhost';
+  const minioPort = import.meta.env.VITE_MINIO_PORT || '9000';
+  const bucketName = 'documents';
+  
+  return `http://${minioHost}:${minioPort}/${bucketName}/${supplierLink.imageUrl}`;
 };
 
 // Computed property to get suppliers with images

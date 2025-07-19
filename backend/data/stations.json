@@ -1,0 +1,162 @@
+[
+    {
+        "nom": "NOVACOOP",
+        "identifiantInterne": "ST-NOVACOOP",
+        "adresse": {
+            "rue": "1141 Chemin des Palanques",
+            "codePostal": "82170",
+            "ville": "Bessens",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Benoît LAFORGUE",
+            "email": "contact@novacoop.com",
+            "telephone": "0563675886"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "LES VERGERS D'ANJOU",
+        "identifiantInterne": "ST-ANJOU",
+        "adresse": {
+            "rue": "La Ripoterie - Route Départementale 94",
+            "codePostal": "49480",
+            "ville": "Verrières-en-Anjou",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Albert RICHARD",
+            "email": "contact@vergers-anjou.fr",
+            "telephone": "0241962000"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "LA MARTINOISE",
+        "identifiantInterne": "ST-MARTINOISE",
+        "adresse": {
+            "rue": "Les Hermites",
+            "codePostal": "18110",
+            "ville": "Saint-Martin-d'Auxigny",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Pierre-Marie LAGOGUE",
+            "email": "contact@martinoise.fr",
+            "telephone": "0248662011"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "KIWICOOP",
+        "identifiantInterne": "ST-KIWICOOP",
+        "adresse": {
+            "rue": "655 Rue des Pommes, BP 38",
+            "codePostal": "82201",
+            "ville": "Moissac Cedex",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Romain MENOTTI",
+            "email": "contact@kiwicoop.fr",
+            "telephone": "0563046010"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "LES DEUX VALLEES",
+        "identifiantInterne": "ST-2VALLEES",
+        "adresse": {
+            "rue": "11 Bis route de Gaillac",
+            "codePostal": "81500",
+            "ville": "Lavaur",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Didier MIOLLAN",
+            "email": "contact@deuxvallees.fr",
+            "telephone": "0563831200"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "LES TROIS DOMAINES",
+        "identifiantInterne": "ST-3DOMAINES",
+        "adresse": {
+            "rue": "Marché d'Intérêt National, Av. d'Aquitaine",
+            "codePostal": "47000",
+            "ville": "Agen",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Olivier SABATHIE",
+            "email": "contact@troisdomaines.fr",
+            "telephone": "0553964700"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "STANOR",
+        "identifiantInterne": "ST-STANOR",
+        "adresse": {
+            "rue": "655 rue des Pommes",
+            "codePostal": "82200",
+            "ville": "Moissac",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Bertrand REHLINGER",
+            "email": "contact@stanor.fr",
+            "telephone": "0563046010"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "JADANA FRUITS",
+        "identifiantInterne": "ST-JADANA",
+        "adresse": {
+            "rue": "169 chemin de Thoumaze",
+            "codePostal": "82000",
+            "ville": "Montauban",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Nicolas BURATTI",
+            "email": "contact@jadana.fr",
+            "telephone": "0563639400"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "SA GP 05",
+        "identifiantInterne": "ST-GP05",
+        "adresse": {
+            "rue": "18 Place des Aires",
+            "codePostal": "05300",
+            "ville": "Laragne-Montéglin",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Laurent GABET",
+            "email": "contact@gp05.fr",
+            "telephone": "0492650300"
+        },
+        "isActive": true
+    },
+    {
+        "nom": "TERRYLOIRE",
+        "identifiantInterne": "ST-TERRYLOIRE",
+        "adresse": {
+            "rue": "10 rue des Moulins",
+            "codePostal": "49390",
+            "ville": "Noyant-Villages",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Nicolas HERVE",
+            "email": "contact@terryloire.com",
+            "telephone": "0241520028"
+        },
+        "isActive": true
+    }
+]

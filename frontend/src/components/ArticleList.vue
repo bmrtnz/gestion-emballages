@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, watch, onMounted } from "vue";
 import { useAuthStore } from "../stores/authStore";
-import { useArticleList } from "../composables/useArticleList";
+import { useArticleList } from "../composables/articles/useArticleList";
 import {
     PencilSquareIcon,
     TrashIcon,
@@ -13,7 +13,7 @@ import {
     ChevronDoubleUpIcon,
     PauseIcon,
     PlayIcon,
-    EyeIcon,
+    CameraIcon,
 } from "@heroicons/vue/24/outline";
 import Button from "./ui/Button.vue";
 import Select from "./ui/Select.vue";
@@ -94,6 +94,8 @@ const canEdit = computed(() => {
 
 // Development mode check for template
 const isDev = import.meta.env.DEV;
+
+// Note: Using existing viewSupplierImage function for camera icon functionality
 
 // Calculate dynamic item height based on content
 const calculateItemHeight = (item, index) => {
@@ -344,7 +346,24 @@ defineExpose({
                                     <tr v-for="item in tableDataSource" :key="item._id" class="border-b border-gray-100 hover:bg-gray-50">
                                         <td class="whitespace-nowrap py-4 pr-3 text-sm">
                                             <div class="text-gray-500">{{ item.codeArticle }}</div>
-                                            <div class="text-gray-900 font-medium">{{ item.designation }}</div>
+                                            <div class="flex items-center justify-between">
+                                                <div class="text-gray-900 font-medium">{{ item.designation }}</div>
+                                                <div v-if="item.imageUrl && permissions.canViewSupplierDocuments" class="relative group">
+                                                    <CameraIcon
+                                                        class="h-4 w-4 cursor-pointer hover:scale-110 transition-transform duration-200 text-primary-600"
+                                                        @click="viewSupplierImage(item, item.parentData)"
+                                                    />
+                                                    <!-- Custom tooltip -->
+                                                    <div class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                                        <div class="text-center">
+                                                            <div class="font-medium">Visuel produit</div>
+                                                            <div class="text-gray-300 text-xs mt-1">Cliquez pour voir</div>
+                                                        </div>
+                                                        <!-- Tooltip arrow -->
+                                                        <div class="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm">
                                             <div class="text-gray-500">{{ item.categorie || "Non définie" }}</div>
@@ -362,22 +381,7 @@ defineExpose({
                                             <span v-else class="text-gray-400">N/A</span>
                                         </td>
                                         <td v-if="allowRowActions" class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                                            <div v-if="canEdit || permissions.canViewSupplierDocuments" class="flex items-center justify-end gap-x-2">
-                                                <!-- Eye icon for viewing supplier images -->
-                                                <button
-                                                    v-if="permissions.canViewSupplierDocuments"
-                                                    @click="item.imageUrl ? viewSupplierImage(item, item.parentData) : null"
-                                                    :disabled="!item.imageUrl"
-                                                    :class="[
-                                                        'p-1.5 rounded-lg transition-colors',
-                                                        item.imageUrl 
-                                                            ? 'text-primary-600 hover:text-primary-900 hover:bg-primary-50 cursor-pointer' 
-                                                            : 'text-gray-500 cursor-not-allowed'
-                                                    ]"
-                                                    :title="item.imageUrl ? 'Voir l\'image' : 'Aucune image disponible'"
-                                                >
-                                                    <EyeIcon class="h-5 w-5" />
-                                                </button>
+                                            <div v-if="canEdit" class="flex items-center justify-end gap-x-2">
                                                 <!-- Edit actions (only for managers) -->
                                                 <button
                                                     v-if="canEdit"
@@ -490,11 +494,28 @@ defineExpose({
                                         <template v-if="shouldShowSuppliers(parentItem.key)">
                                             <tr v-for="childItem in parentItem.children" :key="childItem._id" class="bg-white hover:bg-gray-25 border-b border-gray-100">
                                                 <td class="whitespace-nowrap py-3 pr-3 text-sm text-gray-700">
-                                                    <div class="flex items-center pl-8">
-                                                        <div class="w-4 h-4 mr-2 flex items-center justify-center">
-                                                            <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                                    <div class="flex items-center justify-between pl-8">
+                                                        <div class="flex items-center">
+                                                            <div class="w-4 h-4 mr-2 flex items-center justify-center">
+                                                                <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                                            </div>
+                                                            <span>{{ childItem.fournisseurId?.nom || "Fournisseur inconnu" }}</span>
                                                         </div>
-                                                        {{ childItem.fournisseurId?.nom || "Fournisseur inconnu" }}
+                                                        <div v-if="childItem.imageUrl && permissions.canViewSupplierDocuments" class="relative group">
+                                                            <CameraIcon
+                                                                class="h-4 w-4 cursor-pointer hover:scale-110 transition-transform duration-200 text-primary-600"
+                                                                @click="viewSupplierImage(childItem, parentItem)"
+                                                            />
+                                                            <!-- Custom tooltip -->
+                                                            <div class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                                                <div class="text-center">
+                                                                    <div class="font-medium">Visuel produit</div>
+                                                                    <div class="text-gray-300 text-xs mt-1">Cliquez pour voir</div>
+                                                                </div>
+                                                                <!-- Tooltip arrow -->
+                                                                <div class="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">{{ childItem.referenceFournisseur || "-" }}</td>
@@ -508,21 +529,7 @@ defineExpose({
                                                     <span v-else class="text-gray-400">N/A</span>
                                                 </td>
                                                 <td v-if="allowRowActions" class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                                                    <div v-if="canEdit || permissions.canViewSupplierDocuments" class="flex items-center justify-end gap-x-2">
-                                                        <button
-                                                            v-if="permissions.canViewSupplierDocuments"
-                                                            @click="childItem.imageUrl ? viewSupplierImage(childItem, parentItem) : null"
-                                                            :disabled="!childItem.imageUrl"
-                                                            :class="[
-                                                                'p-1.5 rounded transition-colors',
-                                                                childItem.imageUrl 
-                                                                    ? 'text-primary-600 hover:text-primary-900 hover:bg-primary-50 cursor-pointer' 
-                                                                    : 'text-gray-500 cursor-not-allowed'
-                                                            ]"
-                                                            :title="childItem.imageUrl ? 'Voir l\'image' : 'Aucune image disponible'"
-                                                        >
-                                                            <EyeIcon class="h-5 w-5" />
-                                                        </button>
+                                                    <div v-if="canEdit" class="flex items-center justify-end gap-x-2">
                                                         <button
                                                             v-if="canEdit"
                                                             @click="editSupplier(parentItem._id, childItem._id)"
@@ -571,7 +578,24 @@ defineExpose({
                         <div class="space-y-3">
                             <div>
                                 <p class="text-sm text-gray-500">{{ item.codeArticle }}</p>
-                                <h3 class="text-sm font-semibold text-gray-900">{{ item.designation }}</h3>
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-sm font-semibold text-gray-900">{{ item.designation }}</h3>
+                                    <div v-if="item.imageUrl && permissions.canViewSupplierDocuments" class="relative group">
+                                        <CameraIcon
+                                            class="h-4 w-4 cursor-pointer hover:scale-110 transition-transform duration-200 text-primary-600"
+                                            @click="viewSupplierImage(item, item.parentData)"
+                                        />
+                                        <!-- Custom tooltip -->
+                                        <div class="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div class="text-center">
+                                                <div class="font-medium">Visuel produit</div>
+                                                <div class="text-gray-300 text-xs mt-1">Cliquez pour voir</div>
+                                            </div>
+                                            <!-- Tooltip arrow -->
+                                            <div class="absolute top-full right-2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <p class="text-xs text-gray-500 mt-1">{{ item.categorie || "Non définie" }}</p>
                             </div>
                             <div class="grid grid-cols-2 gap-4 text-sm">
@@ -686,9 +710,26 @@ defineExpose({
                     >
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
-                                <h4 class="text-sm font-medium text-gray-700">
-                                    {{ item.fournisseurId?.nom || "Fournisseur inconnu" }}
-                                </h4>
+                                <div class="flex items-center">
+                                    <h4 class="text-sm font-medium text-gray-700 mr-2">
+                                        {{ item.fournisseurId?.nom || "Fournisseur inconnu" }}
+                                    </h4>
+                                    <div v-if="item.imageUrl && permissions.canViewSupplierDocuments" class="relative group">
+                                        <CameraIcon
+                                            class="h-4 w-4 cursor-pointer hover:scale-110 transition-transform duration-200 text-primary-600"
+                                            @click="viewSupplierImage(item, item.parentData)"
+                                        />
+                                        <!-- Custom tooltip -->
+                                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div class="text-center">
+                                                <div class="font-medium">Visuel produit</div>
+                                                <div class="text-gray-300 text-xs mt-1">Cliquez pour voir</div>
+                                            </div>
+                                            <!-- Tooltip arrow -->
+                                            <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <p class="text-xs text-gray-500">
                                     {{ item.referenceFournisseur || "Pas de référence" }}
                                 </p>
@@ -700,23 +741,9 @@ defineExpose({
                                 </div>
                             </div>
                             <div
-                                v-if="allowRowActions && (canEdit || permissions.canViewSupplierDocuments)"
+                                v-if="allowRowActions && canEdit"
                                 class="flex gap-x-1"
                             >
-                                <button
-                                    v-if="permissions.canViewSupplierDocuments"
-                                    @click="item.imageUrl ? viewSupplierImage(item, item.parentData) : null"
-                                    :disabled="!item.imageUrl"
-                                    :class="[
-                                        'p-1.5 rounded-lg transition-colors',
-                                        item.imageUrl 
-                                            ? 'text-primary-600 hover:text-primary-900 hover:bg-primary-50 cursor-pointer' 
-                                            : 'text-gray-500 cursor-not-allowed'
-                                    ]"
-                                    :title="item.imageUrl ? 'Voir l\'image' : 'Aucune image disponible'"
-                                >
-                                    <EyeIcon class="h-5 w-5" />
-                                </button>
                                 <button
                                     v-if="canEdit"
                                     @click="editSupplier(item.parentId, item._id)"

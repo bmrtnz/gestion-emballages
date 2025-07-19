@@ -52,12 +52,33 @@ const shouldShowEntitySelection = computed(() => {
 
 // Computed property to get the appropriate entity list
 const entityOptions = computed(() => {
+  let options = [];
+  
   if (formState.role === 'Station') {
-    return stations.value;
+    options = [...stations.value];
   } else if (formState.role === 'Fournisseur') {
-    return fournisseurs.value;
+    options = [...fournisseurs.value];
   }
-  return [];
+  
+  // If editing and the current entity is not in the active list, add it
+  if (props.user && props.user.entiteId && formState.entiteId) {
+    const currentEntityId = typeof props.user.entiteId === 'object' 
+      ? props.user.entiteId._id 
+      : props.user.entiteId;
+    
+    const existsInOptions = options.some(entity => entity._id === currentEntityId);
+    
+    if (!existsInOptions && props.user.entiteId && typeof props.user.entiteId === 'object') {
+      // Add the current entity to options even if it's inactive
+      options.unshift({
+        _id: props.user.entiteId._id,
+        nom: `${props.user.entiteId.nom} (Inactif)`,
+        isActive: false
+      });
+    }
+  }
+  
+  return options;
 });
 
 // Computed property to get the appropriate entity label
@@ -75,17 +96,18 @@ const fetchEntities = async () => {
   try {
     const [stationsResponse, fournisseursResponse] = await Promise.all([
       withErrorHandling(
-        () => api.get('/stations'),
+        () => api.get('/stations', { params: { status: 'active', limit: 1000 } }),
         'Erreur lors du chargement des stations'
       ),
       withErrorHandling(
-        () => api.get('/fournisseurs'),
+        () => api.get('/fournisseurs', { params: { status: 'active', limit: 1000 } }),
         'Erreur lors du chargement des fournisseurs'
       )
     ]);
     
-    stations.value = stationsResponse.data;
-    fournisseurs.value = fournisseursResponse.data;
+    // Extract data from paginated response
+    stations.value = stationsResponse.data.data || stationsResponse.data;
+    fournisseurs.value = fournisseursResponse.data.data || fournisseursResponse.data;
   } catch (error) {
     console.error('Error fetching entities:', error);
   }
@@ -136,6 +158,7 @@ onMounted(fetchEntities);
       <div v-if="shouldShowEntitySelection">
         <label for="edit-entiteId" class="block text-sm font-medium text-gray-700">{{ entityLabel }}</label>
         <select v-model="formState.entiteId" id="edit-entiteId" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" required>
+            <option value="">Sélectionner {{ entityLabel.toLowerCase() }}</option>
             <option v-for="entity in entityOptions" :key="entity._id" :value="entity._id">{{ entity.nom }}</option>
         </select>
       </div>
