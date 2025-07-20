@@ -15,6 +15,7 @@ const {
     uploadFournisseurImage,
     deleteFournisseurImage,
     uploadImageMiddleware,
+    getArticlesBySupplierId,
 } = require("../controllers/articleController");
 const { protect, authorize } = require("../middleware/authMiddleware");
 const { validate } = require("../middleware/validationMiddleware");
@@ -101,6 +102,40 @@ router.get("/categories", protect, getCategories);
  *                   example: ["Barquette", "Film"]
  */
 router.get("/distinct-categories", protect, getDistinctCategories);
+
+/**
+ * @swagger
+ * /articles/by-supplier/{supplierId}:
+ *   get:
+ *     summary: Récupérer les articles actifs liés à un fournisseur spécifique
+ *     tags: [Articles]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: supplierId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID du fournisseur
+ *     responses:
+ *       200:
+ *         description: Liste des articles actifs liés au fournisseur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Article'
+ *                 count:
+ *                   type: number
+ */
+router.get("/by-supplier/:supplierId", protect, getArticlesBySupplierId);
 
 router
     .route("/")

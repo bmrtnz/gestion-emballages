@@ -12,6 +12,9 @@ import CommandeDetailPage from "../views/CommandeDetailPage.vue";
 import StockPage from "../views/StockPage.vue";
 import TransfertPage from "../views/TransfertPage.vue";
 import PrevisionPage from "../views/PrevisionPage.vue";
+import SitePrevisionViewPage from "../views/SitePrevisionViewPage.vue";
+import SupplierPrevisionViewPage from "../views/SupplierPrevisionViewPage.vue";
+import WeeklyPrevisionEditPage from "../views/WeeklyPrevisionEditPage.vue";
 import ContratPage from "../views/ContratPage.vue";
 import StationPage from "../views/StationPage.vue";
 import UserPage from "../views/UserPage.vue";
@@ -63,6 +66,21 @@ const routes = [
     path: "/previsions",
     component: PrevisionPage,
     meta: { title: "Prévisions" },
+  },
+  {
+    path: "/previsions/supplier/:fournisseurId/:campagne",
+    component: SupplierPrevisionViewPage,
+    meta: { title: "Prévisions Fournisseur" },
+  },
+  {
+    path: "/previsions/:id",
+    component: SitePrevisionViewPage,
+    meta: { title: "Détail de la Prévision" },
+  },
+  {
+    path: "/previsions/:id/articles/:articlePrevisionId/edit",
+    component: WeeklyPrevisionEditPage,
+    meta: { title: "Édition des Prévisions Hebdomadaires" },
   },
   {
     path: "/contrats",

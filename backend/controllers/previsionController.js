@@ -2,6 +2,7 @@
  * @fileoverview Contrôleur pour la gestion des prévisions de consommation d'articles
  * @module controllers/previsionController
  * @requires models/previsionModel
+ * @requires models/fournisseurModel
  * @requires utils/appError
  * @author Gestion Emballages Team
  * @since 1.0.0
@@ -9,109 +10,410 @@
 
 // backend/controllers/previsionController.js
 const Prevision = require('../models/previsionModel');
-const { NotFoundError } = require('../utils/appError');
-// Removed asyncHandler for cleaner testing and error handling
+const Fournisseur = require('../models/fournisseurModel');
+const Article = require('../models/articleModel');
+const { NotFoundError, ForbiddenError } = require('../utils/appError');
 
 /**
- * Créer une nouvelle campagne de prévision pour un article et un fournisseur donnés.
- * Génère automatiquement les entrées hebdomadaires pour une campagne (S27 à S26).
+ * Créer une nouvelle prévision pour un fournisseur et un site spécifique.
  * @function createPrevision
  * @memberof module:controllers/previsionController
  * @param {Express.Request} req - L'objet de requête Express
  * @param {Object} req.body - Corps de la requête
  * @param {string} req.body.campagne - Nom de la campagne au format "AA-AA" (ex: "25-26")
  * @param {string} req.body.fournisseurId - ID du fournisseur
- * @param {string} req.body.articleId - ID de l'article
- * @param {string} req.body.nom - Nom de la prévision
+ * @param {string} req.body.siteId - ID du site du fournisseur
  * @param {Object} req.user - Utilisateur connecté (ajouté par le middleware auth)
- * @param {string} req.user._id - ID de l'utilisateur créateur
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
- * @returns {Promise<void>} Renvoie la prévision créée avec toutes les semaines générées
+ * @returns {Promise<void>} Renvoie la prévision créée vide
  * @since 1.0.0
  * @example
  * // POST /api/previsions
- * // Body: { "campagne": "25-26", "fournisseurId": "64f5a1b2c3d4e5f6a7b8c9d0", "articleId": "64f5a1b2c3d4e5f6a7b8c9d1", "nom": "Prévision Cartons 2025-2026" }
- * // Response: { "_id": "...", "nom": "Prévision Cartons 2025-2026", "campagne": "25-26", "previsionsHebdomadaires": [{ "annee": 2025, "numeroSemaine": 27, "quantitePrevue": 0 }, ...] }
+ * // Body: { "campagne": "25-26", "fournisseurId": "64f5a1b2c3d4e5f6a7b8c9d0", "siteId": "64f5a1b2c3d4e5f6a7b8c9d1" }
+ * // Response: { "_id": "...", "campagne": "25-26", "fournisseurId": {...}, "siteId": "...", "articlesPrevisions": [] }
  */
 exports.createPrevision = async (req, res, next) => {
     try {
-        const { campagne, fournisseurId, articleId, nom } = req.body;
+        const { campagne, fournisseurId, siteId } = req.body;
         
-        // Calcule l'année de début à partir du format de campagne "AA-AA". Ex: "25-26" -> 2025.
-        const anneeDebut = 2000 + parseInt(campagne.split('-')[0]); 
-
-        const previsionsHebdomadaires = [];
-        // Génère les entrées pour les semaines de la première année (S27 à S52).
-        for (let i = 27; i <= 52; i++) {
-            previsionsHebdomadaires.push({ annee: anneeDebut, numeroSemaine: i, quantitePrevue: 0 });
-        }
-        // Génère les entrées pour les semaines de la deuxième année (S1 à S26).
-        for (let i = 1; i <= 26; i++) {
-            previsionsHebdomadaires.push({ annee: anneeDebut + 1, numeroSemaine: i, quantitePrevue: 0 });
+        // Vérifier que le fournisseur existe
+        const fournisseur = await Fournisseur.findById(fournisseurId);
+        if (!fournisseur) {
+            return next(new NotFoundError('Fournisseur non trouvé'));
         }
 
-        // Crée le document de prévision avec les semaines générées.
+        // Vérifier que le site existe et appartient au fournisseur
+        const site = fournisseur.sites.id(siteId);
+        if (!site || !site.isActive) {
+            return next(new NotFoundError('Site non trouvé ou inactif'));
+        }
+        
+        // Créer la prévision vide (les articles seront ajoutés séparément)
         const prevision = await Prevision.create({
-            nom,
             campagne,
             fournisseurId,
-            articleId,
-            previsionsHebdomadaires,
-            creeParId: req.user._id
+            siteId,
+            articlesPrevisions: []
         });
-        res.status(201).json(prevision);
+
+        // Populer les références pour la réponse
+        const previsionPopulated = await Prevision.findById(prevision._id)
+            .populate('fournisseurId', 'nom sites');
+
+        res.status(201).json(previsionPopulated);
     } catch (error) {
         next(error);
     }
 };
 
 /**
- * Mettre à jour les quantités prévues pour une ou plusieurs semaines d'une campagne.
- * @function updatePrevision
+ * Ajouter une prévision d'article à une prévision existante.
+ * @function addArticlePrevision
  * @memberof module:controllers/previsionController
  * @param {Express.Request} req - L'objet de requête Express
  * @param {Object} req.params - Paramètres de la route
- * @param {string} req.params.id - ID de la prévision à mettre à jour
+ * @param {string} req.params.id - ID de la prévision
  * @param {Object} req.body - Corps de la requête
- * @param {Array<Object>} req.body.updates - Tableau des mises à jour à appliquer
- * @param {number} req.body.updates[].annee - Année de la semaine à mettre à jour
- * @param {number} req.body.updates[].numeroSemaine - Numéro de la semaine à mettre à jour
- * @param {number} req.body.updates[].quantitePrevue - Nouvelle quantité prévue
+ * @param {string} req.body.articleId - ID de l'article
+ * @param {Array<Object>} req.body.semaines - Prévisions par semaine
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
  * @returns {Promise<void>} Renvoie la prévision mise à jour
- * @throws {NotFoundError} Si la prévision n'est pas trouvée
  * @since 1.0.0
- * @example
- * // PUT /api/previsions/64f5a1b2c3d4e5f6a7b8c9d0
- * // Body: { "updates": [{ "annee": 2025, "numeroSemaine": 27, "quantitePrevue": 100 }, { "annee": 2025, "numeroSemaine": 28, "quantitePrevue": 150 }] }
- * // Response: { "_id": "...", "previsionsHebdomadaires": [{ "annee": 2025, "numeroSemaine": 27, "quantitePrevue": 100, "dateMiseAJour": "..." }, ...] }
  */
-exports.updatePrevision = async (req, res, next) => {
+exports.addArticlePrevision = async (req, res, next) => {
     try {
-        // Le corps de la requête doit contenir un tableau d'objets de mise à jour.
-        const { updates } = req.body; // updates: [{ annee, numeroSemaine, quantitePrevue }]
+        const { articleId, semaines } = req.body;
         const prevision = await Prevision.findById(req.params.id);
 
         if (!prevision) {
             return next(new NotFoundError('Prévision non trouvée'));
         }
 
-        // Applique chaque mise à jour au sous-document correspondant.
-        updates.forEach(update => {
-            const weekToUpdate = prevision.previsionsHebdomadaires.find(
-                w => w.annee === update.annee && w.numeroSemaine === update.numeroSemaine
-            );
-            if (weekToUpdate) {
-                weekToUpdate.quantitePrevue = update.quantitePrevue;
-                weekToUpdate.dateMiseAJour = new Date(); // Enregistre la date de la modification.
-            }
+        // Vérifier si l'article existe déjà
+        const existingArticle = prevision.articlesPrevisions.find(
+            ap => ap.articleId.toString() === articleId
+        );
+
+        if (existingArticle) {
+            return next(new Error('Cet article existe déjà dans cette prévision'));
+        }
+
+        // Ajouter la nouvelle prévision d'article
+        prevision.articlesPrevisions.push({
+            articleId,
+            semaines: semaines || []
         });
 
         const updatedPrevision = await prevision.save();
-        res.json(updatedPrevision);
+        
+        // Populer les références pour la réponse
+        const previsionPopulated = await Prevision.findById(updatedPrevision._id)
+            .populate('fournisseurId', 'nom sites')
+            .populate('articlesPrevisions.articleId', 'designation codeArticle fournisseurs');
+
+        res.json(previsionPopulated);
     } catch (error) {
         next(error);
     }
 };
+
+/**
+ * Mettre à jour les quantités d'une prévision d'article.
+ * @function updateArticlePrevision
+ * @memberof module:controllers/previsionController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la prévision
+ * @param {string} req.params.articlePrevisionId - ID de la prévision d'article
+ * @param {Object} req.body - Corps de la requête
+ * @param {Array<Object>} req.body.semaines - Nouvelles prévisions par semaine
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la prévision mise à jour
+ * @since 1.0.0
+ */
+exports.updateArticlePrevision = async (req, res, next) => {
+    try {
+        const { semaines } = req.body;
+        const prevision = await Prevision.findById(req.params.id);
+
+        if (!prevision) {
+            return next(new NotFoundError('Prévision non trouvée'));
+        }
+
+        const articlePrevision = prevision.articlesPrevisions.id(req.params.articlePrevisionId);
+        if (!articlePrevision) {
+            return next(new NotFoundError('Prévision d\'article non trouvée'));
+        }
+
+        // Mettre à jour les semaines
+        articlePrevision.semaines = semaines;
+
+        const updatedPrevision = await prevision.save();
+        
+        // Populer les références pour la réponse
+        const previsionPopulated = await Prevision.findById(updatedPrevision._id)
+            .populate('fournisseurId', 'nom sites')
+            .populate('articlesPrevisions.articleId', 'designation codeArticle fournisseurs');
+
+        res.json(previsionPopulated);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Récupérer les prévisions consolidées pour un fournisseur et une campagne
+ * @function getSupplierPrevisions
+ * @memberof module:controllers/previsionController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.fournisseurId - ID du fournisseur
+ * @param {string} req.params.campagne - Campagne
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie toutes les prévisions du fournisseur pour la campagne
+ * @since 1.0.0
+ */
+exports.getSupplierPrevisions = async (req, res, next) => {
+    try {
+        const { fournisseurId, campagne } = req.params;
+        
+        let query = {
+            fournisseurId: fournisseurId,
+            campagne: campagne
+        };
+        
+        // Contrôle d'accès basé sur le rôle
+        if (req.user.role === 'Fournisseur' && req.user.entiteId.toString() !== fournisseurId) {
+            return next(new ForbiddenError('Accès non autorisé à ces prévisions'));
+        }
+        
+        const previsions = await Prevision.find(query)
+            .populate('fournisseurId', 'nom sites')
+            .populate('articlesPrevisions.articleId', 'designation codeArticle categorie fournisseurs')
+            .sort({ siteId: 1 });
+        
+        res.json({ data: previsions });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Récupérer toutes les prévisions avec pagination et filtrage
+ * @function getPrevisions
+ * @memberof module:controllers/previsionController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.pagination - Paramètres de pagination (ajoutés par le middleware)
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la liste paginée des prévisions
+ * @since 1.0.0
+ */
+exports.getPrevisions = async (req, res, next) => {
+    try {
+        const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;
+        
+        let query = {};
+        
+        // Filtre par campagne
+        if (filters.campagne) {
+            query.campagne = filters.campagne;
+        }
+        
+        // Filtre par fournisseur
+        if (filters.fournisseurId) {
+            query.fournisseurId = filters.fournisseurId;
+        }
+        
+        // Filtre par article
+        if (filters.articleId) {
+            query.articleId = filters.articleId;
+        }
+        
+        // Contrôle d'accès basé sur le rôle
+        if (req.user.role === 'Fournisseur') {
+            query.fournisseurId = req.user.entiteId;
+        }
+        
+        // Recherche textuelle avancée
+        if (search) {
+            // Construire la requête de recherche - commencer par la campagne
+            const searchConditions = [
+                { campagne: { $regex: search, $options: 'i' } }
+            ];
+            
+            try {
+                // Rechercher les fournisseurs par nom
+                const fournisseursByName = await Fournisseur.find({
+                    nom: { $regex: search, $options: 'i' }
+                }).distinct('_id');
+                
+                // Rechercher les fournisseurs et sites par nom de site
+                const fournisseursWithSites = await Fournisseur.find({
+                    'sites.nomSite': { $regex: search, $options: 'i' }
+                });
+                
+                // Ajouter les conditions de recherche par nom de fournisseur
+                if (fournisseursByName.length > 0) {
+                    searchConditions.push({ fournisseurId: { $in: fournisseursByName } });
+                }
+                
+                // Ajouter les conditions de recherche par site spécifique
+                if (fournisseursWithSites.length > 0) {
+                    const siteConditions = [];
+                    fournisseursWithSites.forEach(fournisseur => {
+                        const matchingSites = fournisseur.sites.filter(site => 
+                            site.nomSite.match(new RegExp(search, 'i'))
+                        );
+                        matchingSites.forEach(site => {
+                            siteConditions.push({
+                                fournisseurId: fournisseur._id,
+                                siteId: site._id
+                            });
+                        });
+                    });
+                    
+                    if (siteConditions.length > 0) {
+                        searchConditions.push({ $or: siteConditions });
+                    }
+                }
+                
+                // Rechercher les articles correspondants
+                const articleIds = await Article.find({
+                    designation: { $regex: search, $options: 'i' }
+                }).distinct('_id');
+                
+                // Ajouter les conditions de recherche par article
+                if (articleIds.length > 0) {
+                    searchConditions.push({ 'articlesPrevisions.articleId': { $in: articleIds } });
+                }
+                
+            } catch (searchError) {
+                console.error('Error during search preparation:', searchError);
+            }
+            
+            query.$or = searchConditions;
+        }
+        
+        const previsions = await Prevision.find(query)
+            .populate('fournisseurId', 'nom sites')
+            .populate('articlesPrevisions.articleId', 'designation codeArticle fournisseurs')
+            .sort({ [sortBy]: sortOrder })
+            .skip(skip)
+            .limit(limit);
+        
+        const totalCount = await Prevision.countDocuments(query);
+        
+        res.json(req.pagination.buildResponse(previsions, totalCount));
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Récupérer une prévision spécifique par son ID
+ * @function getPrevisionById
+ * @memberof module:controllers/previsionController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la prévision
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la prévision avec toutes ses données
+ * @throws {NotFoundError} Si la prévision n'est pas trouvée
+ * @throws {ForbiddenError} Si l'utilisateur n'a pas les droits d'accès
+ * @since 1.0.0
+ */
+exports.getPrevisionById = async (req, res, next) => {
+    try {
+        const prevision = await Prevision.findById(req.params.id)
+            .populate('fournisseurId', 'nom sites')
+            .populate('articlesPrevisions.articleId', 'designation codeArticle categorie fournisseurs');
+        
+        if (!prevision) {
+            return next(new NotFoundError('Prévision non trouvée'));
+        }
+        
+        // Contrôle d'accès basé sur le rôle
+        if (req.user.role === 'Fournisseur' && 
+            prevision.fournisseurId._id.toString() !== req.user.entiteId.toString()) {
+            return next(new ForbiddenError('Accès non autorisé à cette prévision'));
+        }
+        
+        res.json(prevision);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Supprimer une prévision
+ * @function deletePrevision
+ * @memberof module:controllers/previsionController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la prévision à supprimer
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie un message de confirmation
+ * @throws {NotFoundError} Si la prévision n'est pas trouvée
+ * @since 1.0.0
+ */
+exports.deletePrevision = async (req, res, next) => {
+    try {
+        const prevision = await Prevision.findById(req.params.id);
+        
+        if (!prevision) {
+            return next(new NotFoundError('Prévision non trouvée'));
+        }
+        
+        // Supprimer définitivement
+        await Prevision.findByIdAndDelete(req.params.id);
+        
+        res.json({ message: 'Prévision supprimée avec succès' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Supprimer une prévision d'article d'une prévision
+ * @function removeArticlePrevision
+ * @memberof module:controllers/previsionController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la prévision
+ * @param {string} req.params.articlePrevisionId - ID de la prévision d'article
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la prévision mise à jour
+ * @since 1.0.0
+ */
+exports.removeArticlePrevision = async (req, res, next) => {
+    try {
+        const prevision = await Prevision.findById(req.params.id);
+        
+        if (!prevision) {
+            return next(new NotFoundError('Prévision non trouvée'));
+        }
+        
+        // Supprimer la prévision d'article
+        prevision.articlesPrevisions.pull(req.params.articlePrevisionId);
+        
+        const updatedPrevision = await prevision.save();
+        
+        // Populer les références pour la réponse
+        const previsionPopulated = await Prevision.findById(updatedPrevision._id)
+            .populate('fournisseurId', 'nom sites')
+            .populate('articlesPrevisions.articleId', 'designation codeArticle fournisseurs');
+        
+        res.json(previsionPopulated);
+    } catch (error) {
+        next(error);
+    }
+};
+

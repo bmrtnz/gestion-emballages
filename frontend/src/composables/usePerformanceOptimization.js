@@ -198,6 +198,64 @@ export function usePerformanceOptimization() {
     return result;
   };
 
+  /**
+   * Create singleton instances for heavy objects
+   * @param {Function} factory - Factory function
+   * @returns {Function} Singleton getter
+   */
+  const singleton = (factory) => {
+    let instance;
+    
+    return () => {
+      if (!instance) {
+        instance = factory();
+      }
+      return instance;
+    };
+  };
+
+  /**
+   * Create formatters singletons
+   */
+  const getCurrencyFormatter = singleton(() => 
+    new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })
+  );
+
+  const getDateFormatter = singleton(() => 
+    new Intl.DateTimeFormat('fr-FR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  );
+
+  const getNumberFormatter = singleton(() => 
+    new Intl.NumberFormat('fr-FR')
+  );
+
+  /**
+   * Memoized formatting functions
+   */
+  const formatCurrency = memoize((amount) => {
+    if (!amount && amount !== 0) return null;
+    return getCurrencyFormatter().format(amount);
+  });
+
+  const formatDate = memoize((dateString) => {
+    if (!dateString) return null;
+    return getDateFormatter().format(new Date(dateString));
+  });
+
+  const formatNumber = memoize((number) => {
+    if (!number && number !== 0) return null;
+    return getNumberFormatter().format(number);
+  });
+
   return {
     memoize,
     memoizedComputed,
@@ -207,6 +265,13 @@ export function usePerformanceOptimization() {
     shallowArray,
     batchUpdates,
     selectiveComputed,
-    measure
+    measure,
+    singleton,
+    formatCurrency,
+    formatDate,
+    formatNumber,
+    getCurrencyFormatter,
+    getDateFormatter,
+    getNumberFormatter
   };
 }

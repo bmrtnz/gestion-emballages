@@ -908,3 +908,45 @@ exports.deleteFournisseurImage = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Get articles by supplier ID - specifically for forecast creation
+ * @function getArticlesBySupplierId
+ * @memberof module:controllers/articleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.supplierId - ID du fournisseur
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la liste des articles actifs liés à ce fournisseur
+ * @since 1.0.0
+ */
+exports.getArticlesBySupplierId = async (req, res, next) => {
+    try {
+        const { supplierId } = req.params;
+        
+        // Find all active articles where this supplier is linked
+        const articles = await Article.find({
+            isActive: true,
+            'fournisseurs.fournisseurId': supplierId
+        }).select('codeArticle designation categorie isActive fournisseurs');
+        
+        // Filter to only include supplier info for the requested supplier
+        const filteredArticles = articles.map(article => {
+            const articleObj = article.toObject();
+            articleObj.fournisseurs = articleObj.fournisseurs.filter(f => 
+                f.fournisseurId.toString() === supplierId
+            );
+            return articleObj;
+        });
+        
+        res.json({
+            success: true,
+            data: filteredArticles,
+            count: filteredArticles.length
+        });
+        
+    } catch (error) {
+        next(error);
+    }
+};

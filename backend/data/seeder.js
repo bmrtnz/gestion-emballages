@@ -7,6 +7,7 @@ const User = require("../models/userModel");
 const Station = require("../models/stationModel");
 const Fournisseur = require("../models/fournisseurModel");
 const Article = require("../models/articleModel");
+const Prevision = require("../models/previsionModel");
 
 // Charger les utilitaires de seed
 const { 
@@ -93,6 +94,7 @@ const importData = async () => {
         await Station.deleteMany();
         await Fournisseur.deleteMany();
         await Article.deleteMany();
+        await Prevision.deleteMany();
 
         // 3. Préparer les fournisseurs avec documents uploadés
         console.log("Generating supplier documents...");
@@ -260,6 +262,10 @@ const destroyData = async () => {
         console.log("Deleting articles...");
         await Article.deleteMany();
         console.log("Articles deleted.");
+
+        console.log("Deleting previsions...");
+        await Prevision.deleteMany();
+        console.log("Previsions deleted.");
 
         console.log("Données détruites avec succès !");
         await mongoose.connection.close();
