@@ -37,7 +37,7 @@ export class PrevisionFournisseurStrategy extends PrevisionRoleStrategy {
         key: 'campagne', 
         label: 'Campagne', 
         sortable: true,
-        width: '15%'
+        width: '20%'
       },
       { 
         key: 'article', 
@@ -49,15 +49,9 @@ export class PrevisionFournisseurStrategy extends PrevisionRoleStrategy {
         key: 'site', 
         label: 'Site / Prévision annuelle', 
         sortable: false,
-        width: '30%'
-      },
-      { 
-        key: 'actions', 
-        label: 'Actions', 
-        sortable: false,
-        width: '10%',
-        align: 'right'
+        width: '35%'
       }
+      // No actions column for suppliers - read-only access
     ];
   }
 

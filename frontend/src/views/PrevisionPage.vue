@@ -197,7 +197,7 @@
                     <span>{{ getSiteName(prevision) }}</span>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td v-if="hasActionsColumn" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex items-center justify-end gap-x-2">
                     <button 
                       v-if="canEdit"
@@ -243,7 +243,7 @@
                       équivalent {{ getConditionnementConversion(articlePrevision, prevision.fournisseurId._id) }}
                     </div>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td v-if="hasActionsColumn" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex items-center justify-end gap-x-2">
                       <button 
                         v-if="canEditArticles"
@@ -289,7 +289,7 @@
           <!-- Mobile actions -->
           <div class="flex justify-end space-x-2 mt-4">
             <Button 
-              v-if="canEdit"
+              v-if="hasActionsColumn && canEdit"
               variant="outline" 
               size="sm"
               @click="handleAddArticlePrevision(prevision._id)"
@@ -543,7 +543,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { usePrevisionList } from '../composables/previsions/usePrevisionList';
 import Button from '../components/ui/Button.vue';
 import SlidePanel from '../components/ui/SlidePanel.vue';
@@ -618,10 +618,6 @@ const {
   showPagination,
   tableColumns,
   
-  // Debug strategy info
-  strategy,
-  uiBehavior,
-  
   // Pagination
   currentPage,
   totalPages,
@@ -659,10 +655,13 @@ const {
   getTotalUnits,
   getTotalQuantityForArticle,
   getConditionnementConversion,
-  formatNumber,
-  testClick,
-  simpleTreeToggle
+  formatNumber
 } = usePrevisionList();
+
+// Check if actions column should be displayed
+const hasActionsColumn = computed(() => {
+  return tableColumns.value.some(col => col.key === 'actions');
+});
 
 // Initialize data on mount
 onMounted(() => {

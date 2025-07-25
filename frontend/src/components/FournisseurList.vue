@@ -48,6 +48,18 @@ const {
   selectedSiteForEdit,
   selectedFournisseurIdForSiteEdit,
   
+  // Role-based configuration
+  allowRowActions,
+  
+  // Permissions
+  canCreateFournisseur,
+  canEditFournisseur,
+  canDeactivateFournisseur,
+  canReactivateFournisseur,
+  canCreateSites,
+  canEditSite,
+  canDeleteSite,
+  
   // Methods
   handlePageChange,
   handlePageSizeChangeWithRefresh,
@@ -267,8 +279,9 @@ const handleViewDocument = (document) => {
               </div>
             </div>
           </div>
-          <div class="mt-3 flex justify-end gap-x-2">
+          <div v-if="allowRowActions" class="mt-3 flex justify-end gap-x-2">
             <button 
+              v-if="canEditFournisseur(fournisseur)"
               @click="editFournisseur(fournisseur)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Modifier"
@@ -276,7 +289,7 @@ const handleViewDocument = (document) => {
               <PencilSquareIcon class="h-5 w-5" />
             </button>
             <button 
-              v-if="fournisseur.isActive"
+              v-if="fournisseur.isActive && canDeactivateFournisseur(fournisseur)"
               @click="handleSoftDeleteFournisseur(fournisseur._id)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Désactiver"
@@ -284,7 +297,7 @@ const handleViewDocument = (document) => {
               <PauseIcon class="h-5 w-5" />
             </button>
             <button 
-              v-else
+              v-else-if="!fournisseur.isActive && canReactivateFournisseur(fournisseur)"
               @click="handleReactivateFournisseur(fournisseur._id)" 
               class="p-2 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
               title="Réactiver"
@@ -377,7 +390,7 @@ const handleViewDocument = (document) => {
                   <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">SIRET / Adresse</th>
                   <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Documents / Contact</th>
                   <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut</th>
-                  <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                  <th v-if="allowRowActions" scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
                     <span class="sr-only">Actions</span>
                   </th>
                 </tr>
@@ -439,9 +452,10 @@ const handleViewDocument = (document) => {
                         Inactif
                       </span>
                     </td>
-                    <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                    <td v-if="allowRowActions" class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                       <div class="flex items-center justify-end gap-x-2">
                         <button 
+                          v-if="canCreateSites(parentItem)"
                           @click="openSiteCreatePanel(parentItem)"
                           class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                           title="Ajouter un site"
@@ -449,6 +463,7 @@ const handleViewDocument = (document) => {
                           <PlusIcon class="h-5 w-5" />
                         </button>
                         <button 
+                          v-if="canEditFournisseur(parentItem)"
                           @click="editFournisseur(parentItem)" 
                           class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                           title="Modifier"
@@ -456,7 +471,7 @@ const handleViewDocument = (document) => {
                           <PencilSquareIcon class="h-5 w-5" />
                         </button>
                         <button 
-                          v-if="parentItem.isActive"
+                          v-if="parentItem.isActive && canDeactivateFournisseur(parentItem)"
                           @click="handleSoftDeleteFournisseur(parentItem._id)" 
                           class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                           title="Désactiver"
@@ -464,7 +479,7 @@ const handleViewDocument = (document) => {
                           <PauseIcon class="h-5 w-5" />
                         </button>
                         <button 
-                          v-else
+                          v-else-if="!parentItem.isActive && canReactivateFournisseur(parentItem)"
                           @click="handleReactivateFournisseur(parentItem._id)" 
                           class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                           title="Réactiver"
@@ -513,9 +528,10 @@ const handleViewDocument = (document) => {
                           Inactif
                         </span>
                       </td>
-                      <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                      <td v-if="allowRowActions" class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <div class="flex items-center justify-end gap-x-2">
                           <button 
+                            v-if="canEditSite(childItem)"
                             @click="editSite(childItem, parentItem._id)"
                             class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                             title="Modifier"
@@ -523,7 +539,7 @@ const handleViewDocument = (document) => {
                             <PencilSquareIcon class="h-5 w-5" />
                           </button>
                           <button 
-                            v-if="childItem.isActive !== false"
+                            v-if="childItem.isActive !== false && canDeleteSite(childItem)"
                             @click="handleDeactivateSite(parentItem._id, childItem._id)"
                             class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                             title="Désactiver"
@@ -531,7 +547,7 @@ const handleViewDocument = (document) => {
                             <PauseIcon class="h-5 w-5" />
                           </button>
                           <button 
-                            v-else
+                            v-else-if="childItem.isActive === false && canDeleteSite(childItem)"
                             @click="handleReactivateSite(parentItem._id, childItem._id)"
                             class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
                             title="Réactiver"

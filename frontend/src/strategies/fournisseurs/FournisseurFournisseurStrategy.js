@@ -72,7 +72,7 @@ export class FournisseurFournisseurStrategy extends BaseFournisseurManagementStr
       {
         key: 'specialisationContact',
         title: 'Spécialisations / Contact',
-        width: '30%',
+        width: '50%',
         render: (item, isParent) => {
           if (isParent) {
             return this.formatSpecialisations(item.specialisations);
@@ -80,16 +80,8 @@ export class FournisseurFournisseurStrategy extends BaseFournisseurManagementStr
             return this.formatContact(item);
           }
         }
-      },
-      {
-        key: 'actions',
-        title: 'Actions',
-        width: '20%',
-        render: (item, isParent) => ({
-          type: 'actions',
-          actions: this.getAvailableActions(item, isParent)
-        })
       }
+      // No actions column for fournisseur self-view
     ];
   }
 
@@ -105,8 +97,8 @@ export class FournisseurFournisseurStrategy extends BaseFournisseurManagementStr
       defaultPageSize: 10,
       enableExport: false,
       showStatusColumn: false,
-      allowRowActions: true,
-      showSiteManagement: true,
+      allowRowActions: false,
+      showSiteManagement: false,
       alwaysExpanded: true, // Always show sites for own management
       defaultExpanded: true
     };
@@ -119,17 +111,17 @@ export class FournisseurFournisseurStrategy extends BaseFournisseurManagementStr
     return {
       ...super.getPermissions(),
       canCreate: false, // Cannot create new suppliers
-      canEdit: true, // Can edit own data
+      canEdit: false, // Cannot edit through this interface
       canDelete: false,
       canActivate: false,
       canDeactivate: false,
       canExport: false,
       canViewAll: false, // Only own data
       canViewDetails: true,
-      canManageSites: true, // Can manage own sites
-      canCreateSites: true, // Can add own sites
-      canEditSites: true, // Can edit own sites
-      canDeleteSites: true // Can delete own sites
+      canManageSites: false, // Cannot manage sites through this interface
+      canCreateSites: false, // Cannot add sites through this interface
+      canEditSites: false, // Cannot edit sites through this interface
+      canDeleteSites: false // Cannot delete sites through this interface
     };
   }
 

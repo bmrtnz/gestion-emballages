@@ -62,7 +62,7 @@ export class StationGestionnaireStrategy extends BaseStationManagementStrategy {
       },
       {
         key: 'actions',
-        title: 'Actions',
+        title: '',
         width: '10%',
         render: (station) => ({
           type: 'actions',

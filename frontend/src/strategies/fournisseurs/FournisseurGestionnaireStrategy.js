@@ -93,7 +93,7 @@ export class FournisseurGestionnaireStrategy extends BaseFournisseurManagementSt
       },
       {
         key: 'actions',
-        title: 'Actions',
+        title: '',
         width: '10%',
         render: (item, isParent) => ({
           type: 'actions',

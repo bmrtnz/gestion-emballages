@@ -15,6 +15,7 @@ import PrevisionPage from "../views/PrevisionPage.vue";
 import SitePrevisionViewPage from "../views/SitePrevisionViewPage.vue";
 import SupplierPrevisionViewPage from "../views/SupplierPrevisionViewPage.vue";
 import WeeklyPrevisionEditPage from "../views/WeeklyPrevisionEditPage.vue";
+import WeeklyStockEditPage from "../views/WeeklyStockEditPage.vue";
 import ContratPage from "../views/ContratPage.vue";
 import StationPage from "../views/StationPage.vue";
 import UserPage from "../views/UserPage.vue";
@@ -81,6 +82,12 @@ const routes = [
     path: "/previsions/:id/articles/:articlePrevisionId/edit",
     component: WeeklyPrevisionEditPage,
     meta: { title: "Édition des Prévisions Hebdomadaires" },
+  },
+  {
+    path: "/stocks/:siteId/:articleId/:campagne/edit",
+    name: "WeeklyStockEdit",
+    component: WeeklyStockEditPage,
+    meta: { title: "Édition des Stocks Hebdomadaires" },
   },
   {
     path: "/contrats",

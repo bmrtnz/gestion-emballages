@@ -4,6 +4,7 @@ import { useFournisseurData } from './useFournisseurData';
 import { useFournisseurFilters } from './useFournisseurFilters';
 import { useFournisseurTreeState } from './useFournisseurTreeState';
 import { useFournisseurUI } from './useFournisseurUI';
+import { useFournisseurRoleStrategy } from './useFournisseurRoleStrategy';
 import { usePerformanceOptimization } from '../usePerformanceOptimization';
 
 /**
@@ -78,6 +79,30 @@ export function useFournisseurList() {
     handleSiteUpdated,
     closeAllPanels
   } = useFournisseurUI();
+  
+  const {
+    // Table configuration
+    getTableColumns,
+    
+    // UI behavior
+    showCreateButton,
+    allowRowActions,
+    showSiteManagement,
+    
+    // Permissions
+    canCreateFournisseur,
+    canEditFournisseur,
+    canDeactivateFournisseur,
+    canReactivateFournisseur,
+    canManageSites,
+    canCreateSites,
+    canEditSite,
+    canDeleteSite,
+    
+    // Actions
+    getAvailableActions,
+    canPerformAction
+  } = useFournisseurRoleStrategy();
   
   /**
    * Transform fournisseurs to table data structure
@@ -290,6 +315,26 @@ export function useFournisseurList() {
     selectedFournisseurForEdit,
     selectedSiteForEdit,
     selectedFournisseurIdForSiteEdit,
+    
+    // Role-based configuration
+    getTableColumns,
+    showCreateButton,
+    allowRowActions,
+    showSiteManagement,
+    
+    // Permissions
+    canCreateFournisseur,
+    canEditFournisseur,
+    canDeactivateFournisseur,
+    canReactivateFournisseur,
+    canManageSites,
+    canCreateSites,
+    canEditSite,
+    canDeleteSite,
+    
+    // Actions
+    getAvailableActions,
+    canPerformAction,
     
     // Methods
     handlePageChange,

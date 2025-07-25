@@ -1,7 +1,22 @@
 <script setup>
+import { ref, computed, onMounted } from 'vue';
 import ArticleList from "./ArticleList.vue";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/vue/20/solid";
+import { 
+  ClockIcon, 
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
+  CircleStackIcon
+} from "@heroicons/vue/24/outline";
 import Button from "./ui/Button.vue";
+import { useAuthStore } from '../stores/authStore';
+import api from '../api/axios';
+
+const authStore = useAuthStore();
+
+// Stock update status for suppliers
+const stockUpdateStatus = ref(null);
+const isLoadingStockStatus = ref(false);
 
 const stats = [
     {
@@ -21,6 +36,116 @@ const stats = [
         tags: ["1,272 iPhone 15", "675 Macbook"],
     },
 ];
+
+// Check if user is a supplier
+const isSupplier = computed(() => {
+  return authStore.userRole === 'Fournisseur';
+});
+
+// Fetch stock update status for suppliers
+const fetchStockUpdateStatus = async () => {
+  if (!isSupplier.value) return;
+  
+  try {
+    isLoadingStockStatus.value = true;
+    const fournisseurId = authStore.user.entiteId;
+    
+    // Get the latest stock update date for this supplier
+    const response = await api.get(`/stocks-fournisseurs/status/${fournisseurId}`);
+    console.log('[DEBUG] API Response:', response.data);
+    stockUpdateStatus.value = response.data.data; // Extract the data from the response
+  } catch (error) {
+    console.error('Error fetching stock status:', error);
+    // Set default status if API fails
+    stockUpdateStatus.value = {
+      lastUpdateDate: null,
+      daysSinceUpdate: null,
+      status: 'unknown'
+    };
+  } finally {
+    isLoadingStockStatus.value = false;
+  }
+};
+
+// Computed properties for stock status display
+const stockStatusConfig = computed(() => {
+  if (!stockUpdateStatus.value) return null;
+  
+  const { daysSinceUpdate, lastUpdateDate, status } = stockUpdateStatus.value;
+  
+  console.log('[DEBUG Frontend] Stock status data:', { daysSinceUpdate, status, lastUpdateDate });
+  
+  // Use the backend's status determination directly
+  switch (status) {
+    case 'good':
+      return {
+        status: 'good',
+        color: 'green',
+        bgColor: 'bg-green-50',
+        textColor: 'text-green-700',
+        borderColor: 'border-green-200',
+        icon: CheckCircleIcon,
+        title: 'Stocks à jour',
+        message: daysSinceUpdate !== null ? 
+          `Mis à jour il y a ${daysSinceUpdate} jour${daysSinceUpdate > 1 ? 's' : ''}` :
+          'Stocks récemment mis à jour',
+        actionText: 'Voir les stocks'
+      };
+      
+    case 'warning':
+      return {
+        status: 'warning',
+        color: 'amber',
+        bgColor: 'bg-amber-50',
+        textColor: 'text-amber-700',
+        borderColor: 'border-amber-200',
+        icon: ClockIcon,
+        title: 'Mise à jour recommandée',
+        message: daysSinceUpdate !== null ? 
+          `Dernière mise à jour il y a ${daysSinceUpdate} jours` :
+          'Mise à jour recommandée',
+        actionText: 'Mettre à jour'
+      };
+      
+    case 'critical':
+      return {
+        status: 'critical',
+        color: 'red',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+        borderColor: 'border-red-200',
+        icon: ExclamationTriangleIcon,
+        title: 'Mise à jour critique',
+        message: daysSinceUpdate !== null ? 
+          `Dernière mise à jour il y a ${daysSinceUpdate} jours` :
+          'Mise à jour urgente requise',
+        actionText: 'Mettre à jour maintenant'
+      };
+      
+    case 'never':
+    default:
+      return {
+        status: 'never',
+        color: 'red',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+        borderColor: 'border-red-200',
+        icon: ExclamationTriangleIcon,
+        title: 'Aucune mise à jour',
+        message: 'Vos stocks n\'ont jamais été mis à jour',
+        actionText: 'Mettre à jour maintenant'
+      };
+  }
+});
+
+const navigateToStocks = () => {
+  // Navigate to stock management page
+  window.location.href = '/stocks';
+};
+
+onMounted(() => {
+  fetchStockUpdateStatus();
+});
 </script>
 
 <template>
@@ -32,8 +157,50 @@ const stats = [
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <!-- December Report Card -->
-            <div class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center text-center">
+            <!-- Stock Status Card (Supplier Only) -->
+            <div v-if="isSupplier" class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 border-l-4" :class="[stockStatusConfig?.borderColor || 'border-gray-200']">
+                <!-- Loading State -->
+                <div v-if="isLoadingStockStatus" class="flex flex-col items-center text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
+                    <p class="text-sm text-gray-500">Vérification du statut des stocks...</p>
+                </div>
+                
+                <!-- Stock Status Content -->
+                <div v-else-if="stockStatusConfig" class="flex flex-col">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 mr-3" :class="[stockStatusConfig.bgColor, 'p-2 rounded-full']">
+                            <component :is="stockStatusConfig.icon" class="h-6 w-6" :class="stockStatusConfig.textColor" />
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900">{{ stockStatusConfig.title }}</h3>
+                            <p :class="[stockStatusConfig.textColor, 'text-sm font-medium']">
+                                Statut des stocks
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6" :class="[stockStatusConfig.bgColor, 'p-4 rounded-lg']">
+                        <div class="flex items-center">
+                            <CircleStackIcon class="h-5 w-5 mr-2" :class="stockStatusConfig.textColor" />
+                            <p :class="[stockStatusConfig.textColor, 'text-sm']">
+                                {{ stockStatusConfig.message }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <Button 
+                        variant="primary" 
+                        size="md" 
+                        @click="navigateToStocks"
+                        class="w-full"
+                    >
+                        {{ stockStatusConfig.actionText }}
+                    </Button>
+                </div>
+            </div>
+
+            <!-- December Report Card (Non-Supplier) -->
+            <div v-if="!isSupplier" class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center text-center">
                 <div class="relative w-24 h-24 mb-4">
                     <div class="absolute inset-0 bg-primary-100 rounded-full opacity-50"></div>
                     <div class="absolute inset-2 bg-primary-200 rounded-full opacity-60"></div>

@@ -8,7 +8,9 @@
         "start": "node server.js",
         "data:import": "node data/seeder.js",
         "data:destroy": "node data/seeder.js -d",
-        "docs:generate": "jsdoc -c jsdoc.json"
+        "docs:generate": "jsdoc -c jsdoc.json",
+        "fix:duplicates:preview": "node scripts/preview-duplicate-designations.js",
+        "fix:duplicates:apply": "node scripts/fix-duplicate-designations.js"
     },
     "keywords": [],
     "author": "",

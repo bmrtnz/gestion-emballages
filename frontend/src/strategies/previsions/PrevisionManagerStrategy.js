@@ -49,7 +49,7 @@ export class PrevisionManagerStrategy extends PrevisionRoleStrategy {
       },
       { 
         key: 'actions', 
-        label: 'Actions', 
+        label: '', 
         sortable: false,
         width: '15%',
         align: 'right'

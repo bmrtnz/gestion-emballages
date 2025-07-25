@@ -135,7 +135,7 @@ router.get("/distinct-categories", protect, getDistinctCategories);
  *                 count:
  *                   type: number
  */
-router.get("/by-supplier/:supplierId", protect, getArticlesBySupplierId);
+router.get("/by-supplier/:supplierId", protect, paginationMiddleware, getArticlesBySupplierId);
 
 router
     .route("/")

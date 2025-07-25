@@ -110,13 +110,19 @@ exports.getDistinctCategories = async (req, res, next) => {
         // Filter by supplier if user is a Fournisseur
         if (req.user.role === 'Fournisseur') {
             query['fournisseurs.fournisseurId'] = req.user.entiteId;
-        }
-        
-        // Gestion du filtre de statut
-        if (status === 'active') {
-            query.isActive = true;
-        } else if (status === 'inactive') {
-            query.isActive = false;
+            // For Fournisseur users, show only active articles by default
+            if (!status || status === 'active') {
+                query.isActive = true;
+            } else if (status === 'inactive') {
+                query.isActive = false;
+            }
+        } else {
+            // For non-Fournisseur users, apply standard status filtering
+            if (status === 'active') {
+                query.isActive = true;
+            } else if (status === 'inactive') {
+                query.isActive = false;
+            }
         }
         
         // Ajout de la recherche textuelle
@@ -227,15 +233,21 @@ exports.getArticles = async (req, res, next) => {
         // Filter by supplier if user is a Fournisseur
         if (req.user.role === 'Fournisseur') {
             query['fournisseurs.fournisseurId'] = req.user.entiteId;
+            // For Fournisseur users, show only active articles by default
+            if (!filters.status || filters.status === 'active') {
+                query.isActive = true;
+            } else if (filters.status === 'inactive') {
+                query.isActive = false;
+            }
+        } else {
+            // For non-Fournisseur users, apply standard status filtering
+            if (filters.status === 'active') {
+                query.isActive = true;
+            } else if (filters.status === 'inactive') {
+                query.isActive = false;
+            }
+            // Si status est vide ou 'tout', on ne filtre pas sur isActive (on affiche tout)
         }
-        
-        // Gestion du filtre de statut
-        if (filters.status === 'active') {
-            query.isActive = true;
-        } else if (filters.status === 'inactive') {
-            query.isActive = false;
-        }
-        // Si status est vide ou 'tout', on ne filtre pas sur isActive (on affiche tout)
         
         // Ajout de la recherche textuelle
         if (search) {
@@ -310,13 +322,23 @@ exports.getArticles = async (req, res, next) => {
             // Get available suppliers for current filter context (excluding supplier filter)
             let supplierQuery = {};
             
-            // Apply status filter
-            if (filters.status === 'active') {
-                supplierQuery.isActive = true;
-            } else if (filters.status === 'inactive') {
-                supplierQuery.isActive = false;
+            // Apply status filter consistent with main query logic
+            if (req.user.role === 'Fournisseur') {
+                // For Fournisseur users, show only active articles by default
+                if (!filters.status || filters.status === 'active') {
+                    supplierQuery.isActive = true;
+                } else if (filters.status === 'inactive') {
+                    supplierQuery.isActive = false;
+                }
+            } else {
+                // For non-Fournisseur users, apply standard status filtering
+                if (filters.status === 'active') {
+                    supplierQuery.isActive = true;
+                } else if (filters.status === 'inactive') {
+                    supplierQuery.isActive = false;
+                }
+                // If status is empty or 'tout', don't filter on isActive (show all)
             }
-            // If status is empty or 'tout', don't filter on isActive (show all)
             
             // Apply search filter
             if (search) {
@@ -383,13 +405,23 @@ exports.getArticles = async (req, res, next) => {
         // Get available suppliers for current filter context (excluding supplier filter)
         let supplierQuery = {};
         
-        // Apply status filter
-        if (filters.status === 'active') {
-            supplierQuery.isActive = true;
-        } else if (filters.status === 'inactive') {
-            supplierQuery.isActive = false;
+        // Apply status filter consistent with main query logic
+        if (req.user.role === 'Fournisseur') {
+            // For Fournisseur users, show only active articles by default
+            if (!filters.status || filters.status === 'active') {
+                supplierQuery.isActive = true;
+            } else if (filters.status === 'inactive') {
+                supplierQuery.isActive = false;
+            }
+        } else {
+            // For non-Fournisseur users, apply standard status filtering
+            if (filters.status === 'active') {
+                supplierQuery.isActive = true;
+            } else if (filters.status === 'inactive') {
+                supplierQuery.isActive = false;
+            }
+            // If status is empty or 'tout', don't filter on isActive (show all)
         }
-        // If status is empty or 'tout', don't filter on isActive (show all)
         
         // Apply search filter
         if (search) {
@@ -910,12 +942,13 @@ exports.deleteFournisseurImage = async (req, res, next) => {
 };
 
 /**
- * Get articles by supplier ID - specifically for forecast creation
+ * Get articles by supplier ID with pagination support
  * @function getArticlesBySupplierId
  * @memberof module:controllers/articleController
  * @param {Express.Request} req - L'objet de requête Express
  * @param {Object} req.params - Paramètres de la route
  * @param {string} req.params.supplierId - ID du fournisseur
+ * @param {Object} req.pagination - Paramètres de pagination
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
  * @returns {Promise<void>} Renvoie la liste des articles actifs liés à ce fournisseur
@@ -924,12 +957,43 @@ exports.deleteFournisseurImage = async (req, res, next) => {
 exports.getArticlesBySupplierId = async (req, res, next) => {
     try {
         const { supplierId } = req.params;
+        const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;
         
-        // Find all active articles where this supplier is linked
-        const articles = await Article.find({
-            isActive: true,
+        // Build base query - show only active articles by default for suppliers
+        let query = {
             'fournisseurs.fournisseurId': supplierId
-        }).select('codeArticle designation categorie isActive fournisseurs');
+        };
+        
+        // Apply status filter - default to active for this endpoint
+        if (!filters.status || filters.status === 'active') {
+            query.isActive = true;
+        } else if (filters.status === 'inactive') {
+            query.isActive = false;
+        }
+        
+        // Apply search across relevant fields
+        if (search) {
+            query.$or = [
+                { codeArticle: { $regex: search, $options: 'i' } },
+                { designation: { $regex: search, $options: 'i' } },
+                { categorie: { $regex: search, $options: 'i' } }
+            ];
+        }
+        
+        // Apply category filter if provided
+        if (filters.categorie) {
+            query.categorie = filters.categorie;
+        }
+        
+        // Find articles with pagination
+        const articles = await Article.find(query)
+            .select('codeArticle designation categorie isActive fournisseurs')
+            .sort({ [sortBy]: sortOrder })
+            .skip(skip)
+            .limit(limit);
+        
+        // Get total count for pagination
+        const totalCount = await Article.countDocuments(query);
         
         // Filter to only include supplier info for the requested supplier
         const filteredArticles = articles.map(article => {
@@ -940,11 +1004,8 @@ exports.getArticlesBySupplierId = async (req, res, next) => {
             return articleObj;
         });
         
-        res.json({
-            success: true,
-            data: filteredArticles,
-            count: filteredArticles.length
-        });
+        // Use standard pagination response format
+        res.json(req.pagination.buildResponse(filteredArticles, totalCount));
         
     } catch (error) {
         next(error);

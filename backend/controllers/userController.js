@@ -181,9 +181,27 @@ exports.loginUser = async (req, res, next) => {
  */
 exports.getUserProfile = async (req, res, next) => {
     try {
-    // Les informations de l'utilisateur sont déjà attachées à l'objet `req`
-    // par le middleware `protect`. Il suffit de les renvoyer.
-    res.json(req.user);
+    // Start with the user data from the protect middleware
+    let userData = req.user.toObject();
+    
+    // For supplier and station users, populate entity details
+    if (userData.entiteId && (userData.role === 'Fournisseur' || userData.role === 'Station')) {
+        let EntityModel;
+        if (userData.role === 'Fournisseur') {
+            EntityModel = require('../models/fournisseurModel');
+        } else if (userData.role === 'Station') {
+            EntityModel = require('../models/stationModel');
+        }
+        
+        if (EntityModel) {
+            const entity = await EntityModel.findById(userData.entiteId);
+            if (entity) {
+                userData.entiteDetails = entity.toObject();
+            }
+        }
+    }
+    
+    res.json(userData);
     } catch (error) {
         next(error);
     }

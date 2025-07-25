@@ -23,7 +23,8 @@
       "Bash(npx vue-tsc:*)",
       "Bash(mkdir:*)",
       "Bash(grep:*)",
-      "Bash(docker-compose:*)"
+      "Bash(docker-compose:*)",
+      "Bash(tail:*)"
     ],
     "deny": []
   }

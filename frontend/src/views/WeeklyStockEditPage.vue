@@ -4,17 +4,17 @@
     <div class="sm:flex sm:items-center mb-8">
       <div class="sm:flex-auto">
         <h1 class="text-3xl font-bold text-gray-900">
-          <span v-if="prevision && articlePrevision">
-            Prévisions {{ prevision.campagne }}
+          <span v-if="stockData && selectedSite && selectedArticle">
+            Stock {{ currentCampaign }}
           </span>
           <span v-else>
-            Prévisions
+            Stock hebdomadaire
           </span>
         </h1>
-        <div v-if="prevision && articlePrevision" class="mt-1 text-xl font-medium text-gray-700">
-          {{ prevision.fournisseurId?.nom }} ({{ getSiteName() }}) - {{ getArticleInfo().designation }}
+        <div v-if="stockData && selectedSite && selectedArticle" class="mt-1 text-xl font-medium text-gray-700">
+          {{ selectedSite.nomSite }} - {{ selectedArticle.designation }}
         </div>
-        <p class="mt-1 text-sm text-gray-500">Édition des prévisions hebdomadaires.</p>
+        <p class="mt-1 text-sm text-gray-500">Édition des stocks hebdomadaires.</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <div class="flex space-x-3">
@@ -56,7 +56,7 @@
     </div>
 
     <!-- Main Content Card -->
-    <div v-else-if="prevision && articlePrevision" class="bg-white rounded-2xl shadow-soft p-6">
+    <div v-else-if="selectedSite && selectedArticle" class="bg-white rounded-2xl shadow-soft p-6">
       <!-- Quick Actions -->
       <div class="bg-gray-50 rounded-lg p-6 mb-6">
         <div class="flex items-center justify-between mb-4">
@@ -149,7 +149,7 @@
                   S{{ week.numero }}
                 </label>
                 <input 
-                  v-model.number="getWeekData(week.numero).quantitePrevue"
+                  v-model.number="getWeekData(week.numero).quantiteStock"
                   type="number" 
                   min="0"
                   class="flex-1 px-2 py-1 border border-gray-300 rounded text-xs focus:ring-1 focus:ring-primary-500 focus:border-transparent text-center"
@@ -212,10 +212,12 @@ import { useRoute, useRouter } from 'vue-router';
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 import Button from '../components/ui/Button.vue';
 import ConfirmDialog from '../components/ui/ConfirmDialog.vue';
-import previsionsAPI from '../api/previsions';
+import stockFournisseurAPI from '../api/stockFournisseur';
+import articlesAPI from '../api/articles';
+import { useAuthStore } from '../stores/authStore';
 
 export default {
-  name: 'WeeklyPrevisionEditPage',
+  name: 'WeeklyStockEditPage',
   components: {
     Button,
     ConfirmDialog,
@@ -224,11 +226,15 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const authStore = useAuthStore();
 
     // Data
-    const prevision = ref(null);
-    const articlePrevision = ref(null);
-    const originalSemaines = ref([]);
+    const stockData = ref(null);
+    const selectedSite = ref(null);
+    const selectedArticle = ref(null);
+    const weeklyStocks = ref([]);
+    const originalWeeklyStocks = ref([]);
+    const currentCampaign = ref('25-26'); // Default campaign
     const isLoading = ref(false);
     const isSaving = ref(false);
     const error = ref(null);
@@ -250,10 +256,10 @@ export default {
 
     // Quarter options for bulk apply (computed based on campaign)
     const quarterOptions = computed(() => {
-      if (!prevision.value?.campagne) return [];
+      if (!currentCampaign.value) return [];
       
       // Parse campaign string (e.g., "24-25" -> 2024, 2025)
-      const campaignParts = prevision.value.campagne.split('-');
+      const campaignParts = currentCampaign.value.split('-');
       if (campaignParts.length !== 2) return [];
       
       const firstYear = parseInt(`20${campaignParts[0]}`);
@@ -269,64 +275,95 @@ export default {
 
     // Computed
     const currentTotal = computed(() => {
-      if (!articlePrevision.value?.semaines) return 0;
-      return articlePrevision.value.semaines.reduce((sum, semaine) => sum + (semaine.quantitePrevue || 0), 0);
+      if (!weeklyStocks.value) return 0;
+      return weeklyStocks.value.reduce((sum, week) => sum + (week.quantiteStock || 0), 0);
     });
 
     // Methods
-    const getSiteName = () => {
-      if (!prevision.value?.fournisseurId?.sites || !prevision.value?.siteId) return 'N/A';
-      const site = prevision.value.fournisseurId.sites.find(s => s._id === prevision.value.siteId);
-      return site?.nomSite || 'N/A';
-    };
-
-    const getArticleInfo = () => {
-      return {
-        codeArticle: articlePrevision.value?.articleId?.codeArticle || 'N/A',
-        designation: articlePrevision.value?.articleId?.designation || 'Article non trouvé'
-      };
-    };
-
-    const fetchData = async () => {
+    const initializeData = async () => {
       try {
         isLoading.value = true;
         error.value = null;
 
-        const response = await previsionsAPI.getPrevisionById(route.params.id);
-        prevision.value = response;
-
-        // Find the specific article prevision
-        const articlePrev = response.articlesPrevisions?.find(
-          ap => ap._id === route.params.articlePrevisionId
-        );
-
-        if (!articlePrev) {
-          throw new Error('Prévision d\'article non trouvée');
-        }
-
-        articlePrevision.value = articlePrev;
+        // Get route params
+        const { siteId, articleId, campagne } = route.params;
         
-        // Initialize weeks if they don't exist
-        if (!articlePrevision.value.semaines) {
-          articlePrevision.value.semaines = [];
+        if (campagne) {
+          currentCampaign.value = campagne;
         }
 
-        // Ensure all 52 weeks exist
+        // Get site info from user's entity details
+        if (authStore.user?.entiteDetails?.sites) {
+          selectedSite.value = authStore.user.entiteDetails.sites.find(s => s._id === siteId);
+        }
+
+        if (!selectedSite.value) {
+          throw new Error('Site non trouvé');
+        }
+
+        // Get article info from API
+        try {
+          const articleResponse = await articlesAPI.getArticleById(articleId);
+          selectedArticle.value = articleResponse;
+        } catch (articleError) {
+          console.error('Error fetching article:', articleError);
+          selectedArticle.value = {
+            _id: articleId,
+            designation: 'Article non trouvé',
+            codeArticle: 'N/A'
+          };
+        }
+
+        // Try to get existing stock data
+        try {
+          const stockResponse = await stockFournisseurAPI.getSiteStock(
+            authStore.user.entiteId,
+            siteId
+          );
+          
+          // Find stock for this campaign
+          const campaignStock = stockResponse.stocks?.find(s => s.campagne === currentCampaign.value);
+          if (campaignStock) {
+            stockData.value = campaignStock;
+            // Find weekly stocks for this article
+            const articleWeeklyStocks = [];
+            campaignStock.weeklyStocks?.forEach(weekStock => {
+              const articleStock = weekStock.articles?.find(a => a.articleId === articleId);
+              if (articleStock) {
+                articleWeeklyStocks.push({
+                  numeroSemaine: weekStock.numeroSemaine,
+                  quantiteStock: articleStock.quantiteStock
+                });
+              }
+            });
+            weeklyStocks.value = articleWeeklyStocks;
+          }
+        } catch (stockError) {
+          console.warn('No existing stock found, will create new:', stockError);
+          stockData.value = null;
+          weeklyStocks.value = [];
+        }
+
+        // Initialize all 52 weeks if not exist
+        if (!weeklyStocks.value) {
+          weeklyStocks.value = [];
+        }
+
         for (let i = 1; i <= 52; i++) {
-          const existingWeek = articlePrevision.value.semaines.find(s => s.numeroSemaine === i);
+          const existingWeek = weeklyStocks.value.find(w => w.numeroSemaine === i);
           if (!existingWeek) {
-            articlePrevision.value.semaines.push({
+            weeklyStocks.value.push({
               numeroSemaine: i,
-              quantitePrevue: 0
+              quantiteStock: 0
             });
           }
         }
 
         // Sort weeks
-        articlePrevision.value.semaines.sort((a, b) => a.numeroSemaine - b.numeroSemaine);
+        weeklyStocks.value.sort((a, b) => a.numeroSemaine - b.numeroSemaine);
 
         // Store original data for change detection
-        originalSemaines.value = JSON.parse(JSON.stringify(articlePrevision.value.semaines));
+        originalWeeklyStocks.value = JSON.parse(JSON.stringify(weeklyStocks.value));
 
       } catch (err) {
         error.value = err.response?.data?.message || err.message || 'Erreur lors du chargement';
@@ -337,36 +374,31 @@ export default {
     };
 
     const getQuarterWeeks = (range) => {
-      if (!articlePrevision.value?.semaines) return [];
+      if (!weeklyStocks.value) return [];
       
       const [start, end] = range;
-      return articlePrevision.value.semaines
-        .filter(semaine => semaine.numeroSemaine >= start && semaine.numeroSemaine <= end)
-        .map(semaine => ({
-          numero: semaine.numeroSemaine,
-          quantite: semaine.quantitePrevue || 0
+      return weeklyStocks.value
+        .filter(week => week.numeroSemaine >= start && week.numeroSemaine <= end)
+        .map(week => ({
+          numero: week.numeroSemaine,
+          quantite: week.quantiteStock || 0
         }))
         .sort((a, b) => a.numero - b.numero);
     };
 
     const getWeekData = (weekNumber) => {
-      return articlePrevision.value.semaines.find(s => s.numeroSemaine === weekNumber) || { quantitePrevue: 0 };
+      return weeklyStocks.value.find(w => w.numeroSemaine === weekNumber) || { quantiteStock: 0 };
     };
 
     const getQuarterTotal = (range) => {
       return getQuarterWeeks(range).reduce((sum, week) => sum + (week.quantite || 0), 0);
     };
 
-    const getWeekDateRange = (weekNumber) => {
-      // This is a simplified calculation - you might want to implement proper date calculation
-      return `S${weekNumber}`;
-    };
-
     const hasWeekChanged = (weekNumber) => {
-      if (!originalSemaines.value) return false;
-      const original = originalSemaines.value.find(s => s.numeroSemaine === weekNumber);
-      const current = articlePrevision.value.semaines.find(s => s.numeroSemaine === weekNumber);
-      return (original?.quantitePrevue || 0) !== (current?.quantitePrevue || 0);
+      if (!originalWeeklyStocks.value) return false;
+      const original = originalWeeklyStocks.value.find(w => w.numeroSemaine === weekNumber);
+      const current = weeklyStocks.value.find(w => w.numeroSemaine === weekNumber);
+      return (original?.quantiteStock || 0) !== (current?.quantiteStock || 0);
     };
 
     const markAsChanged = () => {
@@ -374,16 +406,16 @@ export default {
     };
 
     const setAllWeeks = (value) => {
-      if (!articlePrevision.value?.semaines) return;
+      if (!weeklyStocks.value) return;
       
-      articlePrevision.value.semaines.forEach(semaine => {
-        semaine.quantitePrevue = value || 0;
+      weeklyStocks.value.forEach(week => {
+        week.quantiteStock = value || 0;
       });
       markAsChanged();
     };
 
     const applyBulkValue = () => {
-      if (!articlePrevision.value?.semaines || (bulkValue.value !== 0 && !bulkValue.value)) return;
+      if (!weeklyStocks.value || (bulkValue.value !== 0 && !bulkValue.value)) return;
       
       if (bulkApplyTarget.value === 'all') {
         // Apply to all weeks
@@ -393,9 +425,9 @@ export default {
         const quarter = quarters.find(q => q.id === bulkApplyTarget.value);
         if (quarter) {
           const [start, end] = quarter.range;
-          articlePrevision.value.semaines.forEach(semaine => {
-            if (semaine.numeroSemaine >= start && semaine.numeroSemaine <= end) {
-              semaine.quantitePrevue = bulkValue.value;
+          weeklyStocks.value.forEach(week => {
+            if (week.numeroSemaine >= start && week.numeroSemaine <= end) {
+              week.quantiteStock = bulkValue.value;
             }
           });
           markAsChanged();
@@ -416,23 +448,44 @@ export default {
       showResetConfirm.value = false;
     };
 
-
     const handleSave = async () => {
       try {
         isSaving.value = true;
         error.value = null;
 
-        await previsionsAPI.updateArticlePrevision(
-          route.params.id,
-          route.params.articlePrevisionId,
-          { semaines: articlePrevision.value.semaines }
-        );
+        const { siteId, articleId } = route.params;
+        const fournisseurId = authStore.user.entiteId;
+
+        // Group weekly stocks by week number for API call
+        const weeklyUpdates = weeklyStocks.value.map(week => ({
+          numeroSemaine: week.numeroSemaine,
+          articles: [{
+            articleId: articleId,
+            quantiteStock: week.quantiteStock || 0
+          }]
+        }));
+
+        // Update each week that has changes
+        for (const weekUpdate of weeklyUpdates) {
+          if (weekUpdate.articles[0].quantiteStock > 0 || hasWeekChanged(weekUpdate.numeroSemaine)) {
+            await stockFournisseurAPI.updateWeeklyStock(
+              fournisseurId,
+              siteId,
+              articleId,
+              {
+                campagne: currentCampaign.value,
+                numeroSemaine: weekUpdate.numeroSemaine,
+                quantite: weekUpdate.articles[0].quantiteStock
+              }
+            );
+          }
+        }
 
         hasChanges.value = false;
-        originalSemaines.value = JSON.parse(JSON.stringify(articlePrevision.value.semaines));
+        originalWeeklyStocks.value = JSON.parse(JSON.stringify(weeklyStocks.value));
         
-        // Go back to the previsions list
-        router.push('/previsions');
+        // Go back to the stock list
+        router.push('/stocks');
         
       } catch (err) {
         error.value = err.response?.data?.message || 'Erreur lors de la sauvegarde';
@@ -446,12 +499,12 @@ export default {
       if (hasChanges.value) {
         showCancelConfirm.value = true;
       } else {
-        router.push('/previsions');
+        router.push('/stocks');
       }
     };
 
     const handleCancelConfirm = () => {
-      router.push('/previsions');
+      router.push('/stocks');
       showCancelConfirm.value = false;
     };
 
@@ -468,7 +521,7 @@ export default {
     };
 
     onMounted(() => {
-      fetchData();
+      initializeData();
       window.addEventListener('beforeunload', beforeUnloadHandler);
     });
 
@@ -477,8 +530,11 @@ export default {
     });
 
     return {
-      prevision,
-      articlePrevision,
+      stockData,
+      selectedSite,
+      selectedArticle,
+      weeklyStocks,
+      currentCampaign,
       isLoading,
       isSaving,
       error,
@@ -488,11 +544,8 @@ export default {
       quarters,
       quarterOptions,
       currentTotal,
-      getSiteName,
-      getArticleInfo,
       getQuarterWeeks,
       getQuarterTotal,
-      getWeekDateRange,
       getWeekData,
       hasWeekChanged,
       markAsChanged,
