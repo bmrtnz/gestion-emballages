@@ -24,7 +24,9 @@
       "Bash(mkdir:*)",
       "Bash(grep:*)",
       "Bash(docker-compose:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(touch:*)",
+      "Bash(timeout 8s npm start)"
     ],
     "deny": []
   }

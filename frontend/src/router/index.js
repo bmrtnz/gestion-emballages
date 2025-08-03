@@ -16,6 +16,10 @@ import SitePrevisionViewPage from "../views/SitePrevisionViewPage.vue";
 import SupplierPrevisionViewPage from "../views/SupplierPrevisionViewPage.vue";
 import WeeklyPrevisionEditPage from "../views/WeeklyPrevisionEditPage.vue";
 import WeeklyStockEditPage from "../views/WeeklyStockEditPage.vue";
+import SupplierStockPage from "../views/SupplierStockPage.vue";
+import StationStockPage from "../views/StationStockPage.vue";
+import StationStockDashboard from "../views/StationStockDashboard.vue";
+import SupplierStockDashboard from "../views/SupplierStockDashboard.vue";
 import ContratPage from "../views/ContratPage.vue";
 import StationPage from "../views/StationPage.vue";
 import UserPage from "../views/UserPage.vue";
@@ -90,6 +94,38 @@ const routes = [
     meta: { title: "Édition des Stocks Hebdomadaires" },
   },
   {
+    path: "/stocks/supplier",
+    component: SupplierStockPage,
+    meta: { 
+      title: "Stocks Fournisseur",
+      requiresRoles: ['Fournisseur']
+    },
+  },
+  {
+    path: "/stocks/station",
+    component: StationStockPage,
+    meta: { 
+      title: "Stocks Station",
+      requiresRoles: ['Station']
+    },
+  },
+  {
+    path: "/stocks/stations-dashboard",
+    component: StationStockDashboard,
+    meta: { 
+      title: "Tableau de Bord Stocks Stations",
+      requiresRoles: ['Gestionnaire', 'Manager']
+    },
+  },
+  {
+    path: "/stocks/suppliers-dashboard",
+    component: SupplierStockDashboard,
+    meta: { 
+      title: "Tableau de Bord Stocks Fournisseurs",
+      requiresRoles: ['Gestionnaire', 'Manager']
+    },
+  },
+  {
     path: "/contrats",
     component: ContratPage,
     meta: { title: "Contrats Cadre" },
@@ -123,6 +159,18 @@ router.beforeEach(async (to, from, next) => {
 
   if (requiresAuth && !authStore.isAuthenticated) {
     next("/login");
+  } else if (requiresAuth && to.meta?.requiresRoles) {
+    // Check role-based access
+    const userRole = authStore.user?.role;
+    const requiredRoles = to.meta.requiresRoles;
+    
+    if (!userRole || !requiredRoles.includes(userRole)) {
+      // Redirect to dashboard if user doesn't have required role
+      console.warn(`Access denied. User role: ${userRole}, Required roles: ${requiredRoles.join(', ')}`);
+      next("/dashboard");
+    } else {
+      next();
+    }
   } else {
     next();
   }

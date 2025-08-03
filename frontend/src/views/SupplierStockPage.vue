@@ -6,7 +6,8 @@ import {
   CalendarIcon,
   MagnifyingGlassIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  BuildingStorefrontIcon
 } from '@heroicons/vue/24/outline';
 
 // Components
@@ -233,7 +234,6 @@ const fetchSupplierData = async () => {
     const activeSites = supplierData.value?.sites?.filter(site => site.isActive !== false) || [];
     if (activeSites.length === 1 && !selectedSiteId.value) {
       selectedSiteId.value = activeSites[0]._id;
-      console.log('Auto-selected single site:', activeSites[0].nomSite);
     }
     
   } catch (err) {
@@ -243,7 +243,6 @@ const fetchSupplierData = async () => {
     const authSites = authStore.user?.entiteDetails?.sites?.filter(site => site.isActive !== false) || [];
     if (authSites.length === 1 && !selectedSiteId.value) {
       selectedSiteId.value = authSites[0]._id;
-      console.log('Auto-selected single site from auth store:', authSites[0].nomSite);
     }
   }
 };
@@ -278,7 +277,6 @@ const fetchSupplierArticles = async (resetPage = false) => {
     // Fetch paginated articles linked to this supplier
     const response = await articlesAPI.getArticlesBySupplier(fournisseurId, params);
     
-    console.log('Articles API response:', response); // Debug log to verify structure
     
     // Update articles and pagination info using the standardized pagination format
     availableArticles.value = response.data || [];
@@ -568,8 +566,19 @@ onMounted(async () => {
       </div>
     </div>
 
+    <!-- No Site Selected Card -->
+    <div v-if="!selectedSiteId" class="bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-soft p-8">
+      <div class="text-center">
+        <BuildingStorefrontIcon class="mx-auto h-12 w-12 text-amber-500 mb-4" />
+        <h3 class="text-lg font-medium text-amber-800 mb-2">Sélectionnez un site</h3>
+        <p class="text-amber-800 mb-6">
+          Veuillez sélectionner un site dans la liste déroulante ci-dessus pour gérer les stocks.
+        </p>
+      </div>
+    </div>
+
     <!-- Stock Entry Form -->
-    <div v-if="canShowForm && !isLoadingStock" class="bg-white rounded-2xl shadow-soft overflow-hidden">
+    <div v-else-if="canShowForm && !isLoadingStock" class="bg-white rounded-2xl shadow-soft overflow-hidden">
       <div class="px-6 py-4">
         <div class="flex flex-col gap-4">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

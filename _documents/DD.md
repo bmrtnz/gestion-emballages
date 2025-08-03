@@ -897,4 +897,38 @@ The Button component provides consistent interactive elements across the applica
 - **Testing Requirements**: Component testing standards
 - **Documentation Standards**: Inline code documentation
 
+---
+
+## 10. Recent Design Changes & Updates
+
+### 10.1 ArticlePage Filter Defaults Enhancement (Latest)
+**Date**: 2025-01-03  
+**Component**: Article List Filters  
+**Files Modified**: `frontend/src/composables/articles/useArticleFilters.js`
+
+**Design Change**: 
+- **Default Status Filter**: Changed from showing all articles to showing only active articles by default
+- **Filter Reset Behavior**: Clear filters now resets to active articles instead of all articles
+
+**UX Rationale**:
+- **Cognitive Load Reduction**: Users primarily work with active articles, removing need for manual filtering
+- **Workflow Efficiency**: Reduces clicks and time to access relevant content
+- **Data Quality**: Inactive articles are typically archive/legacy data, less relevant for daily operations
+- **Consistency**: Aligns with common enterprise application patterns where active items are shown by default
+
+**Visual Impact**:
+- Filter dropdown shows "Actif" as selected by default
+- Filter badge count reflects active filter when page loads
+- Clear filters maintains user-expected behavior by returning to active state
+
+**Accessibility Considerations**:
+- Screen readers announce default filter state
+- Filter status is clearly indicated visually
+- No impact on keyboard navigation or focus management
+
+**Implementation Notes**:
+- Maintains backward compatibility with existing filter logic
+- No changes required to component templates or styling
+- Filter behavior is controlled through composable state management
+
 This comprehensive design system provides the foundation for building a world-class packaging management interface that is accessible, performant, and scalable while maintaining visual consistency and supporting complex business workflows.

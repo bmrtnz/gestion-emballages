@@ -145,10 +145,10 @@ const getOptionValue = (option) => {
           leave-to-class="opacity-0"
         >
           <ListboxOptions 
-            class="absolute mt-1 max-h-60 w-full overflow-auto rounded-lg bg-white py-1 text-base shadow-large ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+            class="absolute mt-1 max-h-60 w-full rounded-lg bg-white text-base shadow-large ring-1 ring-black ring-opacity-5 focus:outline-none z-50 flex flex-col"
           >
             <!-- Search input -->
-            <div v-if="searchable" class="sticky top-0 bg-white p-2 border-b border-gray-100">
+            <div v-if="searchable" class="flex-shrink-0 p-2 border-b border-gray-100">
               <input
                 v-model="searchQuery"
                 type="text"
@@ -157,44 +157,47 @@ const getOptionValue = (option) => {
               />
             </div>
 
-            <!-- No results -->
-            <div 
-              v-if="filteredOptions.length === 0" 
-              class="relative cursor-default select-none py-2 px-4 text-gray-700"
-            >
-              Aucun résultat trouvé
-            </div>
-
-            <!-- Options -->
-            <ListboxOption
-              v-for="option in filteredOptions"
-              :key="getOptionValue(option)"
-              v-slot="{ active, selected }"
-              :value="getOptionValue(option)"
-              as="template"
-            >
-              <li
-                :class="[
-                  active ? 'bg-primary-100 text-primary-900' : 'text-gray-900',
-                  'relative cursor-default select-none py-2 pl-10 pr-4'
-                ]"
+            <!-- Scrollable options container -->
+            <div class="flex-1 overflow-auto py-1">
+              <!-- No results -->
+              <div 
+                v-if="filteredOptions.length === 0" 
+                class="relative cursor-default select-none py-2 px-4 text-gray-700"
               >
-                <span
+                Aucun résultat trouvé
+              </div>
+
+              <!-- Options -->
+              <ListboxOption
+                v-for="option in filteredOptions"
+                :key="getOptionValue(option)"
+                v-slot="{ active, selected }"
+                :value="getOptionValue(option)"
+                as="template"
+              >
+                <li
                   :class="[
-                    selected ? 'font-medium' : 'font-normal',
-                    'block truncate'
+                    active ? 'bg-primary-100 text-primary-900' : 'text-gray-900',
+                    'relative cursor-default select-none py-2 pl-10 pr-4'
                   ]"
                 >
-                  {{ getDisplayValue(option) }}
-                </span>
-                <span
-                  v-if="selected"
-                  class="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600"
-                >
-                  <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                </span>
-              </li>
-            </ListboxOption>
+                  <span
+                    :class="[
+                      selected ? 'font-medium' : 'font-normal',
+                      'block truncate'
+                    ]"
+                  >
+                    {{ getDisplayValue(option) }}
+                  </span>
+                  <span
+                    v-if="selected"
+                    class="absolute inset-y-0 left-0 flex items-center pl-3 text-primary-600"
+                  >
+                    <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                  </span>
+                </li>
+              </ListboxOption>
+            </div>
           </ListboxOptions>
         </transition>
       </div>

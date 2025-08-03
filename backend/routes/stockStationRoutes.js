@@ -1,257 +1,418 @@
 /**
- * @fileoverview Routes pour la gestion des stocks stations
+ * @fileoverview Routes pour la gestion des stocks des stations
  * @module routes/stockStationRoutes
+ * @requires express
+ * @requires controllers/stockStationController
+ * @requires middleware/authMiddleware
+ * @requires middleware/validationMiddleware
+ * @requires validators/stockStationValidators
  */
 
 const express = require('express');
 const router = express.Router();
-const {
-    submitStock,
-    getStationStock,
-    getArticleStockHistory,
-    getAllStationsStockSummary,
-    updateArticleStock,
-    deleteStockEntry
-} = require('../controllers/stockStationController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const { validate } = require('../middleware/validationMiddleware');
-const { 
-    submitStationStockValidator,
-    updateStationArticleStockValidator
+const {
+    updateCompleteWeeklyStock,
+    getWeeklyStock,
+    getStationStockStatus,
+    getAllStationStocks,
+    getArticleCampaignHistory,
+    getCampaignStockStats,
+    getStationStocksByCampaign,
+    getStationStockSummary,
+    getStationsWithArticle
+} = require('../controllers/stockStationController');
+const {
+    validateUpdateWeeklyStock,
+    validateGetWeeklyStock,
+    validateStationId,
+    validateCampaign,
+    validateArticleHistory
 } = require('../validators/stockStationValidators');
 
 /**
  * @swagger
  * tags:
  *   name: StocksStations
- *   description: Gestion des stocks stations
+ *   description: Gestion des stocks des stations avec système hebdomadaire
  */
 
-// Routes de base pour les stocks stations
-router
-    .route('/')
-    /**
-     * @swagger
-     * /stocks-stations:
-     *   post:
-     *     summary: Soumettre un inventaire de stock station
-     *     tags: [StocksStations]
-     *     security:
-     *       - bearerAuth: []
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               stationId:
-     *                 type: string
-     *                 description: ID de la station (requis pour les gestionnaires)
-     *               dateInventaire:
-     *                 type: string
-     *                 format: date
-     *               stocks:
-     *                 type: array
-     *                 items:
-     *                   type: object
-     *                   properties:
-     *                     articleId:
-     *                       type: string
-     *                     quantite:
-     *                       type: number
-     *     responses:
-     *       201:
-     *         description: Stock enregistré avec succès
-     *       400:
-     *         description: Données invalides
-     *       403:
-     *         description: Accès non autorisé
-     */
-    .post(
-        protect,
-        authorize('Station', 'Gestionnaire'),
-        submitStationStockValidator,
-        validate,
-        submitStock
-    );
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}/weekly:
+ *   put:
+ *     summary: Mettre à jour le stock complet d'une semaine
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               campagne:
+ *                 type: string
+ *                 pattern: '^\\d{2}-\\d{2}$'
+ *                 example: "25-26"
+ *               numeroSemaine:
+ *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 52
+ *               articles:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     articleId:
+ *                       type: string
+ *                     quantiteStock:
+ *                       type: number
+ *                       minimum: 0
+ *             required:
+ *               - campagne
+ *               - numeroSemaine
+ *               - articles
+ *     responses:
+ *       200:
+ *         description: Stock hebdomadaire mis à jour avec succès
+ *       400:
+ *         description: Données invalides
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.put(
+    '/stations/:stationId/weekly',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    validateUpdateWeeklyStock,
+    validate,
+    updateCompleteWeeklyStock
+);
 
-// Routes pour obtenir un résumé de tous les stocks (gestionnaires uniquement)
-router
-    .route('/summary')
-    /**
-     * @swagger
-     * /stocks-stations/summary:
-     *   get:
-     *     summary: Obtenir un résumé des stocks de toutes les stations
-     *     tags: [StocksStations]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: Résumé des stocks par station
-     *       403:
-     *         description: Accès réservé aux gestionnaires
-     */
-    .get(
-        protect,
-        authorize('Gestionnaire'),
-        getAllStationsStockSummary
-    );
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}/weeks/{numeroSemaine}:
+ *   get:
+ *     summary: Obtenir le stock d'une semaine spécifique
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *       - in: path
+ *         name: numeroSemaine
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 52
+ *         description: Numéro de la semaine
+ *       - in: query
+ *         name: campagne
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\\d{2}-\\d{2}$'
+ *         example: "25-26"
+ *         description: Campagne
+ *     responses:
+ *       200:
+ *         description: Stock de la semaine
+ *       400:
+ *         description: Paramètres manquants ou invalides
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations/:stationId/weeks/:numeroSemaine',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    validateGetWeeklyStock,
+    validate,
+    getWeeklyStock
+);
 
-// Routes pour une station spécifique
-router
-    .route('/stations/:stationId')
-    /**
-     * @swagger
-     * /stocks-stations/stations/{stationId}:
-     *   get:
-     *     summary: Obtenir le stock actuel d'une station
-     *     tags: [StocksStations]
-     *     security:
-     *       - bearerAuth: []
-     *     parameters:
-     *       - in: path
-     *         name: stationId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID de la station
-     *     responses:
-     *       200:
-     *         description: Stock actuel de la station
-     *       403:
-     *         description: Accès non autorisé
-     */
-    .get(
-        protect,
-        authorize('Station', 'Gestionnaire'),
-        getStationStock
-    );
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}/campaign/{campagne}:
+ *   get:
+ *     summary: Obtenir tous les stocks d'une station pour une campagne
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *       - in: path
+ *         name: campagne
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\\d{2}-\\d{2}$'
+ *         example: "25-26"
+ *         description: Campagne
+ *     responses:
+ *       200:
+ *         description: Stocks de la campagne
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations/:stationId/campaign/:campagne',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    getStationStocksByCampaign
+);
 
-// Routes pour l'historique d'un article
-router
-    .route('/stations/:stationId/articles/:articleId/history')
-    /**
-     * @swagger
-     * /stocks-stations/stations/{stationId}/articles/{articleId}/history:
-     *   get:
-     *     summary: Obtenir l'historique du stock d'un article
-     *     tags: [StocksStations]
-     *     security:
-     *       - bearerAuth: []
-     *     parameters:
-     *       - in: path
-     *         name: stationId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID de la station
-     *       - in: path
-     *         name: articleId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID de l'article
-     *     responses:
-     *       200:
-     *         description: Historique des mouvements de stock
-     *       403:
-     *         description: Accès non autorisé
-     */
-    .get(
-        protect,
-        authorize('Station', 'Gestionnaire'),
-        getArticleStockHistory
-    );
+/**
+ * @swagger
+ * /api/stocks-stations/status/{stationId}:
+ *   get:
+ *     summary: Obtenir le statut de mise à jour des stocks d'une station
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *     responses:
+ *       200:
+ *         description: Statut des stocks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     lastUpdateDate:
+ *                       type: string
+ *                       format: date-time
+ *                     daysSinceUpdate:
+ *                       type: integer
+ *                     status:
+ *                       type: string
+ *                       enum: [never, good, warning, critical]
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/status/:stationId',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    validateStationId,
+    validate,
+    getStationStockStatus
+);
 
-// Routes pour mettre à jour le stock d'un article
-router
-    .route('/stations/:stationId/articles/:articleId')
-    /**
-     * @swagger
-     * /stocks-stations/stations/{stationId}/articles/{articleId}:
-     *   put:
-     *     summary: Mettre à jour le stock d'un article
-     *     tags: [StocksStations]
-     *     security:
-     *       - bearerAuth: []
-     *     parameters:
-     *       - in: path
-     *         name: stationId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID de la station
-     *       - in: path
-     *         name: articleId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID de l'article
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               quantite:
-     *                 type: number
-     *                 minimum: 0
-     *                 description: Nouvelle quantité en stock
-     *               dateInventaire:
-     *                 type: string
-     *                 format: date
-     *                 description: Date de l'inventaire (optionnel)
-     *             required:
-     *               - quantite
-     *     responses:
-     *       200:
-     *         description: Stock mis à jour avec succès
-     *       400:
-     *         description: Données invalides
-     *       403:
-     *         description: Accès non autorisé
-     */
-    .put(
-        protect,
-        authorize('Station', 'Gestionnaire'),
-        updateStationArticleStockValidator,
-        validate,
-        updateArticleStock
-    );
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}:
+ *   get:
+ *     summary: Obtenir tous les stocks d'une station
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *     responses:
+ *       200:
+ *         description: Tous les stocks de la station
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations/:stationId',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    validateStationId,
+    validate,
+    getAllStationStocks
+);
 
-// Routes pour supprimer une entrée de stock
-router
-    .route('/:stockId')
-    /**
-     * @swagger
-     * /stocks-stations/{stockId}:
-     *   delete:
-     *     summary: Supprimer une entrée de stock (correction d'erreur)
-     *     tags: [StocksStations]
-     *     security:
-     *       - bearerAuth: []
-     *     parameters:
-     *       - in: path
-     *         name: stockId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID de l'entrée de stock
-     *     responses:
-     *       200:
-     *         description: Entrée supprimée avec succès
-     *       403:
-     *         description: Accès non autorisé
-     *       404:
-     *         description: Entrée non trouvée
-     */
-    .delete(
-        protect,
-        authorize('Station', 'Gestionnaire'),
-        deleteStockEntry
-    );
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}/articles/{articleId}/campaigns/{campagne}/history:
+ *   get:
+ *     summary: Obtenir l'historique de stock d'un article pour une campagne
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *       - in: path
+ *         name: articleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de l'article
+ *       - in: path
+ *         name: campagne
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\\d{2}-\\d{2}$'
+ *         example: "25-26"
+ *         description: Campagne
+ *     responses:
+ *       200:
+ *         description: Historique de l'article
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations/:stationId/articles/:articleId/campaigns/:campagne/history',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    validateArticleHistory,
+    validate,
+    getArticleCampaignHistory
+);
+
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}/campaigns/{campagne}/stats:
+ *   get:
+ *     summary: Obtenir les statistiques de stock pour une campagne
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *       - in: path
+ *         name: campagne
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\\d{2}-\\d{2}$'
+ *         example: "25-26"
+ *         description: Campagne
+ *     responses:
+ *       200:
+ *         description: Statistiques de stock pour la campagne
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations/:stationId/campaigns/:campagne/stats',
+    protect,
+    authorize('Station', 'Gestionnaire', 'Manager'),
+    validateCampaign,
+    validate,
+    getCampaignStockStats
+);
+
+/**
+ * @swagger
+ * /api/stocks-stations/stations/{stationId}/campaign/{campagne}/summary:
+ *   get:
+ *     summary: Obtenir tous les articles avec leur dernière quantité mise à jour
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: stationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID de la station
+ *       - in: path
+ *         name: campagne
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\\d{2}-\\d{2}$'
+ *         example: "25-26"
+ *         description: Campagne
+ *     responses:
+ *       200:
+ *         description: Résumé des stocks avec dernières quantités
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations/:stationId/campaign/:campagne/summary',
+    protect,
+    authorize('Gestionnaire', 'Manager'),
+    getStationStockSummary
+);
+
+/**
+ * @swagger
+ * /api/stocks-stations/stations-with-article:
+ *   get:
+ *     summary: Obtenir les stations ayant un article en stock
+ *     tags: [StocksStations]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: campagne
+ *         required: true
+ *         schema:
+ *           type: string
+ *           pattern: '^\\d{2}-\\d{2}$'
+ *         example: "25-26"
+ *         description: Campagne
+ *       - in: query
+ *         name: search
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nom ou code de l'article à rechercher
+ *     responses:
+ *       200:
+ *         description: Liste des stations avec l'article en stock
+ *       403:
+ *         description: Accès non autorisé
+ */
+router.get(
+    '/stations-with-article',
+    protect,
+    authorize('Gestionnaire', 'Manager'),
+    getStationsWithArticle
+);
 
 module.exports = router;

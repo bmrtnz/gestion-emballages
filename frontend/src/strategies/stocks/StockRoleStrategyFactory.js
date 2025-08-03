@@ -32,7 +32,6 @@ export class StockRoleStrategyFactory {
       
       default:
         // Default to Station strategy for unknown roles (read-only access)
-        console.warn(`Unknown user role: ${userRole}. Defaulting to Station strategy.`);
         return new StationStockStrategy(userEntiteId);
     }
   }

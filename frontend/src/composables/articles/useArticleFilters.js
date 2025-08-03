@@ -12,7 +12,7 @@ export function useArticleFilters() {
   const searchQuery = ref('');
   const categoryFilter = ref('');
   const supplierFilter = ref('');
-  const statusFilter = ref('');
+  const statusFilter = ref('active');
   const showFilters = ref(false);
   
   // Available categories (will be populated from API)
@@ -90,7 +90,7 @@ export function useArticleFilters() {
     
     if (authStore.userRole !== 'Fournisseur') {
       supplierFilter.value = '';
-      statusFilter.value = '';
+      statusFilter.value = 'active';
     }
     
     showFilters.value = false;

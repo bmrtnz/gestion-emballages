@@ -16,7 +16,9 @@ const {
     getWeeklyStock,
     getArticleCampaignHistory,
     getCampaignStockStats,
-    getSupplierStockStatus
+    getSupplierStockStatus,
+    getSupplierStockSummary,
+    getSuppliersWithArticle
 } = require('../controllers/stockFournisseurController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const { validate } = require('../middleware/validationMiddleware');
@@ -584,6 +586,82 @@ router
         protect,
         authorize('Gestionnaire', 'Fournisseur'),
         getWeeklyStock
+    );
+
+// Route pour obtenir le résumé de tous les stocks d'un fournisseur
+router
+    .route('/suppliers/:fournisseurId/campaign/:campagne/summary')
+    /**
+     * @swagger
+     * /stocks-fournisseurs/suppliers/{fournisseurId}/campaign/{campagne}/summary:
+     *   get:
+     *     summary: Obtenir tous les articles avec leur dernière quantité mise à jour pour un fournisseur (tous sites)
+     *     tags: [StocksFournisseurs]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: path
+     *         name: fournisseurId
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: ID du fournisseur
+     *       - in: path
+     *         name: campagne
+     *         required: true
+     *         schema:
+     *           type: string
+     *           pattern: ^\d{2}-\d{2}$
+     *         example: "25-26"
+     *         description: Campagne
+     *     responses:
+     *       200:
+     *         description: Résumé des stocks avec dernières quantités par site
+     *       403:
+     *         description: Accès non autorisé
+     */
+    .get(
+        protect,
+        authorize('Gestionnaire', 'Manager'),
+        getSupplierStockSummary
+    );
+
+// Route pour obtenir les fournisseurs ayant un article en stock
+router
+    .route('/suppliers-with-article')
+    /**
+     * @swagger
+     * /stocks-fournisseurs/suppliers-with-article:
+     *   get:
+     *     summary: Obtenir les fournisseurs ayant un article en stock
+     *     tags: [StocksFournisseurs]
+     *     security:
+     *       - bearerAuth: []
+     *     parameters:
+     *       - in: query
+     *         name: campagne
+     *         required: true
+     *         schema:
+     *           type: string
+     *           pattern: ^\d{2}-\d{2}$
+     *         example: "25-26"
+     *         description: Campagne
+     *       - in: query
+     *         name: search
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: Nom ou code de l'article à rechercher
+     *     responses:
+     *       200:
+     *         description: Liste des fournisseurs avec l'article en stock
+     *       403:
+     *         description: Accès non autorisé
+     */
+    .get(
+        protect,
+        authorize('Gestionnaire', 'Manager'),
+        getSuppliersWithArticle
     );
 
 module.exports = router;

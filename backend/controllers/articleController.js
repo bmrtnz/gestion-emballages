@@ -223,6 +223,67 @@ exports.createArticle = async (req, res, next) => {
  * // GET /api/articles?page=2&limit=20&search=barquette&categorie=Emballage
  * // Response: { data: [...], pagination: { currentPage: 2, totalPages: 5, ... }, filters: { search: 'barquette', ... } }
  */
+/**
+ * Get all active articles without pagination (for forms/selects)
+ * @route GET /api/articles/all-active
+ * @access Private
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+exports.getAllActiveArticles = async (req, res, next) => {
+    console.log('[getAllActiveArticles] Route handler called!'); // Debug log
+    
+    try {
+        console.log('[getAllActiveArticles] Starting query for all active articles...'); // Debug log
+        
+        // Check if suppliers data is requested
+        const includeSuppliers = req.query.includeSuppliers === 'true';
+        console.log(`[getAllActiveArticles] Include suppliers: ${includeSuppliers}`); // Debug log
+        
+        // Get count first for debugging
+        const count = await Article.countDocuments({ isActive: true });
+        console.log(`[getAllActiveArticles] Found ${count} active articles in database`); // Debug log
+        
+        let articles;
+        
+        if (includeSuppliers) {
+            // Use full Mongoose query - let the hooks handle population
+            articles = await Article.find({ isActive: true })
+                .select('_id designation codeArticle categorie conditionnement quantiteParConditionnement fournisseurs')
+                .sort({ designation: 1 });
+            
+            // Convert to plain objects and normalize image URLs
+            articles = articles.map(article => article.toObject());
+            articles = normalizeArticleImageUrls(articles);
+        } else {
+            // Use aggregation for simple data (original behavior)
+            articles = await Article.aggregate([
+                { $match: { isActive: true } },
+                { $project: { 
+                    _id: 1, 
+                    designation: 1, 
+                    codeArticle: 1, 
+                    categorie: 1 
+                }},
+                { $sort: { designation: 1 } }
+            ]);
+        }
+
+        console.log(`[getAllActiveArticles] Successfully retrieved ${articles.length} articles`); // Debug log
+
+        res.status(200).json({
+            success: true,
+            data: articles,
+            count: articles.length
+        });
+    } catch (error) {
+        console.error('[getAllActiveArticles] Error occurred:', error); // Debug log
+        console.error('[getAllActiveArticles] Error stack:', error.stack); // Debug log
+        next(error);
+    }
+};
+
 exports.getArticles = async (req, res, next) => {
     try {
         const { page, limit, skip, search, sortBy, sortOrder, filters } = req.pagination;

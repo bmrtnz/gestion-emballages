@@ -21,6 +21,15 @@ const articlesAPI = {
   },
 
   /**
+   * Get all active articles without pagination (for forms/selects)
+   * @returns {Promise<Object>} API response with all active articles
+   */
+  async getAllActiveArticles() {
+    const response = await api.get('/articles/all-active');
+    return response.data;
+  },
+
+  /**
    * Get articles by supplier
    * @param {string} supplierId - Supplier ID
    * @param {Object} params - Query parameters for pagination and filtering

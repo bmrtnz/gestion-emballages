@@ -4,6 +4,7 @@ const router = express.Router();
 const {
     createArticle,
     getArticles,
+    getAllActiveArticles,
     getArticleById,
     updateArticle,
     deleteArticle,
@@ -136,6 +137,52 @@ router.get("/distinct-categories", protect, getDistinctCategories);
  *                   type: number
  */
 router.get("/by-supplier/:supplierId", protect, paginationMiddleware, getArticlesBySupplierId);
+
+/**
+ * @swagger
+ * /articles/all-active:
+ *   get:
+ *     summary: Récupérer tous les articles actifs sans pagination (pour les formulaires)
+ *     tags: [Articles]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: includeSuppliers
+ *         schema:
+ *           type: string
+ *           enum: [true, false]
+ *         description: Inclure les données des fournisseurs liés
+ *     responses:
+ *       200:
+ *         description: Liste de tous les articles actifs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       designation:
+ *                         type: string
+ *                       codeArticle:
+ *                         type: string
+ *                       categorie:
+ *                         type: string
+ *                       fournisseurs:
+ *                         type: array
+ *                         description: Inclus seulement si includeSuppliers=true
+ *                 count:
+ *                   type: number
+ */
+router.get("/all-active", protect, getAllActiveArticles);
 
 router
     .route("/")

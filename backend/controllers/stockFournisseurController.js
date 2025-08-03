@@ -9,6 +9,7 @@
 const mongoose = require('mongoose');
 const StockFournisseur = require('../models/stockFournisseurModel');
 const Fournisseur = require('../models/fournisseurModel');
+const Article = require('../models/articleModel');
 const { BadRequestError, ForbiddenError, NotFoundError } = require('../utils/appError');
 
 /**
@@ -385,14 +386,6 @@ exports.updateCompleteWeeklyStock = async (req, res, next) => {
             }
         }
 
-        // Log incoming data for debugging
-        console.log(`[Controller] updateCompleteWeeklyStock called with:`, {
-            fournisseurId,
-            siteId,
-            campagne,
-            numeroSemaine,
-            articlesCount: articles.length
-        });
 
         // Try to find and update in one atomic operation
         let stockFournisseur = await StockFournisseur.findOneAndUpdate(
@@ -416,11 +409,6 @@ exports.updateCompleteWeeklyStock = async (req, res, next) => {
             }
         );
 
-        console.log(`[Controller] Document found/created:`, {
-            _id: stockFournisseur._id,
-            isNew: stockFournisseur.isNew,
-            weeklyStocksCount: stockFournisseur.weeklyStocks.length
-        });
 
         // Alternative approach: Use atomic operators for more reliable updates
         // First, remove existing week data if it exists
@@ -453,7 +441,6 @@ exports.updateCompleteWeeklyStock = async (req, res, next) => {
             }
         );
         
-        console.log(`[Controller] Update completed successfully using atomic operators`);
 
         res.status(200).json({
             message: 'Stock hebdomadaire complet mis à jour avec succès.',
@@ -650,6 +637,189 @@ exports.getCampaignStockStats = async (req, res, next) => {
 };
 
 /**
+ * @desc    Obtenir tous les articles avec leur dernière quantité mise à jour pour un fournisseur (tous sites)
+ * @route   GET /api/stocks-fournisseurs/suppliers/:fournisseurId/campaign/:campagne/summary
+ * @access  Private (Gestionnaire, Manager)
+ */
+const getSupplierStockSummary = async (req, res, next) => {
+    try {
+        const { fournisseurId, campagne } = req.params;
+        
+        // Vérification des permissions
+        if (!['Manager', 'Gestionnaire'].includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                message: 'Accès non autorisé'
+            });
+        }
+        
+        // Récupérer tous les documents de stock pour ce fournisseur/campagne
+        const stockDocuments = await StockFournisseur.find({
+            fournisseurId: new mongoose.Types.ObjectId(fournisseurId),
+            campagne
+        }).populate('weeklyStocks.articles.articleId', 'designation codeArticle categorie');
+        
+        if (!stockDocuments || stockDocuments.length === 0) {
+            return res.status(200).json({
+                success: true,
+                data: []
+            });
+        }
+        
+        // Obtenir les informations du fournisseur et des sites
+        const fournisseur = await Fournisseur.findById(fournisseurId);
+        if (!fournisseur) {
+            return res.status(404).json({
+                success: false,
+                message: 'Fournisseur non trouvé'
+            });
+        }
+        
+        // Organiser les données par site
+        const sitesSummary = [];
+        
+        for (const stockDoc of stockDocuments) {
+            const site = fournisseur.sites.find(s => s._id.toString() === stockDoc.siteId.toString());
+            if (!site) continue;
+            
+            // Construire une map de tous les articles avec leur dernière quantité pour ce site
+            const articlesMap = new Map();
+            
+            // Parcourir toutes les semaines dans l'ordre chronologique
+            stockDoc.weeklyStocks
+                .sort((a, b) => a.numeroSemaine - b.numeroSemaine)
+                .forEach(weekStock => {
+                    weekStock.articles.forEach(articleStock => {
+                        if (articleStock.articleId) {
+                            const articleId = articleStock.articleId._id.toString();
+                            articlesMap.set(articleId, {
+                                articleId: articleStock.articleId._id,
+                                codeArticle: articleStock.articleId.codeArticle,
+                                designation: articleStock.articleId.designation,
+                                categorie: articleStock.articleId.categorie,
+                                quantiteStock: articleStock.quantiteStock,
+                                derniereMAJ: weekStock.numeroSemaine
+                            });
+                        }
+                    });
+                });
+            
+            // Convertir la map en array pour ce site
+            const articlesSummary = Array.from(articlesMap.values());
+            
+            if (articlesSummary.length > 0) {
+                sitesSummary.push({
+                    site: {
+                        _id: site._id,
+                        nom: site.nomSite || site.nom,
+                        adresse: site.adresse
+                    },
+                    articles: articlesSummary
+                });
+            }
+        }
+        
+        res.status(200).json({
+            success: true,
+            data: sitesSummary
+        });
+        
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * @desc    Obtenir les fournisseurs ayant un article en stock
+ * @route   GET /api/stocks-fournisseurs/suppliers-with-article
+ * @access  Private (Gestionnaire, Manager)
+ */
+const getSuppliersWithArticle = async (req, res, next) => {
+    try {
+        const { campagne, search } = req.query;
+        
+        // Vérification des permissions
+        if (!['Manager', 'Gestionnaire'].includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                message: 'Accès non autorisé'
+            });
+        }
+        
+        if (!campagne || !search) {
+            return res.status(400).json({
+                success: false,
+                message: 'Paramètres campagne et search requis'
+            });
+        }
+        
+        // Rechercher d'abord les articles correspondants
+        const articleQuery = {
+            isActive: true,
+            $or: [
+                { designation: { $regex: search, $options: 'i' } },
+                { codeArticle: { $regex: search, $options: 'i' } }
+            ]
+        };
+        
+        const matchingArticles = await Article.find(articleQuery).select('_id');
+        const articleIds = matchingArticles.map(a => a._id);
+        
+        if (articleIds.length === 0) {
+            return res.status(200).json({
+                success: true,
+                data: []
+            });
+        }
+        
+        // Trouver tous les stocks contenant ces articles
+        const stocksWithArticles = await StockFournisseur.find({
+            campagne,
+            'weeklyStocks.articles.articleId': { $in: articleIds }
+        }).populate('fournisseurId', 'nom');
+        
+        // Construire la liste des fournisseurs avec leurs quantités
+        const suppliersMap = new Map();
+        
+        stocksWithArticles.forEach(stock => {
+            if (!stock.fournisseurId) return;
+            
+            const supplierId = stock.fournisseurId._id.toString();
+            
+            stock.weeklyStocks.forEach(weekStock => {
+                weekStock.articles.forEach(articleStock => {
+                    const articleIdStr = articleStock.articleId.toString();
+                    if (articleIds.some(id => id.toString() === articleIdStr) && articleStock.quantiteStock > 0) {
+                        if (!suppliersMap.has(supplierId)) {
+                            suppliersMap.set(supplierId, {
+                                _id: stock.fournisseurId._id,
+                                nom: stock.fournisseurId.nom,
+                                totalQuantity: 0
+                            });
+                        }
+                        // Additionner les quantités
+                        const supplierData = suppliersMap.get(supplierId);
+                        supplierData.totalQuantity += articleStock.quantiteStock;
+                    }
+                });
+            });
+        });
+        
+        // Convertir en array et trier par quantité
+        const suppliers = Array.from(suppliersMap.values())
+            .sort((a, b) => b.totalQuantity - a.totalQuantity);
+        
+        res.status(200).json({
+            success: true,
+            data: suppliers
+        });
+        
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * @desc    Obtenir le statut de mise à jour des stocks d'un fournisseur
  * @route   GET /api/stocks-fournisseurs/status/:fournisseurId
  * @access  Private (Gestionnaire, Fournisseur)
@@ -674,12 +844,6 @@ const getSupplierStockStatus = async (req, res, next) => {
         .sort({ updatedAt: -1 })
         .select('updatedAt campagne siteId weeklyStocks');
         
-        console.log('[DEBUG] Latest stock document found:', {
-            found: !!latestStock,
-            updatedAt: latestStock?.updatedAt,
-            campagne: latestStock?.campagne,
-            weeklyStocksCount: latestStock?.weeklyStocks?.length || 0
-        });
         
         let lastUpdateDate = null;
         let daysSinceUpdate = null;
@@ -691,12 +855,6 @@ const getSupplierStockStatus = async (req, res, next) => {
             const diffTime = Math.abs(now - lastUpdateDate);
             daysSinceUpdate = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
-            console.log('[DEBUG] Date calculation:', {
-                now: now.toISOString(),
-                lastUpdateDate: lastUpdateDate.toISOString(),
-                diffTimeMs: diffTime,
-                daysSinceUpdate
-            });
             
             // Déterminer le statut basé sur l'ancienneté
             if (daysSinceUpdate < 14) {
@@ -708,7 +866,6 @@ const getSupplierStockStatus = async (req, res, next) => {
             }
         }
         
-        console.log('[DEBUG] Final status:', { lastUpdateDate, daysSinceUpdate, status });
         
         res.status(200).json({
             success: true,
@@ -720,7 +877,6 @@ const getSupplierStockStatus = async (req, res, next) => {
         });
         
     } catch (error) {
-        console.error('Erreur lors de la récupération du statut des stocks:', error);
         next(error);
     }
 };
@@ -736,5 +892,7 @@ module.exports = {
     getWeeklyStock: exports.getWeeklyStock,
     getArticleCampaignHistory: exports.getArticleCampaignHistory,
     getCampaignStockStats: exports.getCampaignStockStats,
-    getSupplierStockStatus
+    getSupplierStockStatus,
+    getSupplierStockSummary,
+    getSuppliersWithArticle
 };

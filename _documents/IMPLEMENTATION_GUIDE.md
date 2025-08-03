@@ -671,4 +671,26 @@ app.use((req, res, next) => {
 - **Husky**: Git hooks for pre-commit validation
 - **Jest**: Testing framework
 
+---
+
+## Recent Changes & Updates
+
+### ArticlePage Status Filter Default (Latest)
+**Date**: 2025-01-03  
+**Files Modified**:
+- `frontend/src/composables/articles/useArticleFilters.js`
+
+**Changes**:
+1. **Default Status Filter**: Set default status filter to 'active' instead of empty string
+   - Line 15: `const statusFilter = ref('active');`
+   - Line 93: Reset to 'active' in clearFilters function
+
+**Impact**: 
+- ArticlePage now shows only active articles by default
+- Improves user experience by filtering out inactive articles automatically
+- Maintains consistency when clearing filters
+
+**Rationale**: 
+Most users primarily work with active articles, so showing them by default reduces the need for manual filtering and improves workflow efficiency.
+
 This implementation guide provides everything a new developer needs to understand, set up, and contribute to the Gestion Emballages project effectively.

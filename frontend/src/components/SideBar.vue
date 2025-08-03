@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useAuthStore } from "../stores/authStore";
+import { useListeAchatStore } from "../stores/listeAchatStore";
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import {
     XMarkIcon,
@@ -20,6 +21,8 @@ import {
     CircleStackIcon,
     DocumentChartBarIcon,
     KeyIcon,
+    CubeIcon,
+    ShoppingCartIcon,
 } from "@heroicons/vue/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 
@@ -30,6 +33,40 @@ const props = defineProps({
 const emit = defineEmits(["close-sidebar"]);
 
 const authStore = useAuthStore();
+const listeAchatStore = useListeAchatStore();
+
+// Computed property for cart items count
+const cartItemsCount = computed(() => {
+    return listeAchatStore.activeList?.articles?.length || 0;
+});
+
+// Computed property for entity name
+const entityName = computed(() => {
+    const user = authStore.user;
+    if (!user) return null;
+    
+    console.log('User object for entity name:', user);
+    
+    // Check if entiteDetails is populated (should be for Station/Fournisseur users)
+    if (user.entiteDetails?.nom) {
+        return user.entiteDetails.nom;
+    }
+    
+    return null;
+});
+
+// Computed property for role-based stock URL
+const getStockUrl = computed(() => {
+  const userRole = authStore.user?.role;
+  if (userRole === 'Fournisseur') {
+    return '/stocks/supplier';
+  } else if (userRole === 'Station') {
+    return '/stocks/station';
+  } else if (['Gestionnaire', 'Manager'].includes(userRole)) {
+    return '/stocks/stations-dashboard';
+  }
+  return '/stocks';
+});
 
 const navigation = computed(() => [
     {
@@ -54,7 +91,8 @@ const gestionMenu = computed(() => [
         icon: ArrowsRightLeftIcon,
         roles: ["Manager", "Gestionnaire", "Station"],
     },
-    { name: "Stocks", href: "/stocks", icon: CircleStackIcon, roles: ["Manager", "Gestionnaire", "Station"] },
+    { name: "Stocks des stations", href: "/stocks/stations-dashboard", icon: CircleStackIcon, roles: ["Manager", "Gestionnaire"] },
+    { name: "Stocks des fournisseurs", href: "/stocks/suppliers-dashboard", icon: CubeIcon, roles: ["Manager", "Gestionnaire"] },
     { name: "Prévisions", href: "/previsions", icon: DocumentChartBarIcon, roles: ["Manager", "Gestionnaire"] },
 ]);
 
@@ -67,9 +105,10 @@ const parametresMenu = computed(() => [
 ]);
 
 const stationGestionMenu = computed(() => [
+    { name: "Ma liste d'achat", href: "/liste-achat", icon: ShoppingCartIcon, roles: ["Station"] },
     { name: "Mes commandes", href: "/commandes", icon: ClipboardDocumentCheckIcon, roles: ["Station"] },
     { name: "Mes transferts", href: "/transferts", icon: ArrowsRightLeftIcon, roles: ["Station"] },
-    { name: "Mes stocks", href: "/stocks", icon: CircleStackIcon, roles: ["Station"] },
+    { name: "Mes stocks", href: getStockUrl.value, icon: CircleStackIcon, roles: ["Station"] },
 ]);
 
 const stationParametresMenu = computed(() => [
@@ -79,7 +118,7 @@ const stationParametresMenu = computed(() => [
 
 const fournisseurGestionMenu = computed(() => [
     { name: "Mes commandes", href: "/commandes", icon: ClipboardDocumentCheckIcon, roles: ["Fournisseur"] },
-    { name: "Mes stocks", href: "/stocks", icon: CircleStackIcon, roles: ["Fournisseur"] },
+    { name: "Mes stocks", href: getStockUrl.value, icon: CircleStackIcon, roles: ["Fournisseur"] },
 ]);
 
 const fournisseurParametresMenu = computed(() => [
@@ -106,6 +145,31 @@ const handleLogout = () => {
     authStore.logout();
     emit("close-sidebar");
 };
+
+// Load shopping list data when user is authenticated and is a Station
+const loadShoppingListData = async () => {
+    if (authStore.isAuthenticated && authStore.userRole === 'Station') {
+        try {
+            await listeAchatStore.fetchActiveList();
+        } catch (error) {
+            console.error('Error loading shopping list data in sidebar:', error);
+        }
+    }
+};
+
+// Watch for authentication changes and load shopping list for Station users
+watch(() => [authStore.isAuthenticated, authStore.userRole], ([isAuth, role]) => {
+    if (isAuth && role === 'Station') {
+        loadShoppingListData();
+    }
+}, { immediate: true });
+
+// Load data on mount if already authenticated
+onMounted(() => {
+    if (authStore.isAuthenticated && authStore.userRole === 'Station') {
+        loadShoppingListData();
+    }
+});
 </script>
 
 <template>
@@ -162,6 +226,7 @@ const handleLogout = () => {
                                         <div class="flex flex-col">
                                             <span class="text-sm font-semibold text-gray-900">{{ authStore.user?.nomComplet }}</span>
                                             <span class="text-xs text-gray-500">{{ authStore.userRole }}</span>
+                                            <span v-if="entityName" class="text-xs text-primary-600">{{ entityName }}</span>
                                         </div>
                                     </div>
 
@@ -260,7 +325,13 @@ const handleLogout = () => {
                                                             ]"
                                                             aria-hidden="true"
                                                         />
-                                                        {{ item.name }}
+                                                        <span class="flex-1">{{ item.name }}</span>
+                                                        <span 
+                                                            v-if="item.name === 'Ma liste d\'achat' && cartItemsCount > 0"
+                                                            class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-primary-600 rounded-full"
+                                                        >
+                                                            {{ cartItemsCount }}
+                                                        </span>
                                                     </router-link>
                                                 </li>
                                             </ul>
@@ -414,6 +485,7 @@ const handleLogout = () => {
                     <div class="flex flex-col">
                         <span class="text-sm font-semibold text-gray-900">{{ authStore.user?.nomComplet }}</span>
                         <span class="text-xs text-gray-500">{{ authStore.userRole }}</span>
+                        <span v-if="entityName" class="text-xs text-primary-600">{{ entityName }}</span>
                     </div>
                 </div>
 
@@ -510,7 +582,13 @@ const handleLogout = () => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span class="flex-1">{{ item.name }}</span>
+                                        <span 
+                                            v-if="item.name === 'Ma liste d\'achat' && cartItemsCount > 0"
+                                            class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-primary-600 rounded-full"
+                                        >
+                                            {{ cartItemsCount }}
+                                        </span>
                                     </router-link>
                                 </li>
                             </ul>

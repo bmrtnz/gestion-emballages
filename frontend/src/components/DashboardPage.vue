@@ -10,9 +10,11 @@ import {
 } from "@heroicons/vue/24/outline";
 import Button from "./ui/Button.vue";
 import { useAuthStore } from '../stores/authStore';
+import { useRouter } from 'vue-router';
 import api from '../api/axios';
 
 const authStore = useAuthStore();
+const router = useRouter();
 
 // Stock update status for suppliers
 const stockUpdateStatus = ref(null);
@@ -37,21 +39,44 @@ const stats = [
     },
 ];
 
-// Check if user is a supplier
+// Check if user is a supplier or station (has stock management)
 const isSupplier = computed(() => {
-  return authStore.userRole === 'Fournisseur';
+  const result = authStore.user?.role === 'Fournisseur';
+  console.log('[Dashboard] isSupplier:', result, 'user role:', authStore.user?.role);
+  return result;
 });
 
-// Fetch stock update status for suppliers
+const isStation = computed(() => {
+  const result = authStore.user?.role === 'Station';
+  console.log('[Dashboard] isStation:', result, 'user role:', authStore.user?.role);
+  return result;
+});
+
+const hasStockManagement = computed(() => {
+  // Only suppliers and stations show individual stock status
+  // Gestionnaire/Manager have their own dashboard
+  const result = isSupplier.value || isStation.value;
+  console.log('[Dashboard] hasStockManagement:', result, 'isSupplier:', isSupplier.value, 'isStation:', isStation.value);
+  return result;
+});
+
+// Fetch stock update status for suppliers and stations
 const fetchStockUpdateStatus = async () => {
-  if (!isSupplier.value) return;
+  if (!hasStockManagement.value) return;
   
   try {
     isLoadingStockStatus.value = true;
-    const fournisseurId = authStore.user.entiteId;
+    const entiteId = authStore.user.entiteId;
     
-    // Get the latest stock update date for this supplier
-    const response = await api.get(`/stocks-fournisseurs/status/${fournisseurId}`);
+    let response;
+    if (isSupplier.value) {
+      // Get the latest stock update date for this supplier
+      response = await api.get(`/stocks-fournisseurs/status/${entiteId}`);
+    } else if (isStation.value) {
+      // Get the latest stock update date for this station
+      response = await api.get(`/stocks-stations/status/${entiteId}`);
+    }
+    
     console.log('[DEBUG] API Response:', response.data);
     stockUpdateStatus.value = response.data.data; // Extract the data from the response
   } catch (error) {
@@ -139,8 +164,22 @@ const stockStatusConfig = computed(() => {
 });
 
 const navigateToStocks = () => {
-  // Navigate to stock management page
-  window.location.href = '/stocks';
+  // Navigate to appropriate stock management page based on user role
+  console.log('[Dashboard] Navigation to stocks, user role:', authStore.user?.role);
+  
+  if (authStore.user?.role === 'Fournisseur') {
+    console.log('[Dashboard] Navigating to supplier stocks');
+    router.push('/stocks/supplier');
+  } else if (authStore.user?.role === 'Station') {
+    console.log('[Dashboard] Navigating to station stocks');
+    router.push('/stocks/station');
+  } else if (['Gestionnaire', 'Manager'].includes(authStore.user?.role)) {
+    console.log('[Dashboard] Navigating to stations dashboard');
+    router.push('/stocks/stations-dashboard');
+  } else {
+    console.log('[Dashboard] Navigating to default stocks page');
+    router.push('/stocks');
+  }
 };
 
 onMounted(() => {
@@ -157,8 +196,8 @@ onMounted(() => {
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            <!-- Stock Status Card (Supplier Only) -->
-            <div v-if="isSupplier" class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 border-l-4" :class="[stockStatusConfig?.borderColor || 'border-gray-200']">
+            <!-- Stock Status Card (Supplier & Station) -->
+            <div v-if="hasStockManagement" class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 border-l-4" :class="[stockStatusConfig?.borderColor || 'border-gray-200']">
                 <!-- Loading State -->
                 <div v-if="isLoadingStockStatus" class="flex flex-col items-center text-center">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
@@ -199,8 +238,8 @@ onMounted(() => {
                 </div>
             </div>
 
-            <!-- December Report Card (Non-Supplier) -->
-            <div v-if="!isSupplier" class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center text-center">
+            <!-- December Report Card (Non-Stock Management Users) -->
+            <div v-if="!hasStockManagement" class="lg:col-span-1 bg-white rounded-2xl shadow-soft p-6 flex flex-col items-center text-center">
                 <div class="relative w-24 h-24 mb-4">
                     <div class="absolute inset-0 bg-primary-100 rounded-full opacity-50"></div>
                     <div class="absolute inset-2 bg-primary-200 rounded-full opacity-60"></div>
