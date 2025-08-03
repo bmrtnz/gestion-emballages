@@ -46,6 +46,17 @@ export const useAuthStore = defineStore('auth', () => {
             const { token: newToken, ...userData } = response.data;
             setToken(newToken);
             user.value = userData;
+            
+            // Fetch complete user profile including entity details for Station/Fournisseur users
+            if (userData.role === 'Station' || userData.role === 'Fournisseur') {
+                try {
+                    await fetchUser();
+                } catch (error) {
+                    console.warn('Failed to fetch complete user profile:', error);
+                    // Continue with login even if profile fetch fails
+                }
+            }
+            
             notification.success('Connexion réussie ! Bienvenue.');
             router.push('/dashboard');
             return response.data;
@@ -60,7 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
     
     // Action pour récupérer le profil si un token existe (ex: après un F5)
     async function fetchUser() {
-        if (token.value && !user.value) {
+        if (token.value) {
             return executeFetch(async () => {
                 try {
                     const response = await api.get('/users/profile');
