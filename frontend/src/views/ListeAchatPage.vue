@@ -72,6 +72,9 @@ const confirmAndValidateListe = () => {
   if (!activeListeAchat.value?.articles?.length) {
     return;
   }
+  if (isValidationBlocked.value) {
+    return;
+  }
   openConfirmModal();
 };
 
@@ -82,6 +85,78 @@ const handleConfirmValidation = () => {
 
 const handleCancelValidation = () => {
   closeConfirmModal();
+};
+
+// Format date helper
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('fr-FR', { 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: 'numeric' 
+  });
+};
+
+// Date coloring helper
+const getDateColorClass = (dateString) => {
+  if (!dateString) return 'text-gray-500';
+  
+  const date = new Date(dateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+  
+  const diffTime = date.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) {
+    return 'text-red-600 font-semibold'; // Passed date
+  } else if (diffDays < 5) {
+    return 'text-amber-600 font-semibold'; // Less than 5 days
+  } else {
+    return 'text-gray-700'; // Normal
+  }
+};
+
+// Check if any item has a passed delivery date
+const hasPassedDeliveryDate = computed(() => {
+  if (!activeListeAchat.value?.articles?.length) return false;
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  return activeListeAchat.value.articles.some(item => {
+    if (!item.dateSouhaiteeLivraison) return false;
+    const deliveryDate = new Date(item.dateSouhaiteeLivraison);
+    deliveryDate.setHours(0, 0, 0, 0);
+    return deliveryDate.getTime() < today.getTime();
+  });
+});
+
+// Check if validation is blocked due to passed dates
+const isValidationBlocked = computed(() => {
+  return hasPassedDeliveryDate.value;
+});
+
+// French pluralization helper for conditioning types
+const pluralizeFrench = (word, quantity) => {
+  if (quantity <= 1) return word;
+  
+  const lowerWord = word.toLowerCase();
+  
+  // Words ending in "eau" or "au" take "x" for plural
+  if (lowerWord.endsWith('eau') || lowerWord.endsWith('au')) {
+    return word + 'x';
+  }
+  
+  // Words ending in "s", "x", or "z" don't change
+  if (lowerWord.endsWith('s') || lowerWord.endsWith('x') || lowerWord.endsWith('z')) {
+    return word;
+  }
+  
+  // Default case: add "s"
+  return word + 's';
 };
 
 // Computed pour l'affichage des données de la liste
@@ -108,14 +183,19 @@ const displayData = computed(() => {
       <div class="cart-section">
         <div class="panel">
           <div class="panel-header">
-            <Button
-              variant="primary"
-              :loading="isSubmitting"
-              @click="confirmAndValidateListe"
-              :disabled="!permissions.canValidateList || !activeListeAchat?.articles?.length"
-            >
-              {{ uiBehavior.messages?.validateButton || 'Valider la Liste et Commander' }}
-            </Button>
+            <div class="flex flex-col gap-2">
+              <Button
+                variant="primary"
+                :loading="isSubmitting"
+                @click="confirmAndValidateListe"
+                :disabled="!permissions.canValidateList || !activeListeAchat?.articles?.length || isValidationBlocked"
+              >
+                {{ uiBehavior.messages?.validateButton || 'Valider la Liste et Commander' }}
+              </Button>
+              <div v-if="isValidationBlocked" class="text-sm text-red-600 font-medium">
+                ⚠️ Impossible de valider : des dates de livraison sont dépassées
+              </div>
+            </div>
             <div class="total-amount">
               <span>Total HT</span>
               <strong>{{ formatCurrency(totalAmount) }}</strong>
@@ -130,18 +210,27 @@ const displayData = computed(() => {
             
             <div v-else class="cart-items">
               <table class="cart-table bg-white text-sm">
-                <thead>
+                <thead class="border-b border-gray-200">
                   <tr>
-                    <th class="text-left text-sm py-2 px-2">Article</th>
-                    <th class="text-center text-sm py-2 px-2">Qté</th>
-                    <th class="text-left text-sm py-2 px-2">Cond.</th>
-                    <th class="text-right text-sm py-2 px-2">P.U.</th>
-                    <th class="text-right py-2 px-2">Total</th>
-                    <th class="py-2 px-2"></th>
+                    <th class="text-left text-sm py-2 px-2 align-bottom">
+                      <div>Livraison</div>
+                      <div>souhaitée</div>
+                    </th>
+                    <th class="text-left text-sm py-2 px-2 align-bottom">Article</th>
+                    <th class="text-right text-sm py-2 px-2 align-bottom">Qté</th>
+                    <th class="text-left text-sm py-2 px-2 align-bottom">Cond.</th>
+                    <th class="text-right text-sm py-2 px-2 align-bottom">P.U.</th>
+                    <th class="text-right py-2 px-2 align-bottom">Total</th>
+                    <th class="py-2 px-2 align-bottom"></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="item in activeListeAchat?.articles" :key="item._id">
+                    <td class="align-top py-2 px-2">
+                      <div class="text-sm font-medium" :class="getDateColorClass(item.dateSouhaiteeLivraison)">
+                        {{ item.dateSouhaiteeLivraison ? formatDate(item.dateSouhaiteeLivraison) : 'N/A' }}
+                      </div>
+                    </td>
                     <td class="align-top py-2 px-2">
                       <div class="text-sm font-bold text-primary-600">{{ getArticleDetails(item.articleId)?.designation }}</div>
                       <div class="text-xs text-gray-500">{{ getArticleDetails(item.articleId)?.codeArticle }}</div>
@@ -150,16 +239,15 @@ const displayData = computed(() => {
                         {{ getSupplierDetails(item.articleId, item.fournisseurId)?.fournisseurId?.nom }})
                       </div>
                     </td>
-                    <td class="align-top text-center text-sm font-bold text-primary-600 py-2 px-2">{{ formatNumber(item.quantite) }}</td>
+                    <td class="align-top text-right text-sm font-bold text-primary-600 py-2 px-2">{{ formatNumber(item.quantite) }}</td>
                     <td class="align-top py-2 px-2">
                       <div class="text-sm font-medium">
-                        {{ item.quantite > 1 ? 
-                            (getSupplierDetails(item.articleId, item.fournisseurId)?.uniteConditionnement || 
-                             getSupplierDetails(item.articleId, item.fournisseurId)?.conditionnement || 
-                             getArticleDetails(item.articleId)?.conditionnement || "unité") + 's' :
-                            (getSupplierDetails(item.articleId, item.fournisseurId)?.uniteConditionnement || 
-                             getSupplierDetails(item.articleId, item.fournisseurId)?.conditionnement || 
-                             getArticleDetails(item.articleId)?.conditionnement || "unité") }}
+                        {{ pluralizeFrench(
+                            getSupplierDetails(item.articleId, item.fournisseurId)?.uniteConditionnement || 
+                            getSupplierDetails(item.articleId, item.fournisseurId)?.conditionnement || 
+                            getArticleDetails(item.articleId)?.conditionnement || "unité",
+                            item.quantite
+                        ) }}
                       </div>
                       <div class="text-xs text-gray-500">
                         de {{ getSupplierDetails(item.articleId, item.fournisseurId)?.quantiteParConditionnement || 1 }} unités
