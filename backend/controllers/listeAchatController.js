@@ -159,12 +159,15 @@ exports.validateListeAchat = async (req, res, next) => {
       for (const item of items) {
         // 3. "Cristallisation" du prix et des informations de l'article au moment de la commande.
         const articleData = item.articleId.fournisseurs.find(
-          (f) => f.fournisseurId.toString() === fournisseurId
+          (f) => f.fournisseurId._id?.toString() === fournisseurId || f.fournisseurId.toString() === fournisseurId
         );
         if (!articleData) continue; // Sécurité pour ignorer un article mal configuré.
 
         const prix = articleData.prixUnitaire;
-        montantTotalCommande += prix * item.quantite;
+        const quantiteParConditionnement = articleData.quantiteParConditionnement || 1;
+        // Calculate: unit price × units per conditioning × quantity of conditionings ordered
+        const prixTotalLigne = prix * quantiteParConditionnement * item.quantite;
+        montantTotalCommande += prixTotalLigne;
 
         articlesDeCommande.push({
           articleId: item.articleId._id,

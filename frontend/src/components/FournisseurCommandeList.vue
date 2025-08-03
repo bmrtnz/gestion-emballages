@@ -75,7 +75,10 @@ const formatCurrency = (number) => {
                     </span>
                     <span v-else>{{ formatCurrency(item.prixUnitaire) }}</span>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ formatCurrency(item.isParent ? item.montantTotalHT : (item.prixUnitaire * item.quantiteCommandee)) }}</td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <!-- Uses frozen montantTotalHT for orders, and frozen prixUnitaire for article lines -->
+                    {{ formatCurrency(item.isParent ? item.montantTotalHT : (item.prixUnitaire * item.quantiteCommandee)) }}
+                  </td>
                   <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                     <div v-if="item.isParent" class="flex items-center justify-end gap-x-2">
                         <button :disabled="item.statut !== 'Enregistrée'" class="p-1.5 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Confirmer">

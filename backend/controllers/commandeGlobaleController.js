@@ -47,7 +47,7 @@ exports.getCommandesGlobales = async (req, res, next) => {
     const commandes = await CommandeGlobale.find(query)
       .populate({
         path: "commandesFournisseurs",
-        select: "numeroCommande statut montantTotalHT informationsExpedition fournisseurId",
+        select: "numeroCommande statut montantTotalHT informationsExpedition fournisseurId createdAt",
         populate: { path: "fournisseurId", select: "nom" }, // Peuplement imbriqué pour le nom du fournisseur.
       })
       .populate("stationId", "nom")

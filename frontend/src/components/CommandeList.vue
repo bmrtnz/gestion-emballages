@@ -179,6 +179,7 @@ const handleDeleteCancel = () => {
                     </span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 font-medium">
+                    <!-- Uses frozen montantTotalHT from global order -->
                     {{ formatCurrency(parentItem.montantTotalHT) }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -219,6 +220,7 @@ const handleDeleteCancel = () => {
                       </span>
                     </td>
                     <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-600">
+                      <!-- Uses frozen montantTotalHT from supplier order -->
                       {{ formatCurrency(childItem.montantTotalHT) }}
                     </td>
                     <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">

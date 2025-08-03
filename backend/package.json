@@ -10,7 +10,9 @@
         "data:destroy": "node data/seeder.js -d",
         "docs:generate": "jsdoc -c jsdoc.json",
         "fix:duplicates:preview": "node scripts/preview-duplicate-designations.js",
-        "fix:duplicates:apply": "node scripts/fix-duplicate-designations.js"
+        "fix:duplicates:apply": "node scripts/fix-duplicate-designations.js",
+        "test:create-orders": "node scripts/create-test-orders.js",
+        "test:list-validation": "node scripts/test-list-validation.js"
     },
     "keywords": [],
     "author": "",

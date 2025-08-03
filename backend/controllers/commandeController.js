@@ -116,7 +116,7 @@ exports.getCommandes = async (req, res, next) => {
       .populate("fournisseurId", "nom")
       .populate({
         path: "articles.articleId",
-        select: "codeArticle designation",
+        select: "codeArticle designation categorie",
       })
       .sort({ createdAt: -1 });
 

@@ -207,3 +207,47 @@ If you encounter issues:
 3. Ensure you have proper database backups before running fixes
 
 **Remember**: Always run the preview script first to understand what changes will be made!
+
+---
+
+## Test Order Creation
+
+### Create Sample Orders for Testing
+
+**File:** `create-test-orders.js`
+**Purpose:** Create sample orders to test the CommandePage display functionality
+
+```bash
+# Using npm script (recommended)
+npm run test:create-orders
+
+# Or direct execution
+node scripts/create-test-orders.js
+```
+
+**What it does:**
+1. Finds the first station and its user
+2. Gets some articles with suppliers
+3. Creates a shopping list with random quantities
+4. Simulates order validation to create:
+   - Individual supplier orders (Commande)
+   - Global order (CommandeGlobale)
+   - Frozen pricing at transaction time
+
+**Output Example:**
+```
+Creating test orders...
+Found station: Station A
+Found 3 articles
+Created shopping list with articles
+Created order CMD-1704123456-7890 with amount: €145.67
+Created order CMD-1704123456-2345 with amount: €89.32
+Created global order CG-1704123456 with total amount: €234.99
+Test orders created successfully!
+```
+
+**Prerequisites:** 
+- Run `npm run data:import` first to have stations, users, and articles
+- Ensure MongoDB is running
+
+This script is useful for testing the CommandePage amount display functionality without manually creating orders through the UI.
