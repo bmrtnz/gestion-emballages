@@ -26,6 +26,7 @@ const {
   selectedArticle,
   selectedSupplier,
   quantityToAdd,
+  deliveryDate,
   articleSearchFilter,
   showConfirmModal,
   
@@ -50,6 +51,7 @@ const {
   handleValidateList,
   handleSupplierSelect,
   handleQuantityChange,
+  handleDeliveryDateChange,
   openConfirmModal,
   closeConfirmModal,
   getArticleDetails,
@@ -327,6 +329,7 @@ const displayData = computed(() => {
               <div v-if="selectedSupplier" class="add-to-cart-section">
                 <h4 class="text-lg font-semibold text-gray-900 mb-4">Entrer la quantité à commander</h4>
                 <div class="add-to-cart-form">
+                  <!-- Quantity and Total Row -->
                   <div class="quantity-row flex items-center gap-4 mb-4">
                     <div class="flex items-center gap-2">
                       <div class="flex flex-col">
@@ -352,6 +355,23 @@ const displayData = computed(() => {
                         {{ formatCurrency(selectedTotal) }}
                       </span>
                     </div>
+                  </div>
+                  
+                  <!-- Delivery Date Field -->
+                  <div class="delivery-date-row mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Date de livraison souhaitée
+                    </label>
+                    <input
+                      :value="deliveryDate"
+                      @input="handleDeliveryDateChange($event.target.value)"
+                      type="date"
+                      class="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-50 disabled:text-gray-500"
+                      :min="new Date().toISOString().split('T')[0]"
+                    />
+                    <p class="text-xs text-gray-500 mt-1">
+                      Si non spécifiée, la livraison sera prévue dans 7 jours
+                    </p>
                   </div>
                   <Button
                     variant="primary"

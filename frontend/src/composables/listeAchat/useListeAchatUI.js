@@ -14,6 +14,7 @@ export function useListeAchatUI() {
   const selectedArticle = ref(null);
   const selectedSupplier = ref(null);
   const quantityToAdd = ref(1);
+  const deliveryDate = ref('');
   
   // Filtres de recherche (pattern comme StationStockPage)
   const selectedCategory = ref('');
@@ -30,6 +31,7 @@ export function useListeAchatUI() {
     selectedArticle.value = null;
     selectedSupplier.value = null;
     quantityToAdd.value = 1;
+    deliveryDate.value = '';
     articleSearchFilter.value = '';
   };
   
@@ -73,6 +75,13 @@ export function useListeAchatUI() {
   const handleQuantityChange = (value) => {
     const quantity = parseInt(value) || 1;
     quantityToAdd.value = Math.max(1, quantity);
+  };
+  
+  /**
+   * Gère le changement de date de livraison souhaitée
+   */
+  const handleDeliveryDateChange = (value) => {
+    deliveryDate.value = value;
   };
   
   /**
@@ -220,11 +229,16 @@ export function useListeAchatUI() {
   const getItemDataForCart = () => {
     if (!isValidSelection.value) return null;
     
+    // Use user-selected delivery date or default to 1 week from now
+    const selectedDeliveryDate = deliveryDate.value 
+      ? new Date(deliveryDate.value) 
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    
     return {
       articleId: selectedArticle.value._id,
       fournisseurId: selectedSupplier.value.fournisseurId._id,
       quantite: quantityToAdd.value,
-      dateSouhaiteeLivraison: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 1 semaine par défaut
+      dateSouhaiteeLivraison: selectedDeliveryDate
     };
   };
   
@@ -233,6 +247,7 @@ export function useListeAchatUI() {
     selectedArticle,
     selectedSupplier,
     quantityToAdd,
+    deliveryDate,
     articleSearchFilter,
     showConfirmModal,
     
@@ -252,6 +267,7 @@ export function useListeAchatUI() {
     handleArticleSelect,
     handleSupplierSelect,
     handleQuantityChange,
+    handleDeliveryDateChange,
     openConfirmModal,
     closeConfirmModal,
     filterArticleOption,

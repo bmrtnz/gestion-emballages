@@ -8,6 +8,8 @@ import api from '../api/axios';
 import { EyeIcon, PencilSquareIcon, TrashIcon, ChevronRightIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/vue/24/outline';
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
 import { getStatusTagColor } from "../utils/statusUtils";
+import ConfirmDialog from './ui/ConfirmDialog.vue';
+import { notification } from '../composables/useNotification';
 import dayjs from "dayjs";
 
 const authStore = useAuthStore();
@@ -15,6 +17,10 @@ const authStore = useAuthStore();
 // State
 const commandesGlobales = ref([]);
 const selectedCommandes = ref([]);
+
+// Delete confirmation dialog state
+const showDeleteDialog = ref(false);
+const commandeToDelete = ref(null);
 
 // Loading and error handling
 const { isLoading, execute } = useLoading();
@@ -69,6 +75,40 @@ const handleExpandAll = () => {
 
 const handleCollapseAll = () => {
   collapseAll();
+};
+
+// Check if user can delete global commands (Manager/Gestionnaire only)
+const canDeleteGlobalCommand = computed(() => {
+  return authStore.userRole === 'Manager' || authStore.userRole === 'Gestionnaire';
+});
+
+// Delete functions
+const confirmDeleteGlobalCommand = (commandeGlobale) => {
+  commandeToDelete.value = commandeGlobale;
+  showDeleteDialog.value = true;
+};
+
+const handleDeleteConfirm = async () => {
+  if (!commandeToDelete.value) return;
+  
+  await execute(async () => {
+    await withErrorHandling(
+      () => api.delete(`/commandes-globales/${commandeToDelete.value._id}`),
+      'Erreur lors de la suppression de la commande globale'
+    );
+    
+    notification.success('Commande globale supprimée avec succès');
+    showDeleteDialog.value = false;
+    commandeToDelete.value = null;
+    
+    // Refresh the list
+    await fetchCommandesGlobales();
+  });
+};
+
+const handleDeleteCancel = () => {
+  showDeleteDialog.value = false;
+  commandeToDelete.value = null;
 };
 </script>
 
@@ -148,7 +188,12 @@ const handleCollapseAll = () => {
                     <button class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" title="Voir">
                       <EyeIcon class="h-5 w-5" />
                     </button>
-                    <button class="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors ml-2" title="Supprimer">
+                    <button 
+                      v-if="canDeleteGlobalCommand"
+                      @click="confirmDeleteGlobalCommand(parentItem)"
+                      class="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors ml-2" 
+                      title="Supprimer"
+                    >
                       <TrashIcon class="h-5 w-5" />
                     </button>
                   </td>
@@ -202,5 +247,17 @@ const handleCollapseAll = () => {
       </div>
     </div>
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <ConfirmDialog
+      :open="showDeleteDialog"
+      title="Supprimer la commande globale"
+      :message="`Êtes-vous sûr de vouloir supprimer la commande globale '${commandeToDelete?.referenceGlobale}' ? Cette action supprimera également toutes les commandes fournisseurs associées et ne peut pas être annulée.`"
+      confirm-text="Supprimer"
+      cancel-text="Annuler"
+      variant="danger"
+      @confirm="handleDeleteConfirm"
+      @cancel="handleDeleteCancel"
+    />
   </div>
 </template>
