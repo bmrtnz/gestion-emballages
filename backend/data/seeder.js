@@ -2,6 +2,9 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
+// Charger les variables d'environnement FIRST
+dotenv.config();
+
 // Charger les modèles
 const User = require("../models/userModel");
 const Station = require("../models/stationModel");
@@ -59,9 +62,6 @@ const stations = require("./stations.json");
 const fournisseurs = require("./suppliers.json"); // Utilise le nouveau fichier .json avec 24 fournisseurs
 const articles = require("./articles.json");
 
-// Charger les variables d'environnement
-dotenv.config();
-
 // Connexion à la DB - use local connection for seeder
 const mongoUri = process.env.MONGO_URI_LOCAL || 'mongodb://localhost:27017/gestionEmballages';
 console.log(`Connecting to MongoDB: ${mongoUri}`);
@@ -117,13 +117,13 @@ const importData = async () => {
             {
                 nomComplet: "Thomas Decoudun",
                 email: "thomas.decoudun@blue-whale.com",
-                password: "password123",
+                password: "LocalDevPass2025!",
                 role: "Manager",
             },
             {
                 nomComplet: "Nicole Lang",
                 email: "nicole.lang@blue-whale.com",
-                password: "password123",
+                password: "LocalDevPass2025!",
                 role: "Gestionnaire",
             },
         ];
@@ -137,7 +137,7 @@ const importData = async () => {
                 usersToCreate.push({
                     nomComplet: contact.nom,
                     email: contact.email,
-                    password: "password123",
+                    password: "LocalDevPass2025!",
                     role: "Station",
                     entiteId: station._id,
                 });
@@ -153,7 +153,7 @@ const importData = async () => {
                 usersToCreate.push({
                     nomComplet: contact.nom,
                     email: contact.email,
-                    password: "password123",
+                    password: "LocalDevPass2025!",
                     role: "Fournisseur",
                     entiteId: supplier._id,
                 });

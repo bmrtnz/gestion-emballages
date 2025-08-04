@@ -80,24 +80,68 @@ async function generatePlaceholderImage(text, width = 400, height = 300) {
 }
 
 /**
- * Generate a simple text file as PDF placeholder
+ * Generate a proper PDF file
  */
 async function generatePlaceholderPDF(title, content) {
-    // Create a simple text content that mimics a PDF
-    const pdfContent = `
-=====================================
-${title}
-=====================================
-
-${content}
-
--------------------------------------
-Generated on: ${new Date().toLocaleDateString('fr-FR')}
-Document ID: ${Math.random().toString(36).substring(7)}
-=====================================
-    `;
+    const PDFDocument = require('pdfkit');
     
-    return Buffer.from(pdfContent);
+    return new Promise((resolve, reject) => {
+        try {
+            const doc = new PDFDocument({
+                margin: 50,
+                size: 'A4'
+            });
+            
+            const buffers = [];
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfBuffer = Buffer.concat(buffers);
+                resolve(pdfBuffer);
+            });
+            
+            // Add header
+            doc.fontSize(20)
+               .fillColor('#2563eb')
+               .text(title, { align: 'center' });
+            
+            doc.moveDown(2);
+            
+            // Add a separator line
+            doc.strokeColor('#e5e7eb')
+               .lineWidth(1)
+               .moveTo(50, doc.y)
+               .lineTo(550, doc.y)
+               .stroke();
+            
+            doc.moveDown(1);
+            
+            // Add content
+            doc.fontSize(12)
+               .fillColor('#374151')
+               .text(content, {
+                   align: 'left',
+                   lineGap: 5
+               });
+            
+            doc.moveDown(3);
+            
+            // Add footer
+            doc.fontSize(10)
+               .fillColor('#9ca3af')
+               .text(`Generated on: ${new Date().toLocaleDateString('fr-FR')}`, { align: 'center' })
+               .text(`Document ID: ${Math.random().toString(36).substring(7)}`, { align: 'center' });
+            
+            // Add a simple logo/watermark
+            doc.fontSize(8)
+               .fillColor('#e5e7eb')
+               .text('GESTION EMBALLAGES - Document de Test', 50, 750, { align: 'center' });
+            
+            doc.end();
+            
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 /**

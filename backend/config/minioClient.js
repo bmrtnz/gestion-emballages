@@ -16,8 +16,23 @@ const policy = {
     "Statement": [
         {
             "Effect": "Allow",
-            "Principal": {"AWS": ["*"]},
-            "Action": ["s3:GetObject"],
+            "Principal": {
+                "AWS": ["*"]
+            },
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:ListBucket"
+            ],
+            "Resource": [`arn:aws:s3:::${bucketName}`]
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": ["*"]
+            },
+            "Action": [
+                "s3:GetObject"
+            ],
             "Resource": [`arn:aws:s3:::${bucketName}/*`]
         }
     ]

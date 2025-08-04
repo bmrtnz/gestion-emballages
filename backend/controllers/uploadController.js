@@ -50,8 +50,13 @@ exports.uploadFile = async (req, res, next) => {
         // Uploade le buffer du fichier vers le bucket MinIO.
         await minioClient.putObject(bucketName, fileName, req.file.buffer, req.file.size);
 
-        // Construit l'URL publique complète du fichier uploadé.
-        const fileUrl = `${config.minio.useSSL ? 'https' : 'http'}://${config.minio.externalHost}:${config.minio.port}/${bucketName}/${fileName}`;
+        // Construit l'URL sécurisée via le backend (au lieu d'un accès direct MinIO)
+        // TODO: En production, utiliser une URL sécurisée via le backend
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        
+        const fileUrl = isDevelopment 
+            ? `${config.minio.useSSL ? 'https' : 'http'}://${config.minio.externalHost}:${config.minio.port}/${bucketName}/${fileName}`
+            : `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/secure-image/${fileName}`;
 
         // Renvoie une réponse de succès avec un message, l'URL accessible par le client,
         // et la clé du fichier pour référence interne.

@@ -22,6 +22,7 @@ const stockStationRoutes = require("./routes/stockStationRoutes");
 const previsionRoutes = require("./routes/previsionRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const commandeGlobaleRoutes = require("./routes/commandeGlobaleRoutes");
+const secureImageRoutes = require("./routes/secureImageRoutes");
 
 // Middlewares
 app.use(cors()); // Activer CORS
@@ -54,6 +55,7 @@ app.use("/api/stocks-stations", stockStationRoutes);
 app.use("/api/previsions", previsionRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/commandes-globales", commandeGlobaleRoutes);
+app.use("/api", secureImageRoutes);
 
 // Connexion à MongoDB
 mongoose

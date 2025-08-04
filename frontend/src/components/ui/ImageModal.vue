@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -35,8 +35,22 @@ const props = defineProps({
 
 const emit = defineEmits(['close']);
 
+const imageLoadError = ref(false);
+
+// Reset error state when modal opens
+watch(() => props.open, (newValue) => {
+  if (newValue) {
+    imageLoadError.value = false;
+  }
+});
+
 const handleClose = () => {
   emit('close');
+};
+
+const handleImageError = () => {
+  imageLoadError.value = true;
+  console.error('Failed to load image:', props.imageUrl);
 };
 
 const handleBackdropClick = (event) => {
@@ -128,11 +142,11 @@ const processedImageUrl = computed(() => {
           <div class="flex-1 p-4 overflow-hidden">
             <div class="flex items-center justify-center h-full">
               <img
-                v-if="processedImageUrl"
+                v-if="processedImageUrl && !imageLoadError"
                 :src="processedImageUrl"
                 :alt="supplierInfo || 'Image'"
                 class="max-w-full max-h-full object-contain rounded-lg shadow-sm"
-                @error="$emit('close')"
+                @error="handleImageError"
               />
               <div
                 v-else
@@ -151,7 +165,8 @@ const processedImageUrl = computed(() => {
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <p class="text-sm">Aucune image disponible</p>
+                <p class="text-sm">{{ imageLoadError ? 'Erreur lors du chargement de l\'image' : 'Aucune image disponible' }}</p>
+                <p v-if="imageLoadError && processedImageUrl" class="text-xs text-gray-400 max-w-xs break-all">{{ processedImageUrl }}</p>
               </div>
             </div>
           </div>

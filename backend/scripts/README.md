@@ -2,6 +2,45 @@
 
 This directory contains utility scripts for database maintenance and data cleanup.
 
+## MinIO Bucket Policy Management
+
+If you're getting "Erreur lors du chargement de l'image" errors when viewing images, it's likely because the MinIO bucket is private.
+
+### Quick Fix
+
+1. Make sure MinIO is running:
+   ```bash
+   docker-compose up -d minio
+   ```
+
+2. Update the bucket policy to public:
+   ```bash
+   cd backend
+   node scripts/update-minio-policy.js
+   ```
+
+3. Test MinIO access:
+   ```bash
+   node scripts/check-minio-access.js
+   ```
+
+### Manual Fix via MinIO Console
+
+1. Access MinIO Console: http://localhost:9001
+2. Login with credentials from `.env` file:
+   - Username: `minioadmin`
+   - Password: `minioadmin123`
+3. Navigate to the `documents` bucket
+4. Click on "Access Policy" or "Bucket Policy"
+5. Set to "Public" or add the custom policy
+
+### Why This Happens
+
+- MinIO buckets are private by default
+- The application tries to set a public policy on startup, but this might fail
+- Docker container restarts can sometimes reset bucket policies
+- The policy needs to allow both `s3:GetObject` and `s3:ListBucket` actions
+
 ## Duplicate Designations Cleanup
 
 ### Problem

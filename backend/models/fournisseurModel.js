@@ -109,5 +109,25 @@ fournisseurSchema.pre('findOneAndUpdate', async function(next) {
     next();
 });
 
+/**
+ * Transform function to convert document file keys to full URLs
+ */
+fournisseurSchema.methods.toJSON = function() {
+    const obj = this.toObject();
+    
+    // Transform document URLs
+    if (obj.documents && obj.documents.length > 0) {
+        const config = require('../config/env');
+        const baseUrl = `${config.minio.useSSL ? 'https' : 'http'}://${config.minio.externalHost}:${config.minio.port}/documents`;
+        
+        obj.documents = obj.documents.map(doc => ({
+            ...doc,
+            urlStockage: doc.urlStockage.startsWith('http') ? doc.urlStockage : `${baseUrl}/${doc.urlStockage}`
+        }));
+    }
+    
+    return obj;
+};
+
 const Fournisseur = mongoose.model('Fournisseur', fournisseurSchema);
 module.exports = Fournisseur;
