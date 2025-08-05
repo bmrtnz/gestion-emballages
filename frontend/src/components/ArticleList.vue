@@ -318,24 +318,24 @@ defineExpose({
                         <table class="min-w-full table-fixed divide-y divide-gray-300">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
+                                    <th scope="col" class="min-w-[12rem] py-2.5 pr-3 text-left text-sm font-semibold text-gray-900">
                                         <template v-if="!useTreeView">Article</template>
                                         <template v-else>Article / Fournisseur</template>
                                     </th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">
                                         <template v-if="!useTreeView">{{ getDynamicColumnTitle("Référence", supplierName) }}</template>
                                         <template v-else>Code / Référence</template>
                                     </th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">
                                         <template v-if="!useTreeView">Conditionnement</template>
                                         <template v-else>Catégorie / Conditionnement</template>
                                     </th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Prix Conditionnement</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">Prix Conditionnement</th>
+                                    <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">
                                         <template v-if="!useTreeView">Prix unitaire</template>
                                         <template v-else>Statut / Prix Unitaire</template>
                                     </th>
-                                    <th v-if="allowRowActions" scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                                    <th v-if="allowRowActions" scope="col" class="relative py-2.5 pl-3 pr-4 sm:pr-3">
                                         <span class="sr-only">Actions</span>
                                     </th>
                                 </tr>
@@ -344,7 +344,7 @@ defineExpose({
                                 <!-- Simple view (Fournisseur) -->
                                 <template v-if="!useTreeView">
                                     <tr v-for="item in tableDataSource" :key="item._id" class="border-b border-gray-100 hover:bg-gray-50">
-                                        <td class="whitespace-nowrap py-4 pr-3 text-sm">
+                                        <td class="whitespace-nowrap py-2 pr-3 text-sm">
                                             <div class="text-gray-500">{{ item.codeArticle }}</div>
                                             <div class="flex items-center justify-between">
                                                 <div class="text-gray-900 font-medium">{{ item.designation }}</div>
@@ -365,22 +365,27 @@ defineExpose({
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                        <td class="whitespace-nowrap px-3 py-2 text-sm">
                                             <div class="text-gray-500">{{ item.categorie || "Non définie" }}</div>
                                             <div class="text-gray-900">{{ item.referenceFournisseur || "-" }}</div>
                                         </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                             {{ formatConditionnement(item) || "-" }}
                                         </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                        <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                             <span v-if="getConditionnementPrice(item)">{{ formatCurrency(getConditionnementPrice(item)) }}</span>
                                             <span v-else class="text-gray-400">N/A</span>
                                         </td>
-                                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                            <span v-if="item.prixUnitaire">{{ formatCurrency(item.prixUnitaire) }}</span>
-                                            <span v-else class="text-gray-400">N/A</span>
+                                        <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                            <div>
+                                                <span v-if="item.prixUnitaire">{{ formatCurrency(item.prixUnitaire) }}</span>
+                                                <span v-else class="text-gray-400">N/A</span>
+                                            </div>
+                                            <div v-if="item.delaiIndicatifApprovisionnement" class="text-xs text-gray-400 mt-1">
+                                                Délai: {{ item.delaiIndicatifApprovisionnement }} jour{{ item.delaiIndicatifApprovisionnement > 1 ? 's' : '' }}
+                                            </div>
                                         </td>
-                                        <td v-if="allowRowActions" class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                                        <td v-if="allowRowActions" class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                             <div v-if="canEdit" class="flex items-center justify-end gap-x-2">
                                                 <!-- Edit actions (only for managers) -->
                                                 <button
@@ -417,7 +422,7 @@ defineExpose({
                                     <template v-for="parentItem in tableDataSource" :key="parentItem.key">
                                         <!-- Parent row (Article) -->
                                         <tr class="border-b border-gray-200 bg-gray-50">
-                                            <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">
+                                            <td class="whitespace-nowrap py-2 pr-3 text-sm font-medium text-gray-900">
                                                 <div class="flex items-center">
                                                     <button
                                                         v-if="shouldShowExpandButton(parentItem)"
@@ -436,9 +441,9 @@ defineExpose({
                                                     <span class="font-semibold text-gray-900">{{ parentItem.designation }}</span>
                                                 </div>
                                             </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ parentItem.codeArticle }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ parentItem.categorie || "Non définie" }}</td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ parentItem.codeArticle }}</td>
+                                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ parentItem.categorie || "Non définie" }}</td>
+                                            <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                 <div v-if="parentItem.fournisseurs?.length" class="flex items-center">
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
                                                         {{ parentItem.fournisseurs.length }}
@@ -447,7 +452,7 @@ defineExpose({
                                                 </div>
                                                 <span v-else class="text-gray-400">-</span>
                                             </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                            <td class="whitespace-nowrap px-3 py-2 text-sm">
                                                 <span
                                                     v-if="parentItem.isActive"
                                                     class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
@@ -461,7 +466,7 @@ defineExpose({
                                                     Inactif
                                                 </span>
                                             </td>
-                                            <td v-if="allowRowActions" class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                                            <td v-if="allowRowActions" class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                                 <div v-if="canEdit" class="flex items-center justify-end gap-x-2">
                                                     <button
                                                         class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors"
@@ -493,7 +498,7 @@ defineExpose({
                                         <!-- Child rows (Suppliers) -->
                                         <template v-if="shouldShowSuppliers(parentItem.key)">
                                             <tr v-for="childItem in parentItem.children" :key="childItem._id" class="bg-white hover:bg-gray-25 border-b border-gray-100">
-                                                <td class="whitespace-nowrap py-3 pr-3 text-sm text-gray-700">
+                                                <td class="whitespace-nowrap py-2 pr-3 text-sm text-gray-700">
                                                     <div class="flex items-center justify-between pl-8">
                                                         <div class="flex items-center">
                                                             <div class="w-4 h-4 mr-2 flex items-center justify-center">
@@ -518,17 +523,22 @@ defineExpose({
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">{{ childItem.referenceFournisseur || "-" }}</td>
-                                                <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">{{ formatConditionnement(childItem) || "-" }}</td>
-                                                <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
+                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ childItem.referenceFournisseur || "-" }}</td>
+                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ formatConditionnement(childItem) || "-" }}</td>
+                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                                                     <span v-if="getConditionnementPrice(childItem)">{{ formatCurrency(getConditionnementPrice(childItem)) }}</span>
                                                     <span v-else class="text-gray-400">N/A</span>
                                                 </td>
-                                                <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
-                                                    <span v-if="childItem.prixUnitaire">{{ formatCurrency(childItem.prixUnitaire) }}</span>
-                                                    <span v-else class="text-gray-400">N/A</span>
+                                                <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                                                    <div>
+                                                        <span v-if="childItem.prixUnitaire">{{ formatCurrency(childItem.prixUnitaire) }}</span>
+                                                        <span v-else class="text-gray-400">N/A</span>
+                                                    </div>
+                                                    <div v-if="childItem.delaiIndicatifApprovisionnement" class="text-xs text-gray-400 mt-1">
+                                                        Délai: {{ childItem.delaiIndicatifApprovisionnement }} jour{{ childItem.delaiIndicatifApprovisionnement > 1 ? 's' : '' }}
+                                                    </div>
                                                 </td>
-                                                <td v-if="allowRowActions" class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                                                <td v-if="allowRowActions" class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                                                     <div v-if="canEdit" class="flex items-center justify-end gap-x-2">
                                                         <button
                                                             v-if="canEdit"
@@ -621,6 +631,9 @@ defineExpose({
                                     <p class="text-gray-900">
                                         <span v-if="item.prixUnitaire">{{ formatCurrency(item.prixUnitaire) }}</span>
                                         <span v-else class="text-gray-400">N/A</span>
+                                    </p>
+                                    <p v-if="item.delaiIndicatifApprovisionnement" class="text-xs text-gray-400 mt-1">
+                                        Délai: {{ item.delaiIndicatifApprovisionnement }} jour{{ item.delaiIndicatifApprovisionnement > 1 ? 's' : '' }}
                                     </p>
                                 </div>
                             </div>
@@ -738,6 +751,9 @@ defineExpose({
                                         formatCurrency(getConditionnementPrice(item))
                                     }}</span>
                                     <span v-if="formatConditionnement(item)"> ({{ formatConditionnement(item) }})</span>
+                                    <span v-if="item.delaiIndicatifApprovisionnement" class="block mt-1">
+                                        Délai: {{ item.delaiIndicatifApprovisionnement }} jour{{ item.delaiIndicatifApprovisionnement > 1 ? 's' : '' }}
+                                    </span>
                                 </div>
                             </div>
                             <div
@@ -773,7 +789,7 @@ defineExpose({
         </div>
 
         <!-- Pagination -->
-        <div v-if="totalPages > 1" class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
+        <div v-if="totalPages > 1" class="flex items-center justify-between px-4 py-2 bg-white border-t border-gray-200 sm:px-6">
             <div class="flex items-center justify-between w-full">
                 <!-- Mobile pagination -->
                 <div class="flex justify-between flex-1 sm:hidden">

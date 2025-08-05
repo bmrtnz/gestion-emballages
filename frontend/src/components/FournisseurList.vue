@@ -399,7 +399,7 @@ const handleViewDocument = (document) => {
                 <template v-for="parentItem in transformedTableData" :key="parentItem.key">
                   <!-- Parent row (Fournisseur) -->
                   <tr class="border-b border-gray-200 bg-gray-50">
-                    <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">
+                    <td class="whitespace-nowrap py-2 pr-3 text-sm font-medium text-gray-900">
                       <div class="flex items-center">
                         <button
                           v-if="parentItem.children.length > 0"
@@ -414,10 +414,10 @@ const handleViewDocument = (document) => {
                         <span class="font-semibold text-gray-900">{{ parentItem.nom }}</span>
                       </div>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-700 font-medium">
+                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-700 font-medium">
                       {{ parentItem.siret }}
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                       <!-- Documents icons for supplier -->
                       <div v-if="parentItem.documents && parentItem.documents.length > 0" class="flex items-center space-x-1">
                         <div
@@ -444,7 +444,7 @@ const handleViewDocument = (document) => {
                         </div>
                       </div>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <td class="whitespace-nowrap px-3 py-2 text-sm">
                       <span v-if="parentItem.isActive" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                         Actif
                       </span>
@@ -452,7 +452,7 @@ const handleViewDocument = (document) => {
                         Inactif
                       </span>
                     </td>
-                    <td v-if="allowRowActions" class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                    <td v-if="allowRowActions" class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                       <div class="flex items-center justify-end gap-x-2">
                         <button 
                           v-if="canCreateSites(parentItem)"
@@ -493,7 +493,7 @@ const handleViewDocument = (document) => {
                   <!-- Child rows (Sites) -->
                   <template v-if="isExpanded(parentItem.key)">
                     <tr v-for="childItem in parentItem.children" :key="childItem._id" class="bg-white hover:bg-gray-25 border-b border-gray-100">
-                      <td class="whitespace-nowrap py-3 pr-3 text-sm text-gray-700">
+                      <td class="whitespace-nowrap py-2 pr-3 text-sm text-gray-700">
                         <div class="flex items-center pl-8">
                           <div class="w-4 h-4 mr-2 flex items-center justify-center">
                             <div 
@@ -504,13 +504,13 @@ const handleViewDocument = (document) => {
                           {{ childItem.nomSite }}
                         </div>
                       </td>
-                      <td class="px-3 py-3 text-sm text-gray-600">
+                      <td class="px-3 py-2 text-sm text-gray-600">
                         <div v-if="formatAddress(childItem.adresse).line1">
                           <div>{{ formatAddress(childItem.adresse).line1 }}</div>
                           <div>{{ formatAddress(childItem.adresse).line2 }}</div>
                         </div>
                       </td>
-                      <td class="whitespace-nowrap px-3 py-3 text-sm text-gray-500">
+                      <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                         <div v-if="childItem.contact">
                           <div>{{ childItem.contact.nom }}</div>
                           <div class="text-gray-400">
@@ -520,7 +520,7 @@ const handleViewDocument = (document) => {
                           </div>
                         </div>
                       </td>
-                      <td class="whitespace-nowrap px-3 py-3 text-sm">
+                      <td class="whitespace-nowrap px-3 py-2 text-sm">
                         <span v-if="childItem.isActive !== false" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                           Actif
                         </span>
@@ -528,7 +528,7 @@ const handleViewDocument = (document) => {
                           Inactif
                         </span>
                       </td>
-                      <td v-if="allowRowActions" class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                      <td v-if="allowRowActions" class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <div class="flex items-center justify-end gap-x-2">
                           <button 
                             v-if="canEditSite(childItem)"

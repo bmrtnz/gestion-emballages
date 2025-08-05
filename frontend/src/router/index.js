@@ -23,6 +23,7 @@ import SupplierStockDashboard from "../views/SupplierStockDashboard.vue";
 import ContratPage from "../views/ContratPage.vue";
 import StationPage from "../views/StationPage.vue";
 import UserPage from "../views/UserPage.vue";
+import CommandeGlobaleViewPage from "../views/CommandeGlobaleViewPage.vue";
 
 const routes = [
   { path: "/", redirect: "/dashboard" },
@@ -56,6 +57,14 @@ const routes = [
     path: "/commandes/:id", // Le :id est un paramètre dynamique
     component: CommandeDetailPage,
     meta: { title: "Détail de la Commande" },
+  },
+  {
+    path: "/commandes-globales/:id",
+    component: CommandeGlobaleViewPage,
+    meta: { 
+      title: "Détail de la Commande Globale",
+      requiresRoles: ['Manager', 'Gestionnaire', 'Station']
+    },
   },
   {
     path: "/stocks",

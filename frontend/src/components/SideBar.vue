@@ -23,14 +23,20 @@ import {
     KeyIcon,
     CubeIcon,
     ShoppingCartIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
 } from "@heroicons/vue/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 
 const props = defineProps({
     sidebarOpen: Boolean,
+    sidebarCollapsed: {
+        type: Boolean,
+        default: false
+    },
 });
 
-const emit = defineEmits(["close-sidebar"]);
+const emit = defineEmits(["close-sidebar", "toggle-sidebar-collapse"]);
 
 const authStore = useAuthStore();
 const listeAchatStore = useListeAchatStore();
@@ -475,14 +481,29 @@ onMounted(() => {
         </TransitionRoot>
 
         <!-- Static sidebar for desktop -->
-        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-            <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300" :class="[sidebarCollapsed ? 'lg:w-16' : 'lg:w-72']">
+            <!-- Collapse/Expand Button -->
+            <button
+                @click="$emit('toggle-sidebar-collapse')"
+                class="absolute -right-3 top-6 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-colors"
+            >
+                <ChevronLeftIcon v-if="!sidebarCollapsed" class="h-4 w-4 text-gray-600" />
+                <ChevronRightIcon v-else class="h-4 w-4 text-gray-600" />
+            </button>
+            
+            <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white pb-4" :class="[sidebarCollapsed ? 'px-2' : 'px-6']">
                 <!-- User Profile -->
-                <div class="flex h-16 shrink-0 items-center gap-x-4">
-                    <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center">
-                        <span class="text-sm font-medium text-white">{{ userInitials }}</span>
+                <div class="flex h-16 shrink-0 items-center" :class="[sidebarCollapsed ? 'justify-center' : 'gap-x-4']">
+                    <div :class="[
+                        'rounded-full bg-primary-600 flex items-center justify-center transition-all duration-300',
+                        sidebarCollapsed ? 'h-8 w-8' : 'h-10 w-10'
+                    ]">
+                        <span :class="[
+                            'font-medium text-white transition-all duration-300',
+                            sidebarCollapsed ? 'text-xs' : 'text-sm'
+                        ]">{{ userInitials }}</span>
                     </div>
-                    <div class="flex flex-col">
+                    <div v-if="!sidebarCollapsed" class="flex flex-col">
                         <span class="text-sm font-semibold text-gray-900">{{ authStore.user?.nomComplet }}</span>
                         <span class="text-xs text-gray-500">{{ authStore.userRole }}</span>
                         <span v-if="entityName" class="text-xs text-primary-600">{{ entityName }}</span>
@@ -490,7 +511,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Search -->
-                <form class="relative" action="#" method="GET">
+                <form v-if="!sidebarCollapsed" class="relative" action="#" method="GET">
                     <input
                         type="text"
                         name="search"
@@ -510,11 +531,13 @@ onMounted(() => {
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -526,23 +549,25 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
                                     </router-link>
                                 </li>
                             </ul>
                         </li>
                         <li v-if="['Manager', 'Gestionnaire'].includes(authStore.userRole)">
-                            <div class="text-xs font-semibold leading-6 text-gray-400">GESTION</div>
+                            <div v-if="!sidebarCollapsed" class="text-xs font-semibold leading-6 text-gray-400">GESTION</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
                                 <li v-for="item in filterMenu(gestionMenu)" :key="item.name">
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -554,23 +579,25 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
                                     </router-link>
                                 </li>
                             </ul>
                         </li>
                         <li v-if="authStore.userRole === 'Station'">
-                            <div class="text-xs font-semibold leading-6 text-gray-400">GESTION</div>
+                            <div v-if="!sidebarCollapsed" class="text-xs font-semibold leading-6 text-gray-400">GESTION</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
                                 <li v-for="item in filterMenu(stationGestionMenu)" :key="item.name">
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold relative',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -582,10 +609,13 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        <span class="flex-1">{{ item.name }}</span>
+                                        <span v-if="!sidebarCollapsed" class="flex-1">{{ item.name }}</span>
                                         <span 
                                             v-if="item.name === 'Ma liste d\'achat' && cartItemsCount > 0"
-                                            class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-primary-600 rounded-full"
+                                            :class="[
+                                                'inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-white bg-primary-600 rounded-full',
+                                                sidebarCollapsed ? 'absolute -top-1 -right-1' : 'ml-auto'
+                                            ]"
                                         >
                                             {{ cartItemsCount }}
                                         </span>
@@ -594,17 +624,19 @@ onMounted(() => {
                             </ul>
                         </li>
                         <li v-if="['Manager', 'Gestionnaire'].includes(authStore.userRole)">
-                            <div class="text-xs font-semibold leading-6 text-gray-400">PARAMETRES</div>
+                            <div v-if="!sidebarCollapsed" class="text-xs font-semibold leading-6 text-gray-400">PARAMETRES</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
                                 <li v-for="item in filterMenu(parametresMenu)" :key="item.name">
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -616,23 +648,25 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
                                     </router-link>
                                 </li>
                             </ul>
                         </li>
                         <li v-if="authStore.userRole === 'Station'">
-                            <div class="text-xs font-semibold leading-6 text-gray-400">PARAMETRES</div>
+                            <div v-if="!sidebarCollapsed" class="text-xs font-semibold leading-6 text-gray-400">PARAMETRES</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
                                 <li v-for="item in filterMenu(stationParametresMenu)" :key="item.name">
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -644,23 +678,25 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
                                     </router-link>
                                 </li>
                             </ul>
                         </li>
                         <li v-if="authStore.userRole === 'Fournisseur'">
-                            <div class="text-xs font-semibold leading-6 text-gray-400">GESTION</div>
+                            <div v-if="!sidebarCollapsed" class="text-xs font-semibold leading-6 text-gray-400">GESTION</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
                                 <li v-for="item in filterMenu(fournisseurGestionMenu)" :key="item.name">
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -672,23 +708,25 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
                                     </router-link>
                                 </li>
                             </ul>
                         </li>
                         <li v-if="authStore.userRole === 'Fournisseur'">
-                            <div class="text-xs font-semibold leading-6 text-gray-400">PARAMETRES</div>
+                            <div v-if="!sidebarCollapsed" class="text-xs font-semibold leading-6 text-gray-400">PARAMETRES</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
                                 <li v-for="item in filterMenu(fournisseurParametresMenu)" :key="item.name">
                                     <router-link
                                         :to="item.href"
                                         :class="[
-                                            'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold',
+                                            'group flex rounded-md p-2 text-sm leading-6 font-semibold',
+                                            sidebarCollapsed ? 'justify-center' : 'gap-x-3',
                                             $route.path === item.href
                                                 ? 'bg-gray-50 text-primary-600'
                                                 : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50',
                                         ]"
+                                        :title="sidebarCollapsed ? item.name : ''"
                                     >
                                         <component
                                             :is="item.icon"
@@ -700,7 +738,7 @@ onMounted(() => {
                                             ]"
                                             aria-hidden="true"
                                         />
-                                        {{ item.name }}
+                                        <span v-if="!sidebarCollapsed">{{ item.name }}</span>
                                     </router-link>
                                 </li>
                             </ul>
@@ -709,13 +747,17 @@ onMounted(() => {
                             <a
                                 @click="handleLogout"
                                 href="#"
-                                class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-primary-600"
+                                :class="[
+                                    'group -mx-2 flex rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-primary-600',
+                                    sidebarCollapsed ? 'justify-center' : 'gap-x-3'
+                                ]"
+                                :title="sidebarCollapsed ? 'Se déconnecter' : ''"
                             >
                                 <ArrowLeftOnRectangleIcon
                                     class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-primary-600"
                                     aria-hidden="true"
                                 />
-                                Se déconnecter
+                                <span v-if="!sidebarCollapsed">Se déconnecter</span>
                             </a>
                         </li>
                     </ul>

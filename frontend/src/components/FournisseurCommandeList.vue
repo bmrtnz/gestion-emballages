@@ -6,6 +6,7 @@ import { useErrorHandler } from '../composables/useErrorHandler';
 import api from '../api/axios';
 import { EyeIcon, PencilSquareIcon, TrashIcon, CheckCircleIcon, PaperAirplaneIcon } from '@heroicons/vue/24/outline';
 import { getStatusTagColor } from "../utils/statusUtils";
+import { notification } from '../composables/useNotification';
 import dayjs from "dayjs";
 
 const authStore = useAuthStore();
@@ -41,6 +42,35 @@ const formatCurrency = (number) => {
   if (typeof number !== "number") return "0,00";
   return new Intl.NumberFormat("fr-FR", { style: 'currency', currency: 'EUR' }).format(number);
 };
+
+// Change order status
+const changeOrderStatus = async (commande, newStatus) => {
+  await execute(async () => {
+    try {
+      await withErrorHandling(
+        () => api.put(`/commandes/${commande._id}/statut`, { statut: newStatus }),
+        `Erreur lors du changement de statut`
+      );
+      
+      notification.success(`Commande ${newStatus === 'Confirmée' ? 'confirmée' : 'expédiée'} avec succès`);
+      
+      // Refresh the list
+      await fetchCommandesFournisseur();
+    } catch (error) {
+      console.error('Error changing status:', error);
+    }
+  });
+};
+
+// Confirm order
+const confirmOrder = (commande) => {
+  changeOrderStatus(commande, 'Confirmée');
+};
+
+// Ship order
+const shipOrder = (commande) => {
+  changeOrderStatus(commande, 'Expédiée');
+};
 </script>
 
 <template>
@@ -51,11 +81,11 @@ const formatCurrency = (number) => {
           <table class="min-w-full table-fixed divide-y divide-gray-300">
             <thead>
               <tr>
-                <th scope="col" class="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">Commande / Article</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Station / Qté</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Statut / P.U.</th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Montant Total / Total Ligne</th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-3">
+                <th scope="col" class="min-w-[12rem] py-2.5 pr-3 text-left text-sm font-semibold text-gray-900">Commande / Article</th>
+                <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">Station / Qté</th>
+                <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">Statut / P.U.</th>
+                <th scope="col" class="px-3 py-2.5 text-left text-sm font-semibold text-gray-900">Montant Total / Total Ligne</th>
+                <th scope="col" class="relative py-2.5 pl-3 pr-4 sm:pr-3">
                   <span class="sr-only">Actions</span>
                 </th>
               </tr>
@@ -81,10 +111,20 @@ const formatCurrency = (number) => {
                   </td>
                   <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                     <div v-if="item.isParent" class="flex items-center justify-end gap-x-2">
-                        <button :disabled="item.statut !== 'Enregistrée'" class="p-1.5 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Confirmer">
+                        <button 
+                          @click="confirmOrder(item)"
+                          :disabled="item.statut !== 'Enregistrée'" 
+                          class="p-1.5 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent" 
+                          title="Confirmer"
+                        >
                           <CheckCircleIcon class="h-4 w-4" />
                         </button>
-                        <button :disabled="item.statut !== 'Confirmée'" class="p-1.5 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent" title="Envoyer">
+                        <button 
+                          @click="shipOrder(item)"
+                          :disabled="item.statut !== 'Confirmée'" 
+                          class="p-1.5 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent" 
+                          title="Expédier"
+                        >
                           <PaperAirplaneIcon class="h-4 w-4" />
                         </button>
                     </div>

@@ -49,7 +49,8 @@ const { formData: addForm, validateForm: validateAddForm, resetForm: resetAddFor
     prixUnitaire: 0,
     referenceFournisseur: '',
     uniteConditionnement: '',
-    quantiteParConditionnement: 1
+    quantiteParConditionnement: 1,
+    delaiIndicatifApprovisionnement: null
   },
   {
     fournisseurId: [
@@ -65,6 +66,9 @@ const { formData: addForm, validateForm: validateAddForm, resetForm: resetAddFor
     ],
     quantiteParConditionnement: [
       (value) => !value || value <= 0 ? 'La quantité doit être supérieure à 0' : null
+    ],
+    delaiIndicatifApprovisionnement: [
+      (value) => value && (value < 1 || value > 365) ? 'Le délai doit être entre 1 et 365 jours' : null
     ]
   }
 );
@@ -152,6 +156,9 @@ onMounted(fetchSuppliers);
                 </span>
                 <span class="text-sm text-gray-500">
                   {{ formatConditionnement(item) }}
+                </span>
+                <span v-if="item.delaiIndicatifApprovisionnement" class="text-sm text-gray-500">
+                  Délai: {{ item.delaiIndicatifApprovisionnement }} jour{{ item.delaiIndicatifApprovisionnement > 1 ? 's' : '' }}
                 </span>
               </div>
             </div>
@@ -246,6 +253,28 @@ onMounted(fetchSuppliers);
           />
           <p v-if="getAddFieldMessage('prixUnitaire')" class="mt-1 text-sm text-red-600">
             {{ getAddFieldMessage('prixUnitaire') }}
+          </p>
+        </div>
+        
+        <div>
+          <label for="delaiIndicatifApprovisionnement" class="block text-sm font-medium text-gray-700">
+            Délai indicatif d'approvisionnement (jours)
+          </label>
+          <input 
+            type="number" 
+            v-model="addForm.delaiIndicatifApprovisionnement" 
+            id="delaiIndicatifApprovisionnement" 
+            name="delaiIndicatifApprovisionnement"
+            min="1"
+            max="365"
+            placeholder="Ex: 7"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
+          />
+          <p v-if="getAddFieldMessage('delaiIndicatifApprovisionnement')" class="mt-1 text-sm text-red-600">
+            {{ getAddFieldMessage('delaiIndicatifApprovisionnement') }}
+          </p>
+          <p class="mt-1 text-sm text-gray-500">
+            Nombre de jours estimé pour la livraison depuis la commande
           </p>
         </div>
         

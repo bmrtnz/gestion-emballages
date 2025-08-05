@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/authStore';
 import { useLoading } from '../composables/useLoading';
 import { useErrorHandler } from '../composables/useErrorHandler';
@@ -13,6 +14,7 @@ import { notification } from '../composables/useNotification';
 import dayjs from "dayjs";
 
 const authStore = useAuthStore();
+const router = useRouter();
 
 // State
 const commandesGlobales = ref([]);
@@ -110,6 +112,15 @@ const handleDeleteCancel = () => {
   showDeleteDialog.value = false;
   commandeToDelete.value = null;
 };
+
+// Navigation functions
+const viewGlobalOrder = (commandeGlobale) => {
+  router.push(`/commandes-globales/${commandeGlobale._id}`);
+};
+
+const viewSupplierOrder = (commande) => {
+  router.push(`/commandes/${commande._id}`);
+};
 </script>
 
 <template>
@@ -186,7 +197,11 @@ const handleDeleteCancel = () => {
                     {{ formatDate(parentItem.createdAt) }}
                   </td>
                   <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                    <button class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" title="Voir">
+                    <button 
+                      @click="viewGlobalOrder(parentItem)"
+                      class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
+                      title="Voir"
+                    >
                       <EyeIcon class="h-5 w-5" />
                     </button>
                     <button 
@@ -227,7 +242,11 @@ const handleDeleteCancel = () => {
                       {{ formatDate(childItem.createdAt) }}
                     </td>
                     <td class="whitespace-nowrap py-3 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-                      <button class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" title="Voir">
+                      <button 
+                        @click="viewSupplierOrder(childItem)"
+                        class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors" 
+                        title="Voir"
+                      >
                         <EyeIcon class="h-5 w-5" />
                       </button>
                       <button class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded transition-colors ml-2" title="Modifier">

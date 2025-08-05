@@ -1,6 +1,6 @@
 <script setup>
 // Vue and composables
-import { computed } from "vue";
+import { computed, watch } from "vue";
 
 // Main orchestrator composable
 import { useListeAchat } from "../composables/listeAchat/useListeAchat";
@@ -14,6 +14,7 @@ import ConfirmModal from "../components/ui/ConfirmModal.vue";
 // Icons
 import {
   TrashIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/vue/24/outline";
 
 // Utilisation du composable principal orchestrateur
@@ -98,8 +99,8 @@ const formatDate = (dateString) => {
   });
 };
 
-// Date coloring helper
-const getDateColorClass = (dateString) => {
+// Date coloring helper based on supplier's delay
+const getDateColorClass = (dateString, item = null) => {
   if (!dateString) return 'text-gray-500';
   
   const date = new Date(dateString);
@@ -107,6 +108,27 @@ const getDateColorClass = (dateString) => {
   today.setHours(0, 0, 0, 0);
   date.setHours(0, 0, 0, 0);
   
+  // If we have item information, use the supplier's delay for calculations
+  if (item) {
+    const supplierDetails = getSupplierDetails(item.articleId, item.fournisseurId);
+    const supplierDelay = supplierDetails?.delaiIndicatifApprovisionnement;
+    
+    if (supplierDelay) {
+      // Calculate earliest possible delivery date using working days
+      const earliestPossibleDate = addWorkingDays(today, supplierDelay);
+      earliestPossibleDate.setHours(0, 0, 0, 0);
+      
+      if (date.getTime() < today.getTime()) {
+        return 'text-red-600 font-semibold'; // Passed date
+      } else if (date.getTime() < earliestPossibleDate.getTime()) {
+        return 'text-amber-600 font-semibold'; // Before minimum delay
+      } else {
+        return 'text-gray-700'; // Compatible with delay
+      }
+    }
+  }
+  
+  // Fallback to calendar days logic if no supplier delay info
   const diffTime = date.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
@@ -119,7 +141,7 @@ const getDateColorClass = (dateString) => {
   }
 };
 
-// Check if any item has a passed delivery date
+// Check if any item has a passed delivery date or incompatible with supplier delay
 const hasPassedDeliveryDate = computed(() => {
   if (!activeListeAchat.value?.articles?.length) return false;
   
@@ -128,9 +150,26 @@ const hasPassedDeliveryDate = computed(() => {
   
   return activeListeAchat.value.articles.some(item => {
     if (!item.dateSouhaiteeLivraison) return false;
+    
     const deliveryDate = new Date(item.dateSouhaiteeLivraison);
     deliveryDate.setHours(0, 0, 0, 0);
-    return deliveryDate.getTime() < today.getTime();
+    
+    // Check if date is in the past
+    if (deliveryDate.getTime() < today.getTime()) {
+      return true;
+    }
+    
+    // Check if date is incompatible with supplier delay
+    const supplierDetails = getSupplierDetails(item.articleId, item.fournisseurId);
+    const supplierDelay = supplierDetails?.delaiIndicatifApprovisionnement;
+    
+    if (supplierDelay) {
+      const earliestPossibleDate = addWorkingDays(today, supplierDelay);
+      earliestPossibleDate.setHours(0, 0, 0, 0);
+      return deliveryDate.getTime() < earliestPossibleDate.getTime();
+    }
+    
+    return false;
   });
 });
 
@@ -138,6 +177,40 @@ const hasPassedDeliveryDate = computed(() => {
 const isValidationBlocked = computed(() => {
   return hasPassedDeliveryDate.value;
 });
+
+// Helper function to add working days to a date (excludes weekends)
+const addWorkingDays = (startDate, workingDays) => {
+  const date = new Date(startDate);
+  let daysAdded = 0;
+  
+  while (daysAdded < workingDays) {
+    date.setDate(date.getDate() + 1);
+    // Check if it's not a weekend (0 = Sunday, 6 = Saturday)
+    if (date.getDay() !== 0 && date.getDay() !== 6) {
+      daysAdded++;
+    }
+  }
+  
+  return date;
+};
+
+// Helper function to count working days between two dates
+const countWorkingDays = (startDate, endDate) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  let workingDays = 0;
+  
+  const currentDate = new Date(start);
+  while (currentDate <= end) {
+    // Check if it's not a weekend (0 = Sunday, 6 = Saturday)
+    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
+      workingDays++;
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  
+  return workingDays;
+};
 
 // French pluralization helper for conditioning types
 const pluralizeFrench = (word, quantity) => {
@@ -159,6 +232,63 @@ const pluralizeFrench = (word, quantity) => {
   return word + 's';
 };
 
+// Computed pour vérifier la compatibilité de la date de livraison avec le délai d'approvisionnement (jours ouvrés)
+const deliveryDateCompatibility = computed(() => {
+  if (!selectedSupplier.value || !deliveryDate.value || !selectedSupplier.value.delaiIndicatifApprovisionnement) {
+    return { isCompatible: true, message: null, earliestDate: null };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const selectedDate = new Date(deliveryDate.value);
+  selectedDate.setHours(0, 0, 0, 0);
+  
+  const delayWorkingDays = selectedSupplier.value.delaiIndicatifApprovisionnement;
+  
+  // Calculate the earliest possible date using working days
+  const earliestPossibleDate = addWorkingDays(today, delayWorkingDays);
+  earliestPossibleDate.setHours(0, 0, 0, 0);
+  
+  const isCompatible = selectedDate >= earliestPossibleDate;
+  
+  return {
+    isCompatible,
+    message: isCompatible ? null : `La date souhaitée est trop proche. Délai minimum : ${delayWorkingDays} jour${delayWorkingDays > 1 ? 's' : ''} ouvré${delayWorkingDays > 1 ? 's' : ''}`,
+    earliestDate: earliestPossibleDate.toISOString().split('T')[0],
+    delayDays: delayWorkingDays
+  };
+});
+
+// Computed pour calculer la date de livraison par défaut basée sur le délai du fournisseur
+const defaultDeliveryDate = computed(() => {
+  if (!selectedSupplier.value?.delaiIndicatifApprovisionnement) {
+    // Fallback: 7 jours ouvrés si pas de délai spécifié
+    const fallbackDate = addWorkingDays(new Date(), 7);
+    return fallbackDate;
+  }
+  
+  const today = new Date();
+  const supplierDelay = selectedSupplier.value.delaiIndicatifApprovisionnement;
+  // Délai exact du fournisseur sans marge supplémentaire
+  const defaultDate = addWorkingDays(today, supplierDelay);
+  
+  return defaultDate;
+});
+
+// Computed pour le message informatif sous le sélecteur de date
+const deliveryDateMessage = computed(() => {
+  if (!selectedSupplier.value?.delaiIndicatifApprovisionnement) {
+    return "Si non spécifiée, la livraison sera prévue dans 7 jours ouvrés";
+  }
+  
+  const supplierDelay = selectedSupplier.value.delaiIndicatifApprovisionnement;
+  const defaultDate = defaultDeliveryDate.value;
+  const formattedDate = formatDate(defaultDate.toISOString().split('T')[0]);
+  
+  return `Date suggérée : ${formattedDate} (délai fournisseur ${supplierDelay} jour${supplierDelay > 1 ? 's' : ''} ouvré${supplierDelay > 1 ? 's' : ''})`;
+});
+
 // Computed pour l'affichage des données de la liste
 const displayData = computed(() => {
   return transformedListData.value || {
@@ -166,6 +296,20 @@ const displayData = computed(() => {
     displaySubtitle: 'Gérer votre liste d\'achat et créez vos commandes fournisseurs.'
   };
 });
+
+// Watcher pour définir automatiquement la date de livraison par défaut quand un fournisseur est sélectionné
+watch(selectedSupplier, (newSupplier) => {
+  if (newSupplier && newSupplier.delaiIndicatifApprovisionnement) {
+    // Calculer la date par défaut : délai fournisseur + 1 jour ouvré
+    const defaultDate = defaultDeliveryDate.value;
+    const defaultDateString = defaultDate.toISOString().split('T')[0];
+    
+    // Définir la date par défaut seulement si aucune date n'est déjà sélectionnée
+    if (!deliveryDate.value) {
+      handleDeliveryDateChange(defaultDateString);
+    }
+  }
+}, { immediate: false });
 </script>
 
 <template>
@@ -193,7 +337,7 @@ const displayData = computed(() => {
                 {{ uiBehavior.messages?.validateButton || 'Valider la Liste et Commander' }}
               </Button>
               <div v-if="isValidationBlocked" class="text-sm text-red-600 font-medium">
-                ⚠️ Impossible de valider : des dates de livraison sont dépassées
+                ⚠️ Impossible de valider : des dates de livraison sont incompatibles avec les délais d'approvisionnement
               </div>
             </div>
             <div class="total-amount">
@@ -227,7 +371,7 @@ const displayData = computed(() => {
                 <tbody>
                   <tr v-for="item in activeListeAchat?.articles" :key="item._id">
                     <td class="align-top py-2 px-2">
-                      <div class="text-sm font-medium" :class="getDateColorClass(item.dateSouhaiteeLivraison)">
+                      <div class="text-sm font-medium" :class="getDateColorClass(item.dateSouhaiteeLivraison, item)">
                         {{ item.dateSouhaiteeLivraison ? formatDate(item.dateSouhaiteeLivraison) : 'N/A' }}
                       </div>
                     </td>
@@ -410,6 +554,11 @@ const displayData = computed(() => {
                   <div class="text-xs text-gray-500">
                     Prix unitaire: {{ formatCurrency(supplier.prixUnitaire) }}
                   </div>
+                  
+                  <!-- Supply delay -->
+                  <div v-if="supplier.delaiIndicatifApprovisionnement" class="text-xs text-gray-500 mt-1">
+                    Délai: {{ supplier.delaiIndicatifApprovisionnement }} jour{{ supplier.delaiIndicatifApprovisionnement > 1 ? 's' : '' }}
+                  </div>
                 </div>
               </div>
 
@@ -458,8 +607,24 @@ const displayData = computed(() => {
                       :min="new Date().toISOString().split('T')[0]"
                     />
                     <p class="text-xs text-gray-500 mt-1">
-                      Si non spécifiée, la livraison sera prévue dans 7 jours
+                      {{ deliveryDateMessage }}
                     </p>
+                    
+                    <!-- Delivery Date Compatibility Warning -->
+                    <div v-if="!deliveryDateCompatibility.isCompatible" class="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-start gap-2">
+                      <ExclamationTriangleIcon class="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div class="flex-1">
+                        <p class="text-sm font-medium text-amber-800 mb-1">
+                          Date de livraison incompatible
+                        </p>
+                        <p class="text-xs text-amber-700">
+                          {{ deliveryDateCompatibility.message }}
+                        </p>
+                        <p class="text-xs text-amber-600 mt-1">
+                          Date la plus proche possible : {{ formatDate(deliveryDateCompatibility.earliestDate) }}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   <Button
                     variant="primary"

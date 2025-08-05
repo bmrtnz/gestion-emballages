@@ -215,15 +215,15 @@ defineExpose({ fetchStations });
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="station in stations" :key="station._id">
-                  <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">{{ station.nom }}</td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ station.identifiantInterne }}</td>
-                  <td class="px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap py-2 pr-3 text-sm font-medium text-gray-900">{{ station.nom }}</td>
+                  <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ station.identifiantInterne }}</td>
+                  <td class="px-3 py-2 text-sm text-gray-500">
                     <div v-if="formatAddress(station.adresse).line1">
                       <div>{{ formatAddress(station.adresse).line1 }}</div>
                       <div class="text-xs">{{ formatAddress(station.adresse).line2 }}</div>
                     </div>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                     <div v-if="station.contactPrincipal">
                       <div>{{ station.contactPrincipal.nom }}</div>
                       <div class="text-gray-400">
@@ -233,7 +233,7 @@ defineExpose({ fetchStations });
                       </div>
                     </div>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                  <td class="whitespace-nowrap px-3 py-2 text-sm">
                     <span v-if="station.isActive" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                       Actif
                     </span>
@@ -241,7 +241,7 @@ defineExpose({ fetchStations });
                       Inactif
                     </span>
                   </td>
-                  <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                  <td class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                     <div class="flex items-center justify-end gap-x-2">
                       <button @click="openEditPanel(station)" class="p-1.5 text-primary-600 hover:text-primary-900 hover:bg-primary-50 rounded-lg transition-colors" title="Modifier">
                         <PencilSquareIcon class="h-5 w-5" />

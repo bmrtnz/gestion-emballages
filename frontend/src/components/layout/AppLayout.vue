@@ -4,6 +4,11 @@ import Sidebar from '../SideBar.vue';
 import { Bars3Icon } from '@heroicons/vue/24/outline';
 
 const sidebarOpen = ref(false);
+const sidebarCollapsed = ref(false);
+
+const toggleSidebarCollapse = () => {
+    sidebarCollapsed.value = !sidebarCollapsed.value;
+};
 </script>
 
 <template>
@@ -14,7 +19,12 @@ const sidebarOpen = ref(false);
     
     <!-- Content wrapper -->
     <div class="relative">
-      <Sidebar :sidebar-open="sidebarOpen" @close-sidebar="sidebarOpen = false" />
+      <Sidebar 
+        :sidebar-open="sidebarOpen" 
+        :sidebar-collapsed="sidebarCollapsed"
+        @close-sidebar="sidebarOpen = false" 
+        @toggle-sidebar-collapse="toggleSidebarCollapse"
+      />
     
     <!-- Mobile header -->
     <div class="sticky top-0 z-40 flex items-center gap-x-6 bg-white/95 backdrop-blur-sm px-4 py-4 shadow-sm sm:px-6 lg:hidden">
@@ -31,7 +41,7 @@ const sidebarOpen = ref(false);
       </div>
     </div>
     
-    <div class="lg:pl-72">
+    <div class="transition-all duration-300" :class="[sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-72']">
       <main class="py-10">
         <div class="px-4 sm:px-6 lg:px-8">
           <slot />

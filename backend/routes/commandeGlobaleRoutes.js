@@ -1,7 +1,7 @@
 // backend/routes/commandeGlobaleRoutes.js
 const express = require('express');
 const router = express.Router();
-const { getCommandesGlobales, deleteCommandeGlobale } = require('../controllers/commandeGlobaleController');
+const { getCommandesGlobales, getCommandeGlobaleById, deleteCommandeGlobale } = require('../controllers/commandeGlobaleController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 /**
@@ -44,6 +44,27 @@ router.route('/:id')
   /**
    * @swagger
    * /commandes-globales/{id}:
+   *   get:
+   *     summary: Récupérer une commande globale par son ID
+   *     tags: [Commandes Globales]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: ID de la commande globale
+   *     responses:
+   *       200:
+   *         description: Commande globale trouvée avec succès.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/CommandeGlobale'
+   *       404:
+   *         description: Commande globale non trouvée.
    *   delete:
    *     summary: Supprimer une commande globale et toutes ses données associées
    *     tags: [Commandes Globales]
@@ -62,6 +83,7 @@ router.route('/:id')
    *       404:
    *         description: Commande globale non trouvée.
    */
+  .get(viewRoles, getCommandeGlobaleById)
   .delete(editRoles, deleteCommandeGlobale);
 
 module.exports = router;

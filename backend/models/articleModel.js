@@ -12,6 +12,7 @@ const fournisseurInfoSchema = new mongoose.Schema({
     prixUnitaire: { type: Number, required: true },
     uniteConditionnement: String,
     quantiteParConditionnement: Number,
+    delaiIndicatifApprovisionnement: { type: Number }, // Délai en jours
     imageUrl: String, // URL de l'image du produit chez ce fournisseur
     documents: [
         {

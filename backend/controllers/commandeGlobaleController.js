@@ -70,6 +70,108 @@ exports.getCommandesGlobales = async (req, res, next) => {
 };
 
 /**
+ * Obtenir une commande globale par son ID avec toutes les données associées.
+ * @function getCommandeGlobaleById
+ * @memberof module:controllers/commandeGlobaleController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.params - Paramètres de la route
+ * @param {string} req.params.id - ID de la commande globale à récupérer
+ * @param {Object} req.user - Utilisateur connecté (ajouté par le middleware auth)
+ * @param {string} req.user.role - Rôle de l'utilisateur (Manager, Gestionnaire, Station)
+ * @param {string} req.user.entiteId - ID de l'entité associée à l'utilisateur
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie la commande globale avec ses commandes fournisseurs détaillées
+ * @throws {NotFoundError} Si la commande globale n'est pas trouvée
+ * @since 1.0.0
+ * @example
+ * // GET /api/commandes-globales/64f5a1b2c3d4e5f6a7b8c9d0
+ * // Response: { "_id": "...", "stationId": { "nom": "Station A" }, "commandesFournisseurs": [...], "statutGeneral": "En cours" }
+ */
+exports.getCommandeGlobaleById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    // Build query - stations can only see their own orders
+    let query = { _id: id };
+    if (req.user.role === "Station") {
+      query.stationId = req.user.entiteId;
+    }
+
+    const commandeGlobale = await CommandeGlobale.findOne(query)
+      .populate({
+        path: "commandesFournisseurs",
+        populate: [
+          { 
+            path: "fournisseurId", 
+            select: "nom siret adresse contactPrincipal" 
+          },
+          {
+            path: "articles.articleId",
+            select: "codeArticle designation categorie"
+          }
+        ]
+      })
+      .populate("stationId", "nom identifiantInterne adresse contactPrincipal")
+      .populate("listeAchatId")
+      .populate({
+        path: "creeParId",
+        select: "nomComplet email"
+      });
+
+    if (!commandeGlobale) {
+      return next(new NotFoundError("Commande globale non trouvée."));
+    }
+
+    // Handle different scenarios for creeParId to ensure consistent data structure
+    if (!commandeGlobale.creeParId) {
+      // If creeParId is null, provide a default - this can happen with older records
+      commandeGlobale.creeParId = {
+        nomComplet: 'Utilisateur non identifié',
+        email: 'Non disponible'
+      };
+    } else if (typeof commandeGlobale.creeParId === 'string' || (typeof commandeGlobale.creeParId === 'object' && !commandeGlobale.creeParId.nomComplet)) {
+      // creeParId exists but wasn't populated or is an ObjectId - try manual population
+      try {
+        const User = require('../models/userModel');
+        const userId = typeof commandeGlobale.creeParId === 'string' ? commandeGlobale.creeParId : commandeGlobale.creeParId._id || commandeGlobale.creeParId;
+        
+        const user = await User.findById(userId).select('nomComplet email');
+        if (user) {
+          commandeGlobale.creeParId = {
+            _id: user._id,
+            nomComplet: user.nomComplet,
+            email: user.email
+          };
+        } else {
+          commandeGlobale.creeParId = {
+            nomComplet: `Utilisateur supprimé (ID: ${userId.toString().substring(0, 8)}...)`,
+            email: 'Non disponible'
+          };
+        }
+      } catch (error) {
+        commandeGlobale.creeParId = {
+          nomComplet: 'Erreur de chargement utilisateur',
+          email: 'Non disponible'
+        };
+      }
+    }
+    // If creeParId is already properly populated, no action needed
+
+    // Recalculate status for consistency
+    const newStatus = calculateStatutGeneral(commandeGlobale.commandesFournisseurs);
+    if (commandeGlobale.statutGeneral !== newStatus) {
+      commandeGlobale.statutGeneral = newStatus;
+      await commandeGlobale.save();
+    }
+
+    res.json(commandeGlobale);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Supprimer une commande globale et toutes ses données associées (commandes, documents).
  * @function deleteCommandeGlobale
  * @memberof module:controllers/commandeGlobaleController

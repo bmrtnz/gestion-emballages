@@ -676,6 +676,7 @@ exports.deleteArticle = async (req, res, next) => {
  * @param {string} [req.body.referenceFournisseur] - Référence de l'article chez le fournisseur
  * @param {string} [req.body.uniteConditionnement] - Unité de conditionnement
  * @param {number} [req.body.quantiteParConditionnement] - Quantité par conditionnement
+ * @param {number} [req.body.delaiIndicatifApprovisionnement] - Délai indicatif d'approvisionnement en jours
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
  * @returns {Promise<void>} Renvoie l'article mis à jour avec ses fournisseurs
@@ -690,7 +691,7 @@ exports.deleteArticle = async (req, res, next) => {
 exports.addOrUpdateFournisseurForArticle = async (req, res, next) => {
     try {
     // Extraction des données du fournisseur depuis le corps de la requête.
-    const { fournisseurId, prixUnitaire, referenceFournisseur, uniteConditionnement, quantiteParConditionnement } =
+    const { fournisseurId, prixUnitaire, referenceFournisseur, uniteConditionnement, quantiteParConditionnement, delaiIndicatifApprovisionnement } =
         req.body;
 
     // Validation des données requises
@@ -721,6 +722,7 @@ exports.addOrUpdateFournisseurForArticle = async (req, res, next) => {
         existingFournisseur.referenceFournisseur = referenceFournisseur;
         existingFournisseur.uniteConditionnement = uniteConditionnement;
         existingFournisseur.quantiteParConditionnement = quantiteParConditionnement;
+        existingFournisseur.delaiIndicatifApprovisionnement = delaiIndicatifApprovisionnement;
     } else {
         // Sinon, ajout du nouveau fournisseur à la liste des fournisseurs de l'article.
         article.fournisseurs.push({
@@ -729,6 +731,7 @@ exports.addOrUpdateFournisseurForArticle = async (req, res, next) => {
             referenceFournisseur,
             uniteConditionnement,
             quantiteParConditionnement,
+            delaiIndicatifApprovisionnement,
         });
     }
 
@@ -818,6 +821,7 @@ exports.removeFournisseurFromArticle = async (req, res, next) => {
  * @param {string} [req.body.referenceFournisseur] - Nouvelle référence fournisseur
  * @param {string} [req.body.uniteConditionnement] - Nouvelle unité de conditionnement
  * @param {number} [req.body.quantiteParConditionnement] - Nouvelle quantité par conditionnement
+ * @param {number} [req.body.delaiIndicatifApprovisionnement] - Nouveau délai indicatif d'approvisionnement en jours
  * @param {Express.Response} res - L'objet de réponse Express
  * @param {Function} next - Le prochain middleware Express
  * @returns {Promise<void>} Renvoie l'article avec les informations fournisseur mises à jour
@@ -832,7 +836,7 @@ exports.updateFournisseurForArticle = async (req, res, next) => {
     try {
     // Extraction des IDs et des données à mettre à jour.
     const { id: articleId, fournisseurInfoId } = req.params;
-    const { prixUnitaire, referenceFournisseur, uniteConditionnement, quantiteParConditionnement } = req.body;
+    const { prixUnitaire, referenceFournisseur, uniteConditionnement, quantiteParConditionnement, delaiIndicatifApprovisionnement } = req.body;
 
     // Recherche de l'article parent.
     const article = await Article.findById(articleId);
@@ -853,6 +857,7 @@ exports.updateFournisseurForArticle = async (req, res, next) => {
     if (referenceFournisseur !== undefined) fournisseurInfo.referenceFournisseur = referenceFournisseur;
     if (uniteConditionnement !== undefined) fournisseurInfo.uniteConditionnement = uniteConditionnement;
     if (quantiteParConditionnement !== undefined) fournisseurInfo.quantiteParConditionnement = quantiteParConditionnement;
+    if (delaiIndicatifApprovisionnement !== undefined) fournisseurInfo.delaiIndicatifApprovisionnement = delaiIndicatifApprovisionnement;
 
     // Sauvegarde de l'article parent pour appliquer les modifications.
     await article.save();

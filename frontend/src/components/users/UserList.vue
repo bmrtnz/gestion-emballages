@@ -233,20 +233,20 @@ defineExpose({ fetchUsers });
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="user in transformedUsers" :key="user._id">
-                    <td class="whitespace-nowrap py-4 pr-3 text-sm font-medium text-gray-900">{{ user.nomComplet }}</td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ user.email }}</td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td class="whitespace-nowrap py-2 pr-3 text-sm font-medium text-gray-900">{{ user.nomComplet }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{{ user.email }}</td>
+                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                         {{ user.displayRole }}
                         <span v-if="user.displayEntity && user.displayEntity !== '-'" class="text-gray-400">
                             ({{ user.displayEntity }})
                         </span>
                     </td>
-                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td class="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
                         <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" :class="user.statusClass">
                             {{ user.displayStatus }}
                         </span>
                     </td>
-                    <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
+                    <td class="whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
                         <div class="flex items-center justify-end gap-x-2">
                             <button 
                                 v-if="canEditUser(user)"
