@@ -1,0 +1,241 @@
+# Root level .gitignore for Gestion Emballages v2
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploads and storage
+uploads/
+storage/
+files/
+documents/
+
+# Backups
+backups/
+*.backup
+*.bak
+*.sql
+
+# MinIO data
+minio-data/
+
+# Redis data
+redis-data/
+
+# PostgreSQL data
+postgres-data/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+certificates/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Local configuration
+config/local.*
+local.config.*
+
+# Documentation generated files
+docs/generated/
+
+# Coverage reports
+coverage/
+
+# Test results
+test-results/
+playwright-report/
+
+# Build artifacts (should be in respective .gitignores but adding here as backup)
+dist/
+build/
+out/
+
+# Node modules (should be in respective .gitignores but adding here as backup)
+node_modules/
+
+# Package lock files (uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+
+# Local development overrides
+docker-compose.local.yml
+docker-compose.dev.local.yml
+
+# Monitoring and logs
+prometheus-data/
+grafana-data/
+loki-data/
+
+# Secrets and sensitive data
+secrets/
+*.secret
+private/
+
+# Local scripts
+scripts/local/
+run-local.*
+start-local.*
+
+# Generated API documentation
+swagger.json
+api-docs.json
+
+# Cache directories
+.cache/
+cache/
+
+# JetBrains
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Development databases
+dev.db
+development.db
+test.db
+
+# Email templates compiled
+email-templates/compiled/
+
+# Local environment overrides
+.env.override
+.env.dev.local
+.env.prod.local
+
+# Terraform (if used for infrastructure)
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+
+# Kubernetes (if used)
+*.kubeconfig
+kube-config
+
+# Docker volumes
+docker/data/
+volumes/
+
+# CI/CD artifacts
+.github/workflows/local/
+.gitlab-ci.local.yml
+jenkins/local/
+
+# Performance testing
+performance-results/
+load-test-results/
+
+# Security scanning results
+security-scan-results/
+vulnerability-reports/
+
+# Local development tools
+.devcontainer/local/
+.vscode/settings.local.json
+
+# Database migrations (if you want to ignore local migration files)
+# migrations/local/
+
+# Local seed data (if it contains sensitive information)
+# seeds/local/
+
+# Profiling data
+*.prof
+profiles/
+
+# Memory dumps
+*.heapsnapshot
+heapdumps/
+
+# Local configuration overrides
+config.local.json
+settings.local.json
+
+# Generated certificates for local development
+localhost.pem
+localhost-key.pem
+local-ca.pem
+local-ca-key.pem

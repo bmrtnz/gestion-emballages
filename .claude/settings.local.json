@@ -26,7 +26,8 @@
       "Bash(docker-compose:*)",
       "Bash(tail:*)",
       "Bash(touch:*)",
-      "Bash(timeout 8s npm start)"
+      "Bash(timeout 8s npm start)",
+      "Bash(powershell:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,1 @@
+// This file has been removed - using inline SVG icons instead
