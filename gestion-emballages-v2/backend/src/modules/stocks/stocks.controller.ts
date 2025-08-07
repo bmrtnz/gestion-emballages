@@ -35,7 +35,7 @@ export class StocksController {
 
   // Station Stock Management
   @Post('stations')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Create station stock entry' })
   @ApiResponse({ status: 201, description: 'Station stock created successfully' })
   async createStockStation(@Body() createStockStationDto: CreateStockStationDto, @Request() req) {
@@ -72,7 +72,7 @@ export class StocksController {
   }
 
   @Patch('stations/:id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update station stock' })
   @ApiResponse({ status: 200, description: 'Station stock updated successfully' })
   async updateStockStation(
@@ -84,7 +84,7 @@ export class StocksController {
   }
 
   @Patch('stations/:id/adjust')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Adjust station stock quantity' })
   @ApiResponse({ status: 200, description: 'Station stock adjusted successfully' })
   async adjustStockStation(
@@ -96,7 +96,7 @@ export class StocksController {
   }
 
   @Delete('stations/:id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Delete station stock' })
   @ApiResponse({ status: 200, description: 'Station stock deleted successfully' })
   async deleteStockStation(@Param('id') id: string) {
@@ -105,7 +105,7 @@ export class StocksController {
 
   // Supplier Stock Management
   @Post('fournisseurs')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.FOURNISSEUR)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.SUPPLIER)
   @ApiOperation({ summary: 'Create supplier stock entry' })
   @ApiResponse({ status: 201, description: 'Supplier stock created successfully' })
   async createStockFournisseur(@Body() createStockFournisseurDto: CreateStockFournisseurDto) {
@@ -117,7 +117,7 @@ export class StocksController {
   @ApiResponse({ status: 200, description: 'Supplier stocks retrieved successfully' })
   async findAllStockFournisseurs(@Query() paginationDto: PaginationDto, @Request() req) {
     // Add role-based filtering
-    if (req.user.role === UserRole.FOURNISSEUR) {
+    if (req.user.role === UserRole.SUPPLIER) {
       paginationDto['fournisseurId'] = req.user.entiteId;
     }
 
@@ -142,7 +142,7 @@ export class StocksController {
   }
 
   @Patch('fournisseurs/:id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.FOURNISSEUR)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.SUPPLIER)
   @ApiOperation({ summary: 'Update supplier stock' })
   @ApiResponse({ status: 200, description: 'Supplier stock updated successfully' })
   async updateStockFournisseur(
@@ -153,7 +153,7 @@ export class StocksController {
   }
 
   @Delete('fournisseurs/:id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Delete supplier stock' })
   @ApiResponse({ status: 200, description: 'Supplier stock deleted successfully' })
   async deleteStockFournisseur(@Param('id') id: string) {
@@ -162,7 +162,7 @@ export class StocksController {
 
   // Analytics and Reports
   @Get('analytics/overview')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get stock analytics overview' })
   @ApiResponse({ status: 200, description: 'Stock analytics retrieved successfully' })
   async getStockAnalytics(@Query('stationId') stationId?: string, @Request() req?) {
@@ -172,7 +172,7 @@ export class StocksController {
   }
 
   @Get('alerts/low-stock')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get low stock alerts' })
   @ApiResponse({ status: 200, description: 'Low stock alerts retrieved successfully' })
   async getLowStockAlerts(@Query('stationId') stationId?: string, @Request() req?) {
@@ -182,7 +182,7 @@ export class StocksController {
   }
 
   @Get('movements/:articleId')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get stock movements for an article' })
   @ApiResponse({ status: 200, description: 'Stock movements retrieved successfully' })
   async getStockMovements(

@@ -41,7 +41,7 @@ export class AdminSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Analyses',
             href: '#',
-            icon: 'bar-chart-3'
+            icon: 'chart-candlestick'
           }
         ]
       },
@@ -141,7 +141,7 @@ export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Analyses',
             href: '#',
-            icon: 'bar-chart-3'
+            icon: 'chart-candlestick'
           }
         ]
       },
@@ -228,7 +228,7 @@ export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
 @Injectable({
   providedIn: 'root'
 })
-export class GestionnaireSidebarStrategy extends SidebarNavigationStrategy {
+export class HandlerSidebarStrategy extends SidebarNavigationStrategy {
   getNavigation(): NavigationSection[] {
     return [
       {
@@ -241,7 +241,7 @@ export class GestionnaireSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Analyses',
             href: '#',
-            icon: 'bar-chart-3'
+            icon: 'chart-candlestick'
           }
         ]
       },
@@ -385,7 +385,7 @@ export class StationSidebarStrategy extends SidebarNavigationStrategy {
   }
 
   getEntityName(user: any): string | null {
-    return user?.entiteDetails?.nom || null;
+    return user?.station?.name || user?.supplier?.name || null;
   }
 
   getStockUrl(): string {
@@ -404,7 +404,7 @@ export class StationSidebarStrategy extends SidebarNavigationStrategy {
 @Injectable({
   providedIn: 'root'
 })
-export class FournisseurSidebarStrategy extends SidebarNavigationStrategy {
+export class SupplierSidebarStrategy extends SidebarNavigationStrategy {
   getNavigation(): NavigationSection[] {
     return [
       {
@@ -450,7 +450,7 @@ export class FournisseurSidebarStrategy extends SidebarNavigationStrategy {
   }
 
   getEntityName(user: any): string | null {
-    return user?.entiteDetails?.nom || null;
+    return user?.station?.name || user?.supplier?.name || null;
   }
 
   getStockUrl(): string {
@@ -476,12 +476,12 @@ export class SidebarNavigationStrategyFactory {
         return new AdminSidebarStrategy();
       case UserRole.MANAGER:
         return new ManagerSidebarStrategy();
-      case UserRole.GESTIONNAIRE:
-        return new GestionnaireSidebarStrategy();
+      case UserRole.HANDLER:
+        return new HandlerSidebarStrategy();
       case UserRole.STATION:
         return new StationSidebarStrategy();
-      case UserRole.FOURNISSEUR:
-        return new FournisseurSidebarStrategy();
+      case UserRole.SUPPLIER:
+        return new SupplierSidebarStrategy();
       default:
         return new ManagerSidebarStrategy(); // Default fallback
     }

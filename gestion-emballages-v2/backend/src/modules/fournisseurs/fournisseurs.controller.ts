@@ -39,7 +39,7 @@ export class FournisseursController {
   }
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Create a new supplier' })
   @ApiResponse({ status: 201, description: 'Supplier created successfully' })
   async create(@Body() createFournisseurDto: CreateFournisseurDto, @Request() req) {
@@ -51,7 +51,7 @@ export class FournisseursController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Get all suppliers with pagination' })
   @ApiResponse({ status: 200, description: 'Suppliers retrieved successfully' })
   async findAll(@Query() paginationDto: PaginationDto) {
@@ -59,7 +59,7 @@ export class FournisseursController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Get supplier by ID' })
   @ApiResponse({ status: 200, description: 'Supplier retrieved successfully' })
   async findOne(@Param('id') id: string) {
@@ -67,7 +67,7 @@ export class FournisseursController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update supplier' })
   @ApiResponse({ status: 200, description: 'Supplier updated successfully' })
   async update(
@@ -83,7 +83,7 @@ export class FournisseursController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Deactivate supplier' })
   @ApiResponse({ status: 200, description: 'Supplier deactivated successfully' })
   async remove(@Param('id') id: string) {
@@ -91,7 +91,7 @@ export class FournisseursController {
   }
 
   @Patch(':id/reactivate')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Reactivate supplier' })
   @ApiResponse({ status: 200, description: 'Supplier reactivated successfully' })
   async reactivate(@Param('id') id: string) {

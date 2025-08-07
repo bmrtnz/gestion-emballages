@@ -32,7 +32,7 @@ export class ListesAchatController {
   constructor(private readonly listesAchatService: ListesAchatService) {}
 
   @Post()
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Create a new shopping list' })
   @ApiResponse({ status: 201, description: 'Shopping list created successfully' })
   async create(@Body() createListeAchatDto: CreateListeAchatDto, @Request() req) {
@@ -52,7 +52,7 @@ export class ListesAchatController {
   }
 
   @Get('active/:stationId')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get active shopping list for a station' })
   @ApiResponse({ status: 200, description: 'Active shopping list retrieved successfully' })
   async getActiveByStation(@Param('stationId') stationId: string, @Request() req) {
@@ -65,7 +65,7 @@ export class ListesAchatController {
   }
 
   @Get('analytics')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get shopping list analytics' })
   @ApiResponse({ status: 200, description: 'Analytics retrieved successfully' })
   async getAnalytics(@Query('stationId') stationId?: string, @Request() req?) {
@@ -82,7 +82,7 @@ export class ListesAchatController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update shopping list' })
   @ApiResponse({ status: 200, description: 'Shopping list updated successfully' })
   async update(
@@ -93,7 +93,7 @@ export class ListesAchatController {
   }
 
   @Post(':id/items')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Add item to shopping list' })
   @ApiResponse({ status: 200, description: 'Item added successfully' })
   async addItem(
@@ -104,7 +104,7 @@ export class ListesAchatController {
   }
 
   @Delete(':id/items/:itemId')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Remove item from shopping list' })
   @ApiResponse({ status: 200, description: 'Item removed successfully' })
   async removeItem(
@@ -115,7 +115,7 @@ export class ListesAchatController {
   }
 
   @Post(':id/validate')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Validate shopping list and convert to orders' })
   @ApiResponse({ status: 200, description: 'Shopping list validated and orders created' })
   async validateAndConvertToOrders(
@@ -126,7 +126,7 @@ export class ListesAchatController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Delete shopping list' })
   @ApiResponse({ status: 200, description: 'Shopping list deleted successfully' })
   async remove(@Param('id') id: string) {

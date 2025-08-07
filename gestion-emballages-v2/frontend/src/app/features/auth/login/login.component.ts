@@ -5,8 +5,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
+import { NotificationService } from '@core/services/notification.service';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
-import { User } from '@core/models/user.model';
+import { ModalComponent } from '@shared/components/ui/modal.component';
+import { ButtonComponent } from '@shared/components/ui/button.component';
+import { User, UserRole } from '@core/models/user.model';
 import { environment } from '@environments/environment';
 
 @Component({
@@ -15,7 +18,9 @@ import { environment } from '@environments/environment';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    ModalComponent,
+    ButtonComponent
   ],
   template: `
     <div class="min-h-screen flex flex-col lg:flex-row bg-gray-50">
@@ -77,7 +82,7 @@ import { environment } from '@environments/environment';
                     (change)="onUserSelect($event)">
                     <option value="">Sélectionner un utilisateur test</option>
                     <option *ngFor="let user of availableUsers()" [value]="user.email">
-                      {{ getRoleIcon(user.role) }} {{ user.nomComplet }} ({{ user.email }})
+                      {{ getRoleIcon(user.role) }} {{ user.fullName }} ({{ user.email }})
                     </option>
                   </select>
                 </div>
@@ -135,9 +140,12 @@ import { environment } from '@environments/environment';
             </div>
 
             <div class="flex items-center justify-between">
-              <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+              <button 
+                type="button"
+                class="text-sm font-medium text-primary-600 hover:text-primary-500 focus:outline-none focus:underline"
+                (click)="openForgotPasswordModal()">
                 Mot de passe oublié ?
-              </a>
+              </button>
             </div>
 
             <div>
@@ -162,6 +170,84 @@ import { environment } from '@environments/environment';
         </div>
       </div>
     </div>
+
+    <!-- Forgot Password Modal -->
+    <ui-modal
+      [isOpen]="showForgotPasswordModal()"
+      title="Réinitialiser le mot de passe"
+      description="Entrez votre adresse email pour recevoir un lien de réinitialisation"
+      size="md"
+      (modalClose)="closeForgotPasswordModal()">
+      
+      <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()" class="space-y-4">
+        <!-- Email Field -->
+        <div>
+          <label for="forgot-email" class="block text-sm font-medium text-gray-700 mb-1">
+            Adresse e-mail *
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-10 5L2 7"/>
+              </svg>
+            </div>
+            <input
+              id="forgot-email"
+              name="forgot-email"
+              type="email"
+              formControlName="email"
+              placeholder="vous@exemple.com"
+              class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm placeholder-gray-400"
+              [class.border-red-300]="forgotPasswordForm.get('email')?.invalid && forgotPasswordForm.get('email')?.touched"
+            />
+          </div>
+          
+          <p *ngIf="forgotPasswordForm.get('email')?.invalid && forgotPasswordForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+            {{ getForgotPasswordEmailError() }}
+          </p>
+        </div>
+
+        <!-- Success Message -->
+        <div *ngIf="forgotPasswordSent()" class="rounded-md bg-green-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-green-800">
+                Email envoyé !
+              </p>
+              <div class="mt-2 text-sm text-green-700">
+                <p>Un lien de réinitialisation a été envoyé à votre adresse email. Vérifiez votre boîte de réception.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Modal Footer -->
+      <div modalFooter class="flex flex-col sm:flex-row-reverse gap-3">
+        <ui-button
+          *ngIf="!forgotPasswordSent()"
+          type="submit"
+          variant="primary"
+          [loading]="forgotPasswordLoading()"
+          [disabled]="forgotPasswordForm.invalid || forgotPasswordLoading()"
+          (click)="onForgotPasswordSubmit()">
+          Envoyer le lien
+        </ui-button>
+        
+        <ui-button
+          type="button"
+          variant="outline"
+          (click)="closeForgotPasswordModal()">
+          {{ forgotPasswordSent() ? 'Fermer' : 'Annuler' }}
+        </ui-button>
+      </div>
+    </ui-modal>
   `,
   styles: []
 })
@@ -169,16 +255,26 @@ export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private notificationService = inject(NotificationService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   public isLoading = signal(false);
   public showPassword = signal(false);
   public availableUsers = signal<User[]>([]);
+  
+  // Forgot password modal state
+  public showForgotPasswordModal = signal(false);
+  public forgotPasswordLoading = signal(false);
+  public forgotPasswordSent = signal(false);
 
   public loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['Claude-Whale2025!', [Validators.required]]
+  });
+
+  public forgotPasswordForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]]
   });
 
   ngOnInit(): void {
@@ -248,12 +344,12 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         // Sort users by role hierarchy for better UX
         const sortedUsers = response.data.sort((a, b) => {
-          const roleOrder = { Admin: 0, Manager: 1, Gestionnaire: 2, Station: 3, Fournisseur: 4 };
-          const aOrder = roleOrder[a.role as keyof typeof roleOrder] ?? 999;
-          const bOrder = roleOrder[b.role as keyof typeof roleOrder] ?? 999;
+          const roleOrder = { [UserRole.ADMIN]: 0, [UserRole.MANAGER]: 1, [UserRole.HANDLER]: 2, [UserRole.STATION]: 3, [UserRole.SUPPLIER]: 4 };
+          const aOrder = roleOrder[a.role as UserRole] ?? 999;
+          const bOrder = roleOrder[b.role as UserRole] ?? 999;
           
           if (aOrder !== bOrder) return aOrder - bOrder;
-          return a.nomComplet.localeCompare(b.nomComplet);
+          return a.fullName.localeCompare(b.fullName);
         });
         
         this.availableUsers.set(sortedUsers);
@@ -283,12 +379,73 @@ export class LoginComponent implements OnInit {
 
   getRoleIcon(role: string): string {
     const roleIcons: { [key: string]: string } = {
-      'Admin': '🔐',
-      'Manager': '👑', 
-      'Gestionnaire': '⚙️',
-      'Station': '🏪',
-      'Fournisseur': '🏭'
+      [UserRole.ADMIN]: '🔐',
+      [UserRole.MANAGER]: '👑', 
+      [UserRole.HANDLER]: '⚙️',
+      [UserRole.STATION]: '🏪',
+      [UserRole.SUPPLIER]: '🏭'
     };
     return roleIcons[role] || '👤';
+  }
+
+  // Forgot password methods
+  openForgotPasswordModal(): void {
+    this.showForgotPasswordModal.set(true);
+    this.forgotPasswordSent.set(false);
+    this.forgotPasswordForm.reset();
+    
+    // Pre-fill email if it's already entered in login form
+    const loginEmail = this.loginForm.get('email')?.value;
+    if (loginEmail && this.userService.validateEmail(loginEmail)) {
+      this.forgotPasswordForm.patchValue({ email: loginEmail });
+    }
+  }
+
+  closeForgotPasswordModal(): void {
+    this.showForgotPasswordModal.set(false);
+    this.forgotPasswordSent.set(false);
+    this.forgotPasswordLoading.set(false);
+    this.forgotPasswordForm.reset();
+  }
+
+  onForgotPasswordSubmit(): void {
+    if (this.forgotPasswordForm.valid && !this.forgotPasswordLoading()) {
+      this.forgotPasswordLoading.set(true);
+      
+      const { email } = this.forgotPasswordForm.value;
+      
+      this.userService.sendPasswordResetLink(email).subscribe({
+        next: (response: any) => {
+          this.forgotPasswordSent.set(true);
+          this.forgotPasswordLoading.set(false);
+          this.notificationService.showSuccess('Email de réinitialisation envoyé avec succès');
+        },
+        error: (error: any) => {
+          this.forgotPasswordLoading.set(false);
+          console.error('Send password reset error:', error);
+          
+          if (error.status === 404) {
+            this.notificationService.showError('Adresse email non trouvée');
+          } else {
+            this.notificationService.showError('Erreur lors de l\'envoi de l\'email de réinitialisation');
+          }
+        }
+      });
+    } else {
+      this.forgotPasswordForm.markAllAsTouched();
+    }
+  }
+
+  getForgotPasswordEmailError(): string {
+    const emailControl = this.forgotPasswordForm.get('email');
+    if (emailControl?.errors && emailControl?.touched) {
+      if (emailControl.errors['required']) {
+        return "L'adresse email est requise";
+      }
+      if (emailControl.errors['email']) {
+        return "Veuillez saisir une adresse email valide";
+      }
+    }
+    return '';
   }
 }

@@ -28,7 +28,7 @@ export const createRoleGuard = (allowedRoles: UserRole[]): CanActivateFn => {
 
 // Predefined role guards
 export const managerGuard = createRoleGuard([UserRole.MANAGER]);
-export const gestionnaireGuard = createRoleGuard([UserRole.MANAGER, UserRole.GESTIONNAIRE]);
+export const handlerGuard = createRoleGuard([UserRole.MANAGER, UserRole.HANDLER]);
 export const stationGuard = createRoleGuard([UserRole.STATION]);
-export const fournisseurGuard = createRoleGuard([UserRole.FOURNISSEUR]);
-export const adminGuard = createRoleGuard([UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE]);
+export const supplierGuard = createRoleGuard([UserRole.SUPPLIER]);
+export const adminGuard = createRoleGuard([UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER]);

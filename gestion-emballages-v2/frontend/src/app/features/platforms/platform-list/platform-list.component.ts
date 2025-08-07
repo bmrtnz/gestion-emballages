@@ -7,6 +7,7 @@ import { Platform } from '../../../core/models/platform.model';
 import { PlatformService } from '../../../core/services/platform.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { UserRole } from '../../../core/models/user.model';
 
 interface PlatformFilters {
   page: number;
@@ -115,6 +116,41 @@ interface PlatformFilters {
       <div *ngIf="loading()" class="text-center py-8">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
         <p class="mt-2 text-gray-600">Chargement...</p>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div *ngIf="!loading() && totalPages() > 1" class="flex items-center justify-between border-b border-gray-200 px-6 py-2">
+        <div class="text-xs text-gray-700">
+          Affichage de {{ (currentPage() - 1) * itemsPerPage() + 1 }} à {{ Math.min(currentPage() * itemsPerPage(), totalItems()) }} sur {{ totalItems() }} résultats
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <span class="text-xs text-gray-700">Afficher:</span>
+            <select [value]="itemsPerPage()" (change)="changeItemsPerPage($event)" 
+                    class="border border-gray-300 rounded px-2 py-0.5 text-xs bg-white w-14 focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span class="text-xs text-gray-700">par page</span>
+          </div>
+          <div class="flex space-x-1">
+            <button [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)"
+                    class="px-2 py-0.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Précédent
+            </button>
+            <button *ngFor="let page of getVisiblePages()" (click)="goToPage(page)"
+                    [class.bg-primary-100]="page === currentPage()"
+                    [class.text-primary-700]="page === currentPage()"
+                    class="px-2 py-0.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50">
+              {{ page }}
+            </button>
+            <button [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)"
+                    class="px-2 py-0.5 text-xs border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Suivant
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Desktop Table -->
@@ -238,40 +274,6 @@ interface PlatformFilters {
               {{ platform.isActive ? 'Désactiver' : 'Activer' }}
             </button>
           </div>
-        </div>
-      </div>
-
-      <!-- Pagination -->
-      <div *ngIf="!loading() && totalPages() > 1" class="flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-          Affichage de {{ ((currentPage() - 1) * itemsPerPage()) + 1 }} à 
-          {{ Math.min(currentPage() * itemsPerPage(), totalItems()) }} sur {{ totalItems() }} résultats
-        </div>
-        
-        <div class="flex items-center space-x-2">
-          <button 
-            [disabled]="currentPage() === 1"
-            (click)="goToPage(currentPage() - 1)"
-            class="px-3 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
-            Précédent
-          </button>
-          
-          <div class="flex space-x-1">
-            <button *ngFor="let page of getVisiblePages()" 
-                    (click)="goToPage(page)"
-                    [class]="page === currentPage() ? 
-                      'px-3 py-2 text-sm bg-blue-600 text-white rounded-lg' : 
-                      'px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50'">
-              {{ page }}
-            </button>
-          </div>
-          
-          <button 
-            [disabled]="currentPage() === totalPages()"
-            (click)="goToPage(currentPage() + 1)"
-            class="px-3 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
-            Suivant
-          </button>
         </div>
       </div>
 
@@ -400,6 +402,14 @@ export class PlatformListComponent implements OnInit {
     }
   }
 
+  changeItemsPerPage(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    this.itemsPerPage.set(parseInt(target.value));
+    this.filters.limit = parseInt(target.value);
+    this.filters.page = 1;
+    this.loadPlatforms();
+  }
+
   getVisiblePages(): number[] {
     const total = this.totalPages();
     const current = this.currentPage();
@@ -464,16 +474,16 @@ export class PlatformListComponent implements OnInit {
   // Permission methods
   canCreatePlatform(): boolean {
     const user = this.authService.currentUser();
-    return user?.role === 'Manager' || user?.role === 'Gestionnaire';
+    return user?.role === UserRole.MANAGER || user?.role === UserRole.HANDLER;
   }
 
   canEditPlatform(): boolean {
     const user = this.authService.currentUser();
-    return user?.role === 'Manager' || user?.role === 'Gestionnaire';
+    return user?.role === UserRole.MANAGER || user?.role === UserRole.HANDLER;
   }
 
   canToggleStatus(): boolean {
     const user = this.authService.currentUser();
-    return user?.role === 'Manager' || user?.role === 'Gestionnaire';
+    return user?.role === UserRole.MANAGER || user?.role === UserRole.HANDLER;
   }
 }

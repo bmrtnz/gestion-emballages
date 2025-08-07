@@ -33,6 +33,15 @@ services:
         volumes:
             - minio-data:/data
 
+    # Service pour MailCatcher (développement email)
+    mailcatcher:
+        image: schickling/mailcatcher
+        container_name: gestion-emballages-mailcatcher
+        ports:
+            - "1025:1025"  # Port SMTP pour l'application
+            - "1080:1080"  # Interface web pour voir les emails
+        restart: unless-stopped
+
 volumes:
     mongo-data:
     minio-data:

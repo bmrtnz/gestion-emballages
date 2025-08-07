@@ -1,74 +1,94 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { importProvidersFrom } from '@angular/core';
-import { 
-  LucideAngularModule, 
-  LayoutDashboard,
-  BarChart3,
-  ClipboardList,
-  ArrowLeftRight,
-  Warehouse,
-  Package,
-  Package2,
-  TrendingUp,
-  Store,
-  Building,
-  Users,
-  ShoppingCart,
-  Factory,
-  Layers,
-  GalleryVerticalEnd,
-  Cpu,
-  Search,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  X
-} from 'lucide-angular';
+import { bootstrapApplication } from "@angular/platform-browser";
+import { provideRouter, withPreloading, PreloadAllModules } from "@angular/router";
+import { provideHttpClient, withInterceptors } from "@angular/common/http";
+import { provideAnimations } from "@angular/platform-browser/animations";
+import { importProvidersFrom } from "@angular/core";
+import {
+    LucideAngularModule,
+    LayoutDashboard,
+    ChartCandlestick,
+    ChartColumn,
+    ClipboardList,
+    ArrowLeftRight,
+    Warehouse,
+    Package,
+    Package2,
+    TrendingUp,
+    Store,
+    Building,
+    Building2,
+    Users,
+    ShoppingCart,
+    Factory,
+    Layers,
+    GalleryVerticalEnd,
+    Cpu,
+    Search,
+    LogOut,
+    ChevronLeft,
+    ChevronRight,
+    ChevronDown,
+    ChevronUp,
+    CheckCircle,
+    XCircle,
+    ShieldCheck,
+    Settings,
+    Truck,
+    X,
+    SquareX,
+    SquarePauseIcon,
+    SquarePlayIcon,
+} from "lucide-angular";
 
-import { AppComponent } from './app/app.component';
-import { routes } from './app/app.routes';
-import { authInterceptor } from './app/core/interceptors/auth.interceptor';
-import { errorInterceptor } from './app/core/interceptors/error.interceptor';
-import { loadingInterceptor } from './app/core/interceptors/loading.interceptor';
+import { AppComponent } from "./app/app.component";
+import { routes } from "./app/app.routes";
+import { authInterceptor } from "./app/core/interceptors/auth.interceptor";
+import { errorInterceptor } from "./app/core/interceptors/error.interceptor";
+import { loadingInterceptor } from "./app/core/interceptors/loading.interceptor";
+import { translocoConfig } from "./app/core/i18n/transloco.config";
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(
-      withInterceptors([
-        authInterceptor,
-        loadingInterceptor,
-        errorInterceptor
-      ])
-    ),
-    provideAnimations(),
-    importProvidersFrom(
-      LucideAngularModule.pick({
-        LayoutDashboard,
-        BarChart3,
-        ClipboardList,
-        ArrowLeftRight,
-        Warehouse,
-        Package,
-        Package2,
-        TrendingUp,
-        Store,
-        Building,
-        Users,
-        ShoppingCart,
-        Factory,
-        Layers,
-        GalleryVerticalEnd,
-        Cpu,
-        Search,
-        LogOut,
-        ChevronLeft,
-        ChevronRight,
-        X
-      })
-    )
-  ]
-}).catch(err => console.error(err));
+    providers: [
+        provideRouter(routes, withPreloading(PreloadAllModules)),
+        provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor, errorInterceptor])),
+        provideAnimations(),
+        translocoConfig,
+        importProvidersFrom(
+            LucideAngularModule.pick({
+                LayoutDashboard,
+                ChartCandlestick,
+                ChartColumn,
+                ClipboardList,
+                ArrowLeftRight,
+                Warehouse,
+                Package,
+                Package2,
+                TrendingUp,
+                Store,
+                Building,
+                Building2,
+                Users,
+                ShoppingCart,
+                Factory,
+                Layers,
+                GalleryVerticalEnd,
+                Cpu,
+                Search,
+                LogOut,
+                ChevronLeft,
+                ChevronRight,
+                ChevronDown,
+                ChevronUp,
+                CheckCircle,
+                XCircle,
+                ShieldCheck,
+                Settings,
+                Truck,
+                X,
+                SquareX,
+                SquarePauseIcon,
+                SquarePlayIcon,
+            })
+        ),
+    ],
+}).catch((err) => console.error(err));

@@ -1,0 +1,78 @@
+{
+  "common": {
+    "actions": "Actions",
+    "status": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "all": "Tout",
+    "search": "Rechercher",
+    "filters": "Filtres",
+    "edit": "Modifier",
+    "activate": "Activer", 
+    "deactivate": "Désactiver",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "reset": "Réinitialiser",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "blueWhale": "Blue Whale"
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "stations": "Stations",
+    "suppliers": "Fournisseurs",
+    "articles": "Articles",
+    "orders": "Commandes",
+    "stock": "Stock",
+    "reports": "Rapports"
+  },
+  "users": {
+    "title": "Gestion des utilisateurs",
+    "user": "Utilisateur",
+    "role": "Rôle",
+    "entity": "Entité",
+    "email": "Email",
+    "phone": "Téléphone",
+    "fullName": "Nom complet",
+    "createUser": "Créer un utilisateur",
+    "editUser": "Modifier l'utilisateur",
+    "searchPlaceholder": "Rechercher par nom ou email...",
+    "resetFilters": "Réinitialiser les filtres",
+    "showPerPage": "par page",
+    "displaying": "Affichage de {{start}} à {{end}} sur {{total}} résultats"
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager", 
+    "handler": "Gestionnaire",
+    "station": "Station",
+    "supplier": "Fournisseur"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "show": "Afficher",
+    "perPage": "par page",
+    "of": "de",
+    "results": "résultats"
+  },
+  "messages": {
+    "userActivated": "Utilisateur activé avec succès",
+    "userDeactivated": "Utilisateur désactivé avec succès",
+    "userUpdated": "Utilisateur mis à jour avec succès",
+    "userCreated": "Utilisateur créé avec succès",
+    "errorOccurred": "Une erreur s'est produite",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "confirmDeactivate": "Êtes-vous sûr de vouloir désactiver cet utilisateur ?",
+    "confirmActivate": "Êtes-vous sûr de vouloir activer cet utilisateur ?"
+  }
+}

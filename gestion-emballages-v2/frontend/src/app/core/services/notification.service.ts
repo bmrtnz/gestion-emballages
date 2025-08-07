@@ -26,7 +26,7 @@ export class NotificationService {
       type: 'success',
       title,
       message,
-      duration: duration ?? this.DEFAULT_DURATION
+      duration: duration ?? 2000
     });
   }
 

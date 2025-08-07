@@ -451,3 +451,125 @@ exports.reactivateUser = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Envoyer un lien de réinitialisation de mot de passe par email.
+ * @function sendPasswordResetLink
+ * @memberof module:controllers/userController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.body - Corps de la requête
+ * @param {string} req.body.email - Email de l'utilisateur
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie un message de confirmation
+ * @throws {ValidationError} Si l'email est manquant ou invalide
+ * @throws {NotFoundError} Si l'utilisateur n'est pas trouvé ou inactif
+ * @since 1.0.0
+ * @example
+ * // POST /api/users/password-reset-link
+ * // Body: { "email": "user@example.com" }
+ * // Response: { "message": "Lien de réinitialisation envoyé à user@example.com" }
+ */
+exports.sendPasswordResetLink = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        
+        // Validation de l'email
+        if (!email) {
+            return next(new ValidationError('L\'email est requis'));
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return next(new ValidationError('Veuillez fournir un email valide'));
+        }
+        
+        // Recherche de l'utilisateur
+        const user = await User.findOne({ email, isActive: true });
+        
+        if (!user) {
+            // Pour des raisons de sécurité, on renvoie le même message même si l'utilisateur n'existe pas
+            return res.json({ message: `Lien de réinitialisation envoyé à ${email}` });
+        }
+        
+        // Génération du token de réinitialisation
+        const crypto = require('crypto');
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        
+        // Sauvegarde du token en base
+        const PasswordResetToken = require('../models/PasswordResetToken');
+        await PasswordResetToken.createToken(user._id, user.email, resetToken);
+        
+        // Envoi de l'email
+        const emailService = require('../services/emailService');
+        await emailService.sendPasswordResetEmail(user.email, resetToken, user.nomComplet);
+        
+        res.json({ message: `Lien de réinitialisation envoyé à ${email}` });
+        
+    } catch (error) {
+        console.error('Error sending password reset link:', error);
+        next(error);
+    }
+};
+
+/**
+ * Réinitialiser le mot de passe avec un token valide.
+ * @function resetPassword
+ * @memberof module:controllers/userController
+ * @param {Express.Request} req - L'objet de requête Express
+ * @param {Object} req.body - Corps de la requête
+ * @param {string} req.body.token - Token de réinitialisation
+ * @param {string} req.body.password - Nouveau mot de passe
+ * @param {Express.Response} res - L'objet de réponse Express
+ * @param {Function} next - Le prochain middleware Express
+ * @returns {Promise<void>} Renvoie un message de confirmation
+ * @throws {ValidationError} Si le token ou le mot de passe est manquant/invalide
+ * @throws {BadRequestError} Si le token est expiré ou déjà utilisé
+ * @since 1.0.0
+ * @example
+ * // POST /api/users/reset-password
+ * // Body: { "token": "abc123...", "password": "newpassword123" }
+ * // Response: { "message": "Mot de passe réinitialisé avec succès" }
+ */
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const { token, password } = req.body;
+        
+        // Validation des champs
+        if (!token || !password) {
+            return next(new ValidationError('Le token et le nouveau mot de passe sont requis'));
+        }
+        
+        // Validation du mot de passe
+        if (password.length < 6) {
+            return next(new ValidationError('Le mot de passe doit contenir au moins 6 caractères'));
+        }
+        
+        // Vérification du token
+        const PasswordResetToken = require('../models/PasswordResetToken');
+        const resetTokenDoc = await PasswordResetToken.findValidToken(token);
+        
+        if (!resetTokenDoc) {
+            return next(new BadRequestError('Token de réinitialisation invalide ou expiré'));
+        }
+        
+        // Récupération de l'utilisateur
+        const user = await User.findById(resetTokenDoc.userId);
+        if (!user || !user.isActive) {
+            return next(new BadRequestError('Utilisateur non trouvé ou inactif'));
+        }
+        
+        // Mise à jour du mot de passe
+        user.password = password; // Le hachage sera fait automatiquement par le hook pre-save
+        await user.save();
+        
+        // Marquer le token comme utilisé
+        await PasswordResetToken.markAsUsed(token);
+        
+        res.json({ message: 'Mot de passe réinitialisé avec succès' });
+        
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        next(error);
+    }
+};

@@ -50,7 +50,6 @@ export class UsersController {
     }
 
     try {
-      console.log('Dev users endpoint called with:', paginationDto);
       const result = await this.usersService.findAll({
         ...paginationDto,
         limit: 100,
@@ -62,19 +61,18 @@ export class UsersController {
       const simplifiedUsers = result.data.map(user => ({
         id: user.id,
         email: user.email,
-        nomComplet: user.nomComplet,
+        fullName: user.fullName,
         role: user.role,
         station: (user as any).station ? { 
           id: (user as any).station.id, 
-          nom: (user as any).station.nom 
+          name: (user as any).station.nom 
         } : null,
-        fournisseur: (user as any).fournisseur ? { 
+        supplier: (user as any).fournisseur ? { 
           id: (user as any).fournisseur.id, 
-          nom: (user as any).fournisseur.nom 
+          name: (user as any).fournisseur.nom 
         } : null
       }));
       
-      console.log('Dev users endpoint successful, returned:', simplifiedUsers.length, 'users');
       return {
         ...result,
         data: simplifiedUsers
@@ -87,7 +85,7 @@ export class UsersController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ 
@@ -101,7 +99,7 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users with pagination' })
   @ApiResponse({ 
@@ -110,20 +108,17 @@ export class UsersController {
   })
   async findAll(@Query() paginationDto: PaginationDto) {
     try {
-      console.log('Users findAll called with:', paginationDto);
       const result = await this.usersService.findAll(paginationDto);
-      console.log('Users findAll successful, returned:', result.data?.length, 'users');
       return result;
     } catch (error) {
       console.error('Users findAll error:', error.message);
-      console.error('Stack:', error.stack);
       throw error;
     }
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiResponse({ 
@@ -137,7 +132,7 @@ export class UsersController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ 
@@ -151,7 +146,7 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Deactivate user' })
   @ApiResponse({ 
@@ -164,7 +159,7 @@ export class UsersController {
 
   @Patch(':id/reactivate')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reactivate user' })
   @ApiResponse({ 
@@ -208,5 +203,33 @@ export class UsersController {
       cascadeDelete: cascadeDelete === true,
       confirmIntegrityCheck: confirmIntegrityCheck === true
     });
+  }
+
+  @Post('password-reset-link')
+  @ApiOperation({ summary: 'Send password reset link via email' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Password reset link sent successfully' 
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Invalid email format' 
+  })
+  async sendPasswordResetLink(@Body() body: { email: string }) {
+    return this.usersService.sendPasswordResetLink(body.email);
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset password with valid token' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Password reset successfully' 
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Invalid or expired token' 
+  })
+  async resetPassword(@Body() body: { token: string; password: string }) {
+    return this.usersService.resetPassword(body.token, body.password);
   }
 }

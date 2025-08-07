@@ -83,7 +83,7 @@ export class CommandesService {
   async findAllCommandes(paginationDto: PaginationDto) {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
-      limit: paginationDto.limit || 20,
+      limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
       sortOrder: paginationDto.sortOrder || 'DESC'
     });
@@ -289,7 +289,7 @@ export class CommandesService {
   async findAllCommandesGlobales(paginationDto: PaginationDto) {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
-      limit: paginationDto.limit || 20,
+      limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
       sortOrder: paginationDto.sortOrder || 'DESC'
     });

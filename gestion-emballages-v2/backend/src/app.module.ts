@@ -11,6 +11,8 @@ import { minioConfig } from './config/minio.config';
 // Entities
 import { User } from './modules/users/entities/user.entity';
 import { Station } from './modules/stations/entities/station.entity';
+import { StationGroup } from './modules/stations/entities/station-group.entity';
+import { StationContact } from './modules/stations/entities/station-contact.entity';
 import { Fournisseur } from './modules/fournisseurs/entities/fournisseur.entity';
 import { FournisseurSite } from './modules/fournisseurs/entities/fournisseur-site.entity';
 import { Platform } from './modules/platforms/entities/platform.entity';
@@ -65,6 +67,8 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
         entities: [
           User,
           Station,
+          StationGroup,
+          StationContact,
           Fournisseur,
           FournisseurSite,
           Platform,

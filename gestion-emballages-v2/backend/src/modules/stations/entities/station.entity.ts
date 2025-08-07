@@ -7,6 +7,8 @@ import { StockStation } from '@modules/stocks/entities/stock-station.entity';
 import { DemandeTransfert } from '@modules/transferts/entities/demande-transfert.entity';
 import { Prevision } from '@modules/previsions/entities/prevision.entity';
 import { ListeAchat } from '@modules/listes-achat/entities/liste-achat.entity';
+import { StationGroup } from './station-group.entity';
+import { StationContact } from './station-contact.entity';
 
 @Entity('stations')
 export class Station extends BaseEntity {
@@ -23,6 +25,9 @@ export class Station extends BaseEntity {
     ville?: string;
     pays?: string;
   };
+
+  @Column({ name: 'groupe_id', nullable: true })
+  groupeId?: string; // NULL for independent stations that don't belong to any group
 
   @Column({ name: 'contact_principal', type: 'jsonb', default: {} })
   contactPrincipal: {
@@ -41,6 +46,13 @@ export class Station extends BaseEntity {
   updatedById?: string;
 
   // Relations
+  @ManyToOne(() => StationGroup, (groupe) => groupe.stations, { nullable: true })
+  @JoinColumn({ name: 'groupe_id' })
+  groupe?: StationGroup;
+
+  @OneToMany(() => StationContact, (contact) => contact.station, { cascade: true })
+  contacts: StationContact[];
+
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'created_by' })
   createdBy?: User;
@@ -72,4 +84,32 @@ export class Station extends BaseEntity {
 
   @OneToMany(() => ListeAchat, (liste) => liste.station)
   listesAchat: ListeAchat[];
+
+  // Virtual properties
+  get contactPrincipalFromContacts(): StationContact | undefined {
+    return this.contacts?.find(contact => contact.estPrincipal && contact.isActive);
+  }
+
+  get contactsActifs(): StationContact[] {
+    return this.contacts?.filter(contact => contact.isActive) || [];
+  }
+
+  get hasGroupe(): boolean {
+    return !!this.groupeId && !!this.groupe;
+  }
+
+  get isIndependent(): boolean {
+    return !this.groupeId;
+  }
+
+  get nomCompletAvecGroupe(): string {
+    if (this.hasGroupe && this.groupe) {
+      return `${this.nom} (${this.groupe.nom})`;
+    }
+    return this.nom;
+  }
+
+  get typeStation(): 'grouped' | 'independent' {
+    return this.hasGroupe ? 'grouped' : 'independent';
+  }
 }

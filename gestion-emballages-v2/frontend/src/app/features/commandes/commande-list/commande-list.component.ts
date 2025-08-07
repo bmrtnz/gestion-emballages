@@ -363,82 +363,6 @@ import {
         </div>
       </div>
 
-      <!-- Pagination -->
-      <div *ngIf="paginatedResponse() && paginatedResponse()!.totalPages > 1" 
-           class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
-        
-        <!-- Results Info -->
-        <div class="flex flex-1 justify-between sm:hidden">
-          <button
-            [disabled]="!paginatedResponse()?.hasPreviousPage"
-            (click)="goToPage(currentPage() - 1)"
-            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Précédent
-          </button>
-          <button
-            [disabled]="!paginatedResponse()?.hasNextPage"
-            (click)="goToPage(currentPage() + 1)"
-            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Suivant
-          </button>
-        </div>
-        
-        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm text-gray-700">
-              Affichage de
-              <span class="font-medium">{{ getResultStart() }}</span>
-              à
-              <span class="font-medium">{{ getResultEnd() }}</span>
-              sur
-              <span class="font-medium">{{ paginatedResponse()?.total }}</span>
-              résultats
-            </p>
-          </div>
-          
-          <div class="flex items-center space-x-2">
-            <label class="text-sm text-gray-700">Afficher:</label>
-            <select
-              [value]="itemsPerPage()"
-              (change)="changeItemsPerPage($event)"
-              class="form-select text-sm">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-            <span class="text-sm text-gray-700">par page</span>
-          </div>
-          
-          <div>
-            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
-                [disabled]="!paginatedResponse()?.hasPreviousPage"
-                (click)="goToPage(currentPage() - 1)"
-                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              
-              <button
-                *ngFor="let page of getVisiblePages()"
-                [class]="getPageButtonClass(page)"
-                (click)="goToPage(page)">
-                {{ page }}
-              </button>
-              
-              <button
-                [disabled]="!paginatedResponse()?.hasNextPage"
-                (click)="goToPage(currentPage() + 1)"
-                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
     </div>
   `,
   styles: []
@@ -456,7 +380,7 @@ export class CommandeListComponent implements OnInit {
   public orderStatuses = signal<OrderStatusOption[]>([]);
   public paginatedResponse = signal<PaginatedCommandesResponse | null>(null);
   public currentPage = signal(1);
-  public itemsPerPage = signal(20);
+  public itemsPerPage = signal(10);
 
   // Computed values
   public activeFiltersCount = computed(() => {
@@ -608,19 +532,19 @@ export class CommandeListComponent implements OnInit {
 
   // Order actions
   viewCommande(commande: Commande) {
-    console.log('View order:', commande);
+    // View order functionality
   }
 
   editCommande(commande: Commande) {
-    console.log('Edit order:', commande);
+    // Edit order functionality
   }
 
   openCreateOrderModal() {
-    console.log('Create new order');
+    // Create new order functionality
   }
 
   openCreateGlobalOrderModal() {
-    console.log('Create new global order');
+    // Create new global order functionality
   }
 
   deleteCommande(commande: Commande) {
@@ -643,7 +567,6 @@ export class CommandeListComponent implements OnInit {
       this.updateOrderStatus(commande, nextStatuses[0]);
     } else {
       // TODO: Implement status selection menu
-      console.log('Show status menu for:', commande, nextStatuses);
     }
   }
 

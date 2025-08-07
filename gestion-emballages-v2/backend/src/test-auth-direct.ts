@@ -33,7 +33,7 @@ async function testAuth() {
           id: user.id,
           email: user.email,
           role: user.role,
-          entiteType: user.entiteType
+          entityType: user.entityType
         });
       } else {
         console.log('❌ User validation failed - invalid credentials');

@@ -28,6 +28,7 @@
         "minio": "^8.0.5",
         "mongoose": "^8.16.2",
         "multer": "^2.0.1",
+        "nodemailer": "^7.0.5",
         "pdfkit": "^0.15.0",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.1"

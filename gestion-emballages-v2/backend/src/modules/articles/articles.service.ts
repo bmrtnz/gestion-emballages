@@ -41,7 +41,7 @@ export class ArticlesService {
   async findAll(paginationDto: PaginationDto) {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
-      limit: paginationDto.limit || 20,
+      limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
       sortOrder: paginationDto.sortOrder || 'DESC'
     });

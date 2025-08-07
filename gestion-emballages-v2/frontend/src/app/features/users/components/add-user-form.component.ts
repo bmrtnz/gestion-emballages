@@ -30,17 +30,17 @@ import { Fournisseur } from '@core/models/fournisseur.model';
           
           <!-- Nom complet -->
           <div class="mb-4">
-            <label for="nomComplet" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">
               Nom complet *
             </label>
             <input
               type="text"
-              id="nomComplet"
-              formControlName="nomComplet"
+              id="fullName"
+              formControlName="fullName"
               placeholder="Ex: Jean Dupont"
               class="form-input"
-              [class.border-red-300]="userForm.get('nomComplet')?.invalid && userForm.get('nomComplet')?.touched">
-            <p *ngIf="userForm.get('nomComplet')?.invalid && userForm.get('nomComplet')?.touched" 
+              [class.border-red-300]="userForm.get('fullName')?.invalid && userForm.get('fullName')?.touched">
+            <p *ngIf="userForm.get('fullName')?.invalid && userForm.get('fullName')?.touched" 
                class="mt-1 text-sm text-red-600">
               Le nom complet est obligatoire
             </p>
@@ -61,6 +61,24 @@ import { Fournisseur } from '@core/models/fournisseur.model';
                class="mt-1 text-sm text-red-600">
               <span *ngIf="userForm.get('email')?.errors?.['required']">L'email est obligatoire</span>
               <span *ngIf="userForm.get('email')?.errors?.['email']">L'email n'est pas valide</span>
+            </p>
+          </div>
+
+          <!-- Phone -->
+          <div class="mt-4">
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+              Téléphone
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+              placeholder="Ex: 01 23 45 67 89"
+              class="form-input"
+              [class.border-red-300]="userForm.get('phone')?.invalid && userForm.get('phone')?.touched">
+            <p *ngIf="userForm.get('phone')?.invalid && userForm.get('phone')?.touched" 
+               class="mt-1 text-sm text-red-600">
+              Le format du téléphone n'est pas valide
             </p>
           </div>
         </div>
@@ -93,20 +111,20 @@ import { Fournisseur } from '@core/models/fournisseur.model';
 
           <!-- Entity Selection (for Station/Fournisseur roles) -->
           <div *ngIf="showEntitySelection()" class="mb-4">
-            <label for="entiteId" class="block text-sm font-medium text-gray-700 mb-1">
+            <label for="entityId" class="block text-sm font-medium text-gray-700 mb-1">
               {{ getEntityLabel() }} *
             </label>
             <select
-              id="entiteId"
-              formControlName="entiteId"
+              id="entityId"
+              formControlName="entityId"
               class="form-select"
-              [class.border-red-300]="userForm.get('entiteId')?.invalid && userForm.get('entiteId')?.touched">
+              [class.border-red-300]="userForm.get('entityId')?.invalid && userForm.get('entityId')?.touched">
               <option value="">{{ getEntitySelectPlaceholder() }}</option>
               <option *ngFor="let entity of availableEntities()" [value]="entity.id">
                 {{ entity.nom }}
               </option>
             </select>
-            <p *ngIf="userForm.get('entiteId')?.invalid && userForm.get('entiteId')?.touched" 
+            <p *ngIf="userForm.get('entityId')?.invalid && userForm.get('entityId')?.touched" 
                class="mt-1 text-sm text-red-600">
               {{ getEntityLabel() }} est obligatoire
             </p>
@@ -193,10 +211,11 @@ export class AddUserFormComponent {
   public fournisseurs = signal<Fournisseur[]>([]);
 
   public userForm: FormGroup = this.fb.group({
-    nomComplet: ['', [Validators.required]],
+    fullName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
+    phone: ['', [Validators.pattern(/^[\d\s\-\+\(\)]+$/)]],
     role: ['', [Validators.required]],
-    entiteId: [''],
+    entityId: [''],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required]]
   }, { validators: this.passwordMatchValidator });
@@ -208,23 +227,18 @@ export class AddUserFormComponent {
 
   private initializeForm(): void {
     const currentUserRole = this.authService.userRole();
-    console.log('Current user role:', currentUserRole);
     if (currentUserRole) {
       this.availableRoles = this.userService.getAvailableRoles(currentUserRole);
-      console.log('Available roles:', this.availableRoles);
     }
   }
 
   private async loadEntities(): Promise<void> {
     try {
-      console.log('Loading entities...');
-      
       // Load active stations
       const stationsResponse = await this.stationService.getStations({
         status: 'active',
         limit: 1000 // Get all active stations
       });
-      console.log('Loaded stations:', stationsResponse.data);
       this.stations.set(stationsResponse.data);
       
       // Load active suppliers
@@ -232,7 +246,6 @@ export class AddUserFormComponent {
         status: 'active',
         limit: 1000 // Get all active suppliers
       });
-      console.log('Loaded fournisseurs:', fournisseursResponse.data);
       this.fournisseurs.set(fournisseursResponse.data);
       
     } catch (error) {
@@ -243,7 +256,7 @@ export class AddUserFormComponent {
 
   showEntitySelection(): boolean {
     const selectedRole = this.userForm.get('role')?.value;
-    return selectedRole === UserRole.STATION || selectedRole === UserRole.FOURNISSEUR;
+    return selectedRole === UserRole.STATION || selectedRole === UserRole.SUPPLIER;
   }
 
   getEntityLabel(): string {
@@ -260,31 +273,27 @@ export class AddUserFormComponent {
 
   onRoleChange(): void {
     const selectedRole = this.userForm.get('role')?.value;
-    const entiteIdControl = this.userForm.get('entiteId');
-    
-    console.log('Role changed to:', selectedRole);
+    const entityIdControl = this.userForm.get('entityId');
     
     // Reset entity selection
-    entiteIdControl?.setValue('');
+    entityIdControl?.setValue('');
     
     // Update validators
-    if (selectedRole === UserRole.STATION || selectedRole === UserRole.FOURNISSEUR) {
-      entiteIdControl?.setValidators([Validators.required]);
+    if (selectedRole === UserRole.STATION || selectedRole === UserRole.SUPPLIER) {
+      entityIdControl?.setValidators([Validators.required]);
       
       // Set available entities based on role
       if (selectedRole === UserRole.STATION) {
-        console.log('Setting stations:', this.stations());
         this.availableEntities.set(this.stations());
-      } else if (selectedRole === UserRole.FOURNISSEUR) {
-        console.log('Setting fournisseurs:', this.fournisseurs());
+      } else if (selectedRole === UserRole.SUPPLIER) {
         this.availableEntities.set(this.fournisseurs());
       }
     } else {
-      entiteIdControl?.clearValidators();
+      entityIdControl?.clearValidators();
       this.availableEntities.set([]);
     }
     
-    entiteIdControl?.updateValueAndValidity();
+    entityIdControl?.updateValueAndValidity();
   }
 
   private passwordMatchValidator(form: FormGroup) {
@@ -310,11 +319,12 @@ export class AddUserFormComponent {
     try {
       const formValue = this.userForm.value;
       const userData: CreateUserRequest = {
-        nomComplet: formValue.nomComplet.trim(),
+        fullName: formValue.fullName.trim(),
         email: formValue.email,
+        phone: formValue.phone?.trim() || undefined,
         role: formValue.role,
-        entiteId: formValue.entiteId || undefined,
-        entiteType: this.getEntityType(formValue.role) || undefined,
+        entityId: formValue.entityId || undefined,
+        entityType: this.getEntityType(formValue.role) || undefined,
         password: formValue.password
       };
 
@@ -344,8 +354,8 @@ export class AddUserFormComponent {
     switch (role) {
       case UserRole.STATION:
         return EntityType.STATION;
-      case UserRole.FOURNISSEUR:
-        return EntityType.FOURNISSEUR;
+      case UserRole.SUPPLIER:
+        return EntityType.SUPPLIER;
       default:
         return null;
     }

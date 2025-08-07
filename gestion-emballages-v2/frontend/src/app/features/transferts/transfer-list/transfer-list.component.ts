@@ -181,7 +181,7 @@ export class TransferListComponent implements OnInit {
   }
 
   loadAnalytics(): void {
-    const stationId = this.isStation() ? this.currentUser()?.entiteId : undefined;
+    const stationId = this.isStation() ? this.currentUser()?.entityId : undefined;
     
     this.transferService.getTransferAnalytics(stationId).subscribe({
       next: (analytics) => {

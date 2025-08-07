@@ -1,12 +1,12 @@
 export enum UserRole {
-  ADMIN = 'Admin',
-  MANAGER = 'Manager',
-  GESTIONNAIRE = 'Gestionnaire',
-  STATION = 'Station',
-  FOURNISSEUR = 'Fournisseur',
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+  HANDLER = 'HANDLER',
+  STATION = 'STATION',
+  SUPPLIER = 'SUPPLIER',
 }
 
 export enum EntityType {
-  STATION = 'Station',
-  FOURNISSEUR = 'Fournisseur',
+  STATION = 'STATION',
+  SUPPLIER = 'SUPPLIER',
 }

@@ -1,6 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { UserRole } from '@common/enums/user-role.enum';
-import { EntityType } from '../entities/user.entity';
+import { UserRole, EntityType } from '@common/enums/user-role.enum';
 
 export class UserResponseDto {
   @Expose()
@@ -13,16 +12,19 @@ export class UserResponseDto {
   passwordHash: string;
 
   @Expose()
-  nomComplet: string;
+  fullName: string;
+
+  @Expose()
+  phone?: string;
 
   @Expose()
   role: UserRole;
 
   @Expose()
-  entiteType?: EntityType;
+  entityType?: EntityType;
 
   @Expose()
-  entiteId?: string;
+  entityId?: string;
 
   @Expose()
   isActive: boolean;
@@ -35,13 +37,18 @@ export class UserResponseDto {
 
   // Virtual properties
   @Expose()
+  get isAdmin(): boolean {
+    return this.role === UserRole.ADMIN;
+  }
+
+  @Expose()
   get isManager(): boolean {
     return this.role === UserRole.MANAGER;
   }
 
   @Expose()
-  get isGestionnaire(): boolean {
-    return this.role === UserRole.GESTIONNAIRE;
+  get isHandler(): boolean {
+    return this.role === UserRole.HANDLER;
   }
 
   @Expose()
@@ -50,7 +57,7 @@ export class UserResponseDto {
   }
 
   @Expose()
-  get isFournisseur(): boolean {
-    return this.role === UserRole.FOURNISSEUR;
+  get isSupplier(): boolean {
+    return this.role === UserRole.SUPPLIER;
   }
 }

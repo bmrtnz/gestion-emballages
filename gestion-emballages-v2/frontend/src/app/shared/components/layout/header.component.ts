@@ -36,7 +36,7 @@ import { UserRole } from '@core/models/user.model';
             <div class="hidden md:flex items-center space-x-3">
               <div class="text-right">
                 <p class="text-sm font-medium text-gray-900">
-                  {{ authService.user()?.nomComplet }}
+                  {{ authService.user()?.fullName }}
                 </p>
                 <p class="text-xs text-gray-500">
                   {{ getRoleDisplayName(authService.user()?.role) }}
@@ -80,9 +80,9 @@ export class HeaderComponent {
 
   getUserInitials(): string {
     const user = this.authService.user();
-    if (!user?.nomComplet) return '?';
+    if (!user?.fullName) return '?';
     
-    return user.nomComplet
+    return user.fullName
       .split(' ')
       .map(name => name.charAt(0))
       .slice(0, 2)
@@ -93,9 +93,9 @@ export class HeaderComponent {
   getRoleDisplayName(role?: UserRole): string {
     const roleNames = {
       [UserRole.MANAGER]: 'Gestionnaire',
-      [UserRole.GESTIONNAIRE]: 'Gestionnaire',
+      [UserRole.HANDLER]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',
-      [UserRole.FOURNISSEUR]: 'Fournisseur'
+      [UserRole.SUPPLIER]: 'Fournisseur'
     };
     return role ? roleNames[role] : '';
   }

@@ -1,23 +1,24 @@
 export enum UserRole {
-  ADMIN = 'Admin',
-  MANAGER = 'Manager',
-  GESTIONNAIRE = 'Gestionnaire', 
-  STATION = 'Station',
-  FOURNISSEUR = 'Fournisseur'
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+  HANDLER = 'HANDLER', 
+  STATION = 'STATION',
+  SUPPLIER = 'SUPPLIER'
 }
 
 export enum EntityType {
-  STATION = 'Station',
-  FOURNISSEUR = 'Fournisseur'
+  STATION = 'STATION',
+  SUPPLIER = 'SUPPLIER'
 }
 
 export interface User {
   id: string;
   email: string;
-  nomComplet: string;
+  fullName: string;
+  phone?: string;
   role: UserRole;
-  entiteType?: EntityType;
-  entiteId?: string;
+  entityType?: EntityType;
+  entityId?: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -25,19 +26,19 @@ export interface User {
   // Virtual properties
   isAdmin: boolean;
   isManager: boolean;
-  isGestionnaire: boolean;
+  isHandler: boolean;
   isStation: boolean;
-  isFournisseur: boolean;
+  isSupplier: boolean;
 
   // Relations
   station?: {
     id: string;
-    nom: string;
-    identifiantInterne?: string;
+    name: string;
+    internalIdentifier?: string;
   };
-  fournisseur?: {
+  supplier?: {
     id: string;
-    nom: string;
+    name: string;
     siret?: string;
     type?: string;
   };
@@ -46,16 +47,18 @@ export interface User {
 export interface CreateUserRequest {
   email: string;
   password: string;
-  nomComplet: string;
+  fullName: string;
+  phone?: string;
   role: UserRole;
-  entiteType?: EntityType;
-  entiteId?: string;
+  entityType?: EntityType;
+  entityId?: string;
 }
 
 export interface UpdateUserRequest {
   email?: string;
-  nomComplet?: string;
+  fullName?: string;
+  phone?: string;
   role?: UserRole;
-  entiteType?: EntityType;
-  entiteId?: string;
+  entityType?: EntityType;
+  entityId?: string;
 }

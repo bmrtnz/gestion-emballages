@@ -14,8 +14,8 @@ export interface TokenPayload {
   sub: string;
   email: string;
   role: string;
-  entiteType?: string;
-  entiteId?: string;
+  entityType?: string;
+  entityId?: string;
   iat: number;
   exp: number;
 }

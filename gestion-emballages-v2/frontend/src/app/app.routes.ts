@@ -11,6 +11,12 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)
   },
 
+  // Password reset - accessible to anyone with a valid token
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/auth/password-reset/password-reset.component').then(c => c.PasswordResetComponent)
+  },
+
   // Protected routes
   {
     path: '',
@@ -33,7 +39,7 @@ export const routes: Routes = [
       {
         path: 'users',
         canActivate: [adminGuard],
-        loadComponent: () => import('./features/users/user-list/user-list.component').then(c => c.UserListComponent)
+        loadComponent: () => import('./features/users/user-page.component').then(c => c.UserPageComponent)
       },
       {
         path: 'stations',

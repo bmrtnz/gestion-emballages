@@ -1,50 +1,339 @@
 [
-  {
-    "nom": "Emballages du Sud-Ouest",
-    "adresse": "12 Zone Industrielle Nord",
-    "ville": "Toulouse",
-    "codePostal": "31000",
-    "telephone": "05 61 23 45 67",
-    "email": "contact@emballages-so.fr",
-    "contact": "François Martinez",
-    "siret": "12345678901234",
-    "specialites": ["Carton", "Plastique"],
-    "isActive": true
-  },
-  {
-    "nom": "Plastiques Aquitaine",
-    "adresse": "45 Rue de l'Industrie",
-    "ville": "Bayonne",
-    "codePostal": "64100",
-    "telephone": "05 59 46 78 90",
-    "email": "info@plastiques-aquitaine.com",
-    "contact": "Elisabeth Dubois",
-    "siret": "23456789012345",
-    "specialites": ["Film Plastique", "Barquette"],
-    "isActive": true
-  },
-  {
-    "nom": "Cartons de France",
-    "adresse": "78 Avenue des Pyrénées",
-    "ville": "Tarbes",
-    "codePostal": "65000",
-    "telephone": "05 62 34 56 78",
-    "email": "commercial@cartons-france.fr",
-    "contact": "Michel Laurent",
-    "siret": "34567890123456",
-    "specialites": ["Carton", "Cagette"],
-    "isActive": true
-  },
-  {
-    "nom": "Eco-Emballages Nouvelle-Aquitaine",
-    "adresse": "90 Parc d'Activités",
-    "ville": "Limoges",
-    "codePostal": "87000",
-    "telephone": "05 55 12 34 56",
-    "email": "eco@emballages-na.fr",
-    "contact": "Catherine Moreau",
-    "siret": "45678901234567",
-    "specialites": ["Emballage Isotherme", "Sac Papier"],
-    "isActive": true
-  }
+    {
+        "nom": "PackagingTech Solutions",
+        "adresse": "Zone Industrielle de Rungis, 148 Avenue des États-Unis",
+        "ville": "Rungis",
+        "codePostal": "94150",
+        "telephone": "01 45 12 34 56",
+        "email": "contact@packagingtech.fr",
+        "contact": "Olivier Durand",
+        "siret": "85234567890123",
+        "specialites": ["Barquette", "Film Plastique", "Étiquette"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Site Principal Rungis",
+                "adresse": {
+                    "rue": "Zone Industrielle de Rungis, 148 Avenue des États-Unis",
+                    "ville": "Rungis",
+                    "codePostal": "94150"
+                },
+                "contact": {
+                    "nom": "Olivier Durand",
+                    "telephone": "01 45 12 34 56",
+                    "email": "o.durand@packagingtech.fr"
+                },
+                "specialites": ["Barquette", "Film Plastique", "Étiquette"],
+                "estPrincipal": true
+            },
+            {
+                "nom": "Dépôt Lyon-Villefranche",
+                "adresse": {
+                    "rue": "Parc Logistique, 67 Route de Belleville",
+                    "ville": "Villefranche-sur-Saône",
+                    "codePostal": "69400"
+                },
+                "contact": {
+                    "nom": "Marie-Claire Lyonnaise",
+                    "telephone": "04 74 23 56 78",
+                    "email": "mc.lyonnaise@packagingtech.fr"
+                },
+                "specialites": ["Barquette", "Film Plastique"],
+                "estPrincipal": false
+            }
+        ]
+    },
+    {
+        "nom": "Emballages Méditerranéens",
+        "adresse": "Quartier Saint-Menet, 345 Avenue de la Capelette",
+        "ville": "Marseille",
+        "codePostal": "13011",
+        "telephone": "04 91 78 45 23",
+        "email": "commercial@emballages-med.fr",
+        "contact": "Philippe Provençal",
+        "siret": "75123456789012",
+        "specialites": ["Cagette", "Carton", "Sac Papier"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Usine Marseille",
+                "adresse": {
+                    "rue": "Quartier Saint-Menet, 345 Avenue de la Capelette",
+                    "ville": "Marseille",
+                    "codePostal": "13011"
+                },
+                "contact": {
+                    "nom": "Philippe Provençal",
+                    "telephone": "04 91 78 45 23",
+                    "email": "p.provencal@emballages-med.fr"
+                },
+                "specialites": ["Cagette", "Carton", "Sac Papier"],
+                "estPrincipal": true
+            },
+            {
+                "nom": "Site Montpellier",
+                "adresse": {
+                    "rue": "Zone Artisanale de Figuerolles, 89 Rue de l'Industrie",
+                    "ville": "Montpellier",
+                    "codePostal": "34070"
+                },
+                "contact": {
+                    "nom": "Sandrine Héraultaise",
+                    "telephone": "04 67 34 78 90",
+                    "email": "s.heraultaise@emballages-med.fr"
+                },
+                "specialites": ["Cagette", "Carton"],
+                "estPrincipal": false
+            },
+            {
+                "nom": "Dépôt Avignon",
+                "adresse": {
+                    "rue": "Zone Commerciale Sud, 123 Route de Nîmes",
+                    "ville": "Avignon",
+                    "codePostal": "84000"
+                },
+                "contact": {
+                    "nom": "Laurent Vauclusien",
+                    "telephone": "04 90 45 67 89",
+                    "email": "l.vauclusien@emballages-med.fr"
+                },
+                "specialites": ["Sac Papier"],
+                "estPrincipal": false
+            }
+        ]
+    },
+    {
+        "nom": "Plastiques de l'Ouest",
+        "adresse": "Parc Industriel de la Janais, 234 Boulevard de la Technologie",
+        "ville": "Rennes",
+        "codePostal": "35000",
+        "telephone": "02 99 34 56 78",
+        "email": "info@plastiques-ouest.com",
+        "contact": "Yann Breton",
+        "siret": "65987654321098",
+        "specialites": ["Film Plastique", "Sac Plastique", "Emballage Isotherme"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Usine Principale Rennes",
+                "adresse": {
+                    "rue": "Parc Industriel de la Janais, 234 Boulevard de la Technologie",
+                    "ville": "Rennes",
+                    "codePostal": "35000"
+                },
+                "contact": {
+                    "nom": "Yann Breton",
+                    "telephone": "02 99 34 56 78",
+                    "email": "y.breton@plastiques-ouest.com"
+                },
+                "specialites": ["Film Plastique", "Sac Plastique", "Emballage Isotherme"],
+                "estPrincipal": true
+            },
+            {
+                "nom": "Site Angers",
+                "adresse": {
+                    "rue": "Zone Industrielle Angers-Loire, 156 Rue de la Maine",
+                    "ville": "Angers",
+                    "codePostal": "49000"
+                },
+                "contact": {
+                    "nom": "Gwenaëlle Angevine",
+                    "telephone": "02 41 67 89 12",
+                    "email": "g.angevine@plastiques-ouest.com"
+                },
+                "specialites": ["Film Plastique", "Sac Plastique"],
+                "estPrincipal": false
+            }
+        ]
+    },
+    {
+        "nom": "AgroPackaging Nord",
+        "adresse": "Parc d'Activités de Faches-Thumesnil, 467 Avenue de la République",
+        "ville": "Faches-Thumesnil",
+        "codePostal": "59155",
+        "telephone": "03 20 45 67 89",
+        "email": "contact@agropack-nord.fr",
+        "contact": "François Nordiste",
+        "siret": "55876543210987",
+        "specialites": ["Plateau", "Carton", "Étiquette"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Centre Logistique Faches",
+                "adresse": {
+                    "rue": "Parc d'Activités de Faches-Thumesnil, 467 Avenue de la République",
+                    "ville": "Faches-Thumesnil",
+                    "codePostal": "59155"
+                },
+                "contact": {
+                    "nom": "François Nordiste",
+                    "telephone": "03 20 45 67 89",
+                    "email": "f.nordiste@agropack-nord.fr"
+                },
+                "specialites": ["Plateau", "Carton", "Étiquette"],
+                "estPrincipal": true
+            },
+            {
+                "nom": "Site Amiens",
+                "adresse": {
+                    "rue": "Zone Industrielle Sud, 89 Rue de la Somme",
+                    "ville": "Amiens",
+                    "codePostal": "80000"
+                },
+                "contact": {
+                    "nom": "Brigitte Picarde",
+                    "telephone": "03 22 56 78 90",
+                    "email": "b.picarde@agropack-nord.fr"
+                },
+                "specialites": ["Plateau", "Carton"],
+                "estPrincipal": false
+            }
+        ]
+    },
+    {
+        "nom": "EcoPack Solutions",
+        "adresse": "Écoparc d'Alsace, 178 Route de Strasbourg",
+        "ville": "Colmar",
+        "codePostal": "68000",
+        "telephone": "03 89 23 45 67",
+        "email": "eco@ecopack-solutions.fr",
+        "contact": "Klaus Alsacien",
+        "siret": "45765432109876",
+        "specialites": ["Sac Papier", "Carton", "Emballage Isotherme"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Écosite Colmar",
+                "adresse": {
+                    "rue": "Écoparc d'Alsace, 178 Route de Strasbourg",
+                    "ville": "Colmar",
+                    "codePostal": "68000"
+                },
+                "contact": {
+                    "nom": "Klaus Alsacien",
+                    "telephone": "03 89 23 45 67",
+                    "email": "k.alsacien@ecopack-solutions.fr"
+                },
+                "specialites": ["Sac Papier", "Carton", "Emballage Isotherme"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "nom": "Conditionnements du Centre",
+        "adresse": "Parc Technologique de la Sologne, 290 Avenue de la Sologne",
+        "ville": "Orléans",
+        "codePostal": "45000",
+        "telephone": "02 38 56 78 90",
+        "email": "commercial@conditionnements-centre.fr",
+        "contact": "Martine Orléanaise",
+        "siret": "35654321098765",
+        "specialites": ["Barquette", "Plateau", "Autre"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Centre de Distribution Orléans",
+                "adresse": {
+                    "rue": "Parc Technologique de la Sologne, 290 Avenue de la Sologne",
+                    "ville": "Orléans",
+                    "codePostal": "45000"
+                },
+                "contact": {
+                    "nom": "Martine Orléanaise",
+                    "telephone": "02 38 56 78 90",
+                    "email": "m.orleanaise@conditionnements-centre.fr"
+                },
+                "specialites": ["Barquette", "Plateau", "Autre"],
+                "estPrincipal": true
+            },
+            {
+                "nom": "Dépôt Tours",
+                "adresse": {
+                    "rue": "Zone d'Activité des Deux Lions, 123 Avenue de Grammont",
+                    "ville": "Tours",
+                    "codePostal": "37000"
+                },
+                "contact": {
+                    "nom": "Christine Tourangelle",
+                    "telephone": "02 47 45 67 89",
+                    "email": "c.tourangelle@conditionnements-centre.fr"
+                },
+                "specialites": ["Barquette", "Plateau"],
+                "estPrincipal": false
+            }
+        ]
+    },
+    {
+        "nom": "Emballages Bio Sud-Ouest",
+        "adresse": "Écozone de Bordeaux-Lac, 345 Cours de la Libération",
+        "ville": "Bordeaux",
+        "codePostal": "33000",
+        "telephone": "05 56 78 90 12",
+        "email": "bio@emballages-bio-so.fr",
+        "contact": "Sandrine Bordelaise",
+        "siret": "25543210987654",
+        "specialites": ["Sac Papier", "Carton", "Emballage Isotherme"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Écosite Bordeaux",
+                "adresse": {
+                    "rue": "Écozone de Bordeaux-Lac, 345 Cours de la Libération",
+                    "ville": "Bordeaux",
+                    "codePostal": "33000"
+                },
+                "contact": {
+                    "nom": "Sandrine Bordelaise",
+                    "telephone": "05 56 78 90 12",
+                    "email": "s.bordelaise@emballages-bio-so.fr"
+                },
+                "specialites": ["Sac Papier", "Carton", "Emballage Isotherme"],
+                "estPrincipal": true
+            },
+            {
+                "nom": "Site Toulouse",
+                "adresse": {
+                    "rue": "Parc Technologique du Canal, 178 Avenue de l'Europe",
+                    "ville": "Toulouse",
+                    "codePostal": "31000"
+                },
+                "contact": {
+                    "nom": "Pierre Toulousain",
+                    "telephone": "05 61 34 56 78",
+                    "email": "p.toulousain@emballages-bio-so.fr"
+                },
+                "specialites": ["Sac Papier", "Carton"],
+                "estPrincipal": false
+            }
+        ]
+    },
+    {
+        "nom": "FlexiPack Industries",
+        "adresse": "Zone Industrielle de Rochefoucauld, 567 Rue de l'Innovation",
+        "ville": "Angoulême",
+        "codePostal": "16000",
+        "telephone": "05 45 67 89 01",
+        "email": "contact@flexipack-industries.com",
+        "contact": "Alain Charentais",
+        "siret": "15432109876543",
+        "specialites": ["Film Plastique", "Sac Plastique"],
+        "isActive": true,
+        "sites": [
+            {
+                "nom": "Usine Angoulême",
+                "adresse": {
+                    "rue": "Zone Industrielle de Rochefoucauld, 567 Rue de l'Innovation",
+                    "ville": "Angoulême",
+                    "codePostal": "16000"
+                },
+                "contact": {
+                    "nom": "Alain Charentais",
+                    "telephone": "05 45 67 89 01",
+                    "email": "a.charentais@flexipack-industries.com"
+                },
+                "specialites": ["Film Plastique", "Sac Plastique"],
+                "estPrincipal": true
+            }
+        ]
+    }
 ]

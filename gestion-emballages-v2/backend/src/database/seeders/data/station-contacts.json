@@ -1,0 +1,344 @@
+[
+    {
+        "stationIdentifiant": "DAUPHI",
+        "nomComplet": "Michel Dauphiné",
+        "poste": "Directeur",
+        "telephone": "04 76 87 34 21",
+        "email": "m.dauphine@dauphi.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "DAUPHI",
+        "nomComplet": "Sophie Grenobloise",
+        "poste": "Responsable Logistique",
+        "telephone": "04 76 87 34 22",
+        "email": "s.grenobloise@dauphi.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SAVMON",
+        "nomComplet": "Élise Montagnard",
+        "poste": "Directrice",
+        "telephone": "04 50 23 56 78",
+        "email": "e.montagnard@savmon.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SAVMON",
+        "nomComplet": "Jean-Claude Annesien",
+        "poste": "Chef d'Équipe",
+        "telephone": "04 50 23 56 79",
+        "email": "jc.annesien@savmon.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "ARDECHE",
+        "nomComplet": "Pierre Ardéchois",
+        "poste": "Directeur",
+        "telephone": "04 75 64 89 12",
+        "email": "p.ardechois@ardeche.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "ARDECHE",
+        "nomComplet": "Nathalie Privadoise",
+        "poste": "Assistante de Direction",
+        "telephone": "04 75 64 89 13",
+        "email": "n.privadoise@ardeche.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SOLMED",
+        "nomComplet": "Carole Méditerranée",
+        "poste": "Directrice Commerciale",
+        "telephone": "04 67 45 23 67",
+        "email": "c.mediterranee@solmed.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SOLMED",
+        "nomComplet": "Laurent Montpelliérain",
+        "poste": "Responsable Qualité",
+        "telephone": "04 67 45 23 68",
+        "email": "l.montpellierain@solmed.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SOLMED",
+        "nomComplet": "Valérie Héraultaise",
+        "poste": "Gestionnaire Stock",
+        "telephone": "04 67 45 23 69",
+        "email": "v.heraultaise@solmed.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "CEVENNES",
+        "nomComplet": "Jean-Luc Cévenol",
+        "poste": "Directeur",
+        "telephone": "04 66 78 34 56",
+        "email": "jl.cevenol@cevennes.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "CEVENNES",
+        "nomComplet": "Céline Alésienne",
+        "poste": "Comptable",
+        "telephone": "04 66 78 34 57",
+        "email": "c.alesienne@cevennes.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "VIGPRI",
+        "nomComplet": "Philippe Gardois",
+        "poste": "Directeur Technique",
+        "telephone": "04 66 23 78 90",
+        "email": "p.gardois@vigpri.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "VIGPRI",
+        "nomComplet": "Martine Nîmoise",
+        "poste": "Responsable Achats",
+        "telephone": "04 66 23 78 91",
+        "email": "m.nimoise@vigpri.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "LOIREORG",
+        "nomComplet": "Amélie Loire",
+        "poste": "Directrice Bio",
+        "telephone": "02 40 34 67 89",
+        "email": "a.loire@loireorg.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "LOIREORG",
+        "nomComplet": "Stéphane Nantais",
+        "poste": "Technicien Qualité",
+        "telephone": "02 40 34 67 90",
+        "email": "s.nantais@loireorg.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "MARANJOU",
+        "nomComplet": "Sylvain Angevin",
+        "poste": "Directeur",
+        "telephone": "02 41 56 78 23",
+        "email": "s.angevin@maranjou.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "MARANJOU",
+        "nomComplet": "Claire Anjouine",
+        "poste": "Secrétaire Administrative",
+        "telephone": "02 41 56 78 24",
+        "email": "c.anjouine@maranjou.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "VENDEE",
+        "nomComplet": "Marine Vendéenne",
+        "poste": "Directrice Générale",
+        "telephone": "02 51 45 89 34",
+        "email": "m.vendeenne@vendee.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "VENDEE",
+        "nomComplet": "Pascal Yonnais",
+        "poste": "Responsable Expéditions",
+        "telephone": "02 51 45 89 35",
+        "email": "p.yonnais@vendee.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "BIOGAR",
+        "nomComplet": "Estelle Garonnaise",
+        "poste": "Directrice Bio",
+        "telephone": "05 56 78 23 45",
+        "email": "e.garonnaise@biogar.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "BIOGAR",
+        "nomComplet": "Frédéric Bordelais",
+        "poste": "Responsable Certification",
+        "telephone": "05 56 78 23 46",
+        "email": "f.bordelais@biogar.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "BIOPERIG",
+        "nomComplet": "Alain Périgourdin",
+        "poste": "Directeur",
+        "telephone": "05 53 45 67 89",
+        "email": "a.perigourdin@bioperig.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "BIOPERIG",
+        "nomComplet": "Monique Périgourdine",
+        "poste": "Responsable Truffe",
+        "telephone": "05 53 45 67 90",
+        "email": "m.perigourdine@bioperig.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "LEGNORD",
+        "nomComplet": "François Nordiste",
+        "poste": "Directeur",
+        "telephone": "03 20 67 89 23",
+        "email": "f.nordiste@legnord.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "LEGNORD",
+        "nomComplet": "Brigitte Lilloise",
+        "poste": "Gestionnaire Administrative",
+        "telephone": "03 20 67 89 24",
+        "email": "b.lilloise@legnord.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "LEGNORD",
+        "nomComplet": "Didier Ch'ti",
+        "poste": "Responsable Maraîchage",
+        "telephone": "03 20 67 89 25",
+        "email": "d.chti@legnord.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "PICARD",
+        "nomComplet": "Isabelle Picarde",
+        "poste": "Directrice",
+        "telephone": "03 22 45 67 12",
+        "email": "i.picarde@picard.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "PICARD",
+        "nomComplet": "Thierry Amiénois",
+        "poste": "Chef de Culture",
+        "telephone": "03 22 45 67 13",
+        "email": "t.amienois@picard.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "ARTBRET",
+        "nomComplet": "Yann Le Breton",
+        "poste": "Directeur Artisan",
+        "telephone": "02 98 34 56 78",
+        "email": "y.lebreton@artbret.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "ARTBRET",
+        "nomComplet": "Gwenaëlle Kerléonaise",
+        "poste": "Assistante Production",
+        "telephone": "02 98 34 56 79",
+        "email": "g.kerleonaise@artbret.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "ALSACE",
+        "nomComplet": "Hans Alsacien",
+        "poste": "Directeur Familial",
+        "telephone": "03 88 23 45 67",
+        "email": "h.alsacien@alsace.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "ALSACE",
+        "nomComplet": "Greta Strasbourgeoise",
+        "poste": "Œnologue",
+        "telephone": "03 88 23 45 68",
+        "email": "g.strasbourgeoise@alsace.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "CORSE",
+        "nomComplet": "Antoine Corse",
+        "poste": "Directeur Indépendant",
+        "telephone": "04 95 56 78 90",
+        "email": "a.corse@corse.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "CORSE",
+        "nomComplet": "Marie-Jeanne Ajaccienne",
+        "poste": "Responsable Vente",
+        "telephone": "04 95 56 78 91",
+        "email": "mj.ajaccienne@corse.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SAVOIE",
+        "nomComplet": "Marie-Claire Savoyarde",
+        "poste": "Directrice",
+        "telephone": "04 79 23 45 67",
+        "email": "mc.savoyarde@savoie.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "SAVOIE",
+        "nomComplet": "Pierre Chambérien",
+        "poste": "Gardien d'Alpage",
+        "telephone": "04 79 23 45 68",
+        "email": "p.chamberien@savoie.fr",
+        "estPrincipal": false,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "CHAMPAG",
+        "nomComplet": "Thierry Champenois",
+        "poste": "Directeur Viticole",
+        "telephone": "03 26 78 90 12",
+        "email": "t.champenois@champag.fr",
+        "estPrincipal": true,
+        "isActive": true
+    },
+    {
+        "stationIdentifiant": "CHAMPAG",
+        "nomComplet": "Sandrine Rémoise",
+        "poste": "Responsable Cave",
+        "telephone": "03 26 78 90 13",
+        "email": "s.remoise@champag.fr",
+        "estPrincipal": false,
+        "isActive": true
+    }
+]

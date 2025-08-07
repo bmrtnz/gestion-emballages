@@ -1,36 +1,170 @@
 [
-  {
-    "nom": "Plateforme Logistique Sud-Ouest",
-    "siret": "56789012345678",
-    "type": "Plateforme de distribution",
-    "specialites": ["Distribution générale", "Stockage sécurisé", "Logistique"],
-    "isActive": true,
-    "site": {
-      "nom": "Site Principal Toulouse",
-      "adresse": "150 Zone Industrielle Aerospace",
-      "ville": "Toulouse",
-      "codePostal": "31700",
-      "telephone": "05 61 89 12 34",
-      "email": "toulouse@plateforme-so.fr",
-      "isPrincipal": true,
-      "isActive": true
+    {
+        "nom": "Plateforme France Distribution Île-de-France",
+        "siret": "85276543210987",
+        "type": "Centre National de Distribution",
+        "description": "Plateforme principale de distribution pour la région parisienne et transit européen",
+        "specialites": ["Distribution nationale", "Stockage haute capacité", "Cross-docking", "Export international"],
+        "capaciteStockage": "50000",
+        "certifications": ["ISO 9001", "ISO 14001", "BRC"],
+        "isActive": true,
+        "site": {
+            "nom": "Centre Logistique Roissy",
+            "adresse": "Parc d'Activités de Roissy Charles de Gaulle, 147 Rue de la Belle Étoile",
+            "ville": "Roissy-en-France",
+            "codePostal": "95700",
+            "telephone": "01 48 62 89 34",
+            "email": "roissy@france-distribution.fr",
+            "contact": {
+                "nom": "Directeur Régional - Marc Francilien",
+                "poste": "Directeur Général",
+                "telephone": "01 48 62 89 30",
+                "email": "marc.francilien@france-distribution.fr"
+            },
+            "horaires": "24h/24 - 7j/7",
+            "services": ["Stockage réfrigéré", "Quais de chargement poids lourds", "Zone de picking"],
+            "isPrincipal": true,
+            "isActive": true
+        }
+    },
+    {
+        "nom": "Plateforme Logistique Sud-Est",
+        "siret": "75432109876543",
+        "type": "Hub Méditerranéen",
+        "description": "Plateforme spécialisée pour les produits méditerranéens et distribution Sud-Est",
+        "specialites": ["Produits frais méditerranéens", "Distribution régionale", "Stockage climatisé"],
+        "capaciteStockage": "25000",
+        "certifications": ["ISO 22000", "BRC", "Agriculture Biologique"],
+        "isActive": true,
+        "site": {
+            "nom": "Hub Marseille-Provence",
+            "adresse": "Zone d'Activité de la Capelette, 278 Avenue de Saint-Antoine",
+            "ville": "Marseille",
+            "codePostal": "13010",
+            "telephone": "04 91 25 78 45",
+            "email": "marseille@plateforme-sudest.fr",
+            "contact": {
+                "nom": "Directrice Sud-Est - Catherine Provençale",
+                "poste": "Directrice Régionale",
+                "telephone": "04 91 25 78 40",
+                "email": "catherine.provencale@plateforme-sudest.fr"
+            },
+            "horaires": "6h-22h du lundi au samedi",
+            "services": ["Chambre froide", "Zone bio certifiée", "Contrôle qualité"],
+            "isPrincipal": true,
+            "isActive": true
+        }
+    },
+    {
+        "nom": "Centre de Distribution Rhône-Alpes",
+        "siret": "65123987654321",
+        "type": "Plateforme Alpine",
+        "description": "Centre de distribution spécialisé dans les produits alpins et montagnards",
+        "specialites": ["Produits montagnards", "Fromages d'altitude", "Distribution alpine"],
+        "capaciteStockage": "18000",
+        "certifications": ["IGP Montagne", "AOP Fromages", "Bio Cohérence"],
+        "isActive": true,
+        "site": {
+            "nom": "Centre Logistique Lyon-Villefranche",
+            "adresse": "Parc Logistique des Grandes Chaumes, 189 Route de Belleville",
+            "ville": "Villefranche-sur-Saône",
+            "codePostal": "69400",
+            "telephone": "04 74 65 32 18",
+            "email": "lyon@centre-rhone-alpes.fr",
+            "contact": {
+                "nom": "Chef de Centre - Alain Lyonnais",
+                "poste": "Chef de Centre",
+                "telephone": "04 74 65 32 10",
+                "email": "alain.lyonnais@centre-rhone-alpes.fr"
+            },
+            "horaires": "5h-20h du lundi au vendredi",
+            "services": ["Stockage fromages", "Zone température contrôlée", "Expédition montagne"],
+            "isPrincipal": true,
+            "isActive": true
+        }
+    },
+    {
+        "nom": "Plateforme Logistique Nord-Ouest",
+        "siret": "54987651234098",
+        "type": "Hub Atlantique",
+        "description": "Plateforme de distribution pour la façade atlantique et les régions ouest",
+        "specialites": ["Produits de la mer", "Primeurs atlantiques", "Distribution côtière"],
+        "capaciteStockage": "22000",
+        "certifications": ["MSC Pêche Durable", "Label Rouge", "Appellation Bretagne"],
+        "isActive": true,
+        "site": {
+            "nom": "Plateforme Nantes Atlantique",
+            "adresse": "Zone Portuaire de Cheviré, 67 Boulevard des Régions",
+            "ville": "Nantes",
+            "codePostal": "44000",
+            "telephone": "02 40 73 56 89",
+            "email": "nantes@plateforme-nordouest.fr",
+            "contact": {
+                "nom": "Responsable Atlantique - Yves Nantais",
+                "poste": "Responsable Régional",
+                "telephone": "02 40 73 56 80",
+                "email": "yves.nantais@plateforme-nordouest.fr"
+            },
+            "horaires": "4h-18h du lundi au vendredi",
+            "services": ["Chambre froide poissons", "Zone marée", "Traçabilité origine mer"],
+            "isPrincipal": true,
+            "isActive": true
+        }
+    },
+    {
+        "nom": "Hub Bio Centre-Val de Loire",
+        "siret": "43210987654321",
+        "type": "Plateforme Bio Spécialisée",
+        "description": "Centre spécialisé dans la distribution de produits biologiques certifiés",
+        "specialites": ["Produits biologiques", "Cosmétiques naturels", "Compléments bio"],
+        "capaciteStockage": "15000",
+        "certifications": ["Ecocert", "Agriculture Biologique", "Demeter", "Nature & Progrès"],
+        "isActive": true,
+        "site": {
+            "nom": "Écocentre Orléans",
+            "adresse": "Parc Technologique de la Sologne, 234 Avenue de la Sologne",
+            "ville": "Orléans",
+            "codePostal": "45000",
+            "telephone": "02 38 84 67 23",
+            "email": "orleans@hub-bio-centre.fr",
+            "contact": {
+                "nom": "Coordinatrice Bio - Émilie Orléanaise",
+                "poste": "Coordinatrice Bio",
+                "telephone": "02 38 84 67 20",
+                "email": "emilie.orleanaise@hub-bio-centre.fr"
+            },
+            "horaires": "7h-19h du lundi au vendredi",
+            "services": ["Certification bio", "Contrôle qualité bio", "Étiquetage spécialisé"],
+            "isPrincipal": true,
+            "isActive": true
+        }
+    },
+    {
+        "nom": "Centre Logistique Grand Est",
+        "siret": "32109876543210",
+        "type": "Plateforme Frontalière",
+        "description": "Plateforme logistique avec vocation export vers l'Europe centrale",
+        "specialites": ["Export européen", "Vins et spiritueux", "Produits de terroir"],
+        "capaciteStockage": "20000",
+        "certifications": ["Douanes Export", "OIV Vins", "Appellation Alsace"],
+        "isActive": true,
+        "site": {
+            "nom": "Plateforme Strasbourg-Europe",
+            "adresse": "Port Autonome de Strasbourg, 178 Rue du Rhin",
+            "ville": "Strasbourg",
+            "codePostal": "67000",
+            "telephone": "03 88 52 34 67",
+            "email": "strasbourg@centre-grandest.fr",
+            "contact": {
+                "nom": "Directeur Export - Klaus Rhénan",
+                "poste": "Directeur Export",
+                "telephone": "03 88 52 34 60",
+                "email": "klaus.rhenan@centre-grandest.fr"
+            },
+            "horaires": "6h-18h du lundi au vendredi",
+            "services": ["Export douanier", "Stockage vins", "Transit international"],
+            "isPrincipal": true,
+            "isActive": true
+        }
     }
-  },
-  {
-    "nom": "Hub Emballages Nouvelle-Aquitaine",
-    "siret": "67890123456789",
-    "type": "Hub logistique",
-    "specialites": ["Conditionnement", "Cross-docking", "Stockage réfrigéré"],
-    "isActive": true,
-    "site": {
-      "nom": "Hub Central Bordeaux",
-      "adresse": "88 Port de la Lune",
-      "ville": "Bordeaux",
-      "codePostal": "33100",
-      "telephone": "05 56 78 45 67",
-      "email": "bordeaux@hub-emballages.fr",
-      "isPrincipal": true,
-      "isActive": true
-    }
-  }
 ]

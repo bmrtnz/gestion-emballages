@@ -27,7 +27,7 @@ export class PlatformsController {
   constructor(private readonly platformsService: PlatformsService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async create(@Body() createPlatformDto: CreatePlatformDto, @Request() req) {
     const platform = await this.platformsService.create(createPlatformDto, req.user.id);
     return {
@@ -61,7 +61,7 @@ export class PlatformsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async update(
     @Param('id') id: string,
     @Body() updatePlatformDto: UpdatePlatformDto,
@@ -76,7 +76,7 @@ export class PlatformsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async remove(@Param('id') id: string, @Request() req) {
     await this.platformsService.remove(id, req.user.id);
     return {
@@ -87,7 +87,7 @@ export class PlatformsController {
 
   // Platform sites management
   @Post(':id/sites')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async createSite(
     @Param('id') platformId: string,
     @Body() createSiteDto: CreatePlatformSiteDto,
@@ -101,7 +101,7 @@ export class PlatformsController {
   }
 
   @Patch(':id/sites/:siteId')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async updateSite(
     @Param('id') platformId: string,
     @Param('siteId') siteId: string,
@@ -116,7 +116,7 @@ export class PlatformsController {
   }
 
   @Delete(':id/sites/:siteId')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async removeSite(
     @Param('id') platformId: string,
     @Param('siteId') siteId: string,

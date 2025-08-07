@@ -40,8 +40,8 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
-      entiteType: user.entiteType,
-      entiteId: user.entiteId,
+      entityType: user.entityType,
+      entityId: user.entityId,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -72,8 +72,8 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       role: user.role,
-      entiteType: user.entiteType,
-      entiteId: user.entiteId,
+      entityType: user.entityType,
+      entityId: user.entityId,
     };
 
     const accessToken = this.jwtService.sign(payload);

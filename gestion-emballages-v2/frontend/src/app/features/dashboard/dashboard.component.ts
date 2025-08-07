@@ -13,7 +13,7 @@ import { UserRole } from '@core/models/user.model';
       <!-- Welcome Header -->
       <div class="bg-white rounded-lg shadow-sm p-6">
         <h1 class="text-2xl font-bold text-gray-900 mb-2">
-          Bienvenue, {{ authService.user()?.nomComplet }}
+          Bienvenue, {{ authService.user()?.fullName }}
         </h1>
         <p class="text-gray-600">
           Vous êtes connecté en tant que {{ getRoleDisplayName() }}
@@ -106,8 +106,8 @@ import { UserRole } from '@core/models/user.model';
             </a>
           </ng-container>
 
-          <!-- Admin/Manager/Gestionnaire actions -->
-          <ng-container *ngIf="authService.isAdmin() || authService.isManager() || authService.isGestionnaire()">
+          <!-- Admin/Manager/Handler actions -->
+          <ng-container *ngIf="authService.isAdmin() || authService.isManager() || authService.isHandler()">
             <a href="/articles" 
                class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200">
               <div class="flex items-center">
@@ -175,9 +175,9 @@ export class DashboardComponent {
     const roleNames = {
       [UserRole.ADMIN]: 'Administrateur',
       [UserRole.MANAGER]: 'Manager',
-      [UserRole.GESTIONNAIRE]: 'Gestionnaire',
+      [UserRole.HANDLER]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',
-      [UserRole.FOURNISSEUR]: 'Fournisseur'
+      [UserRole.SUPPLIER]: 'Fournisseur'
     };
     return role ? roleNames[role] : '';
   }

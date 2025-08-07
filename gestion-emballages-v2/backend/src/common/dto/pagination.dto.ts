@@ -15,12 +15,12 @@ export class PaginationDto {
   @IsOptional()
   page?: number = 1;
 
-  @ApiProperty({ default: 20, minimum: 1, maximum: 100 })
+  @ApiProperty({ default: 10, minimum: 1, maximum: 100 })
   @Type(() => Number)
   @IsInt()
   @Min(1)
   @IsOptional()
-  limit?: number = 20;
+  limit?: number = 10;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -50,4 +50,16 @@ export class PaginationDto {
   @IsOptional()
   @Transform(({ value }) => value === '' ? undefined : value)
   specialite?: string;
+
+  @ApiProperty({ required: false, description: 'Filter by role for users' })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
+  role?: string;
+
+  @ApiProperty({ required: false, description: 'Filter by entity type for users' })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
+  entiteType?: string;
 }

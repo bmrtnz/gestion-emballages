@@ -8,6 +8,8 @@ import * as path from 'path';
 // Import entities
 import { User } from '@modules/users/entities/user.entity';
 import { Station } from '@modules/stations/entities/station.entity';
+import { StationGroup } from '@modules/stations/entities/station-group.entity';
+import { StationContact } from '@modules/stations/entities/station-contact.entity';
 import { Fournisseur } from '@modules/fournisseurs/entities/fournisseur.entity';
 import { FournisseurSite } from '@modules/fournisseurs/entities/fournisseur-site.entity';
 import { Platform } from '@modules/platforms/entities/platform.entity';
@@ -18,8 +20,7 @@ import { StockStation } from '@modules/stocks/entities/stock-station.entity';
 import { StockPlatform } from '@modules/stocks/entities/stock-platform.entity';
 
 // Import enums
-import { UserRole } from '@common/enums/user-role.enum';
-import { EntityType } from '@modules/users/entities/user.entity';
+import { UserRole, EntityType } from '@common/enums/user-role.enum';
 import { ArticleCategory } from '@common/enums/article-category.enum';
 
 @Injectable()
@@ -47,35 +48,43 @@ export class DatabaseSeeder {
       // 1. Clear existing data
       await this.clearDatabase(queryRunner);
 
-      // 2. Seed stations first
-      const stations = await this.seedStations(queryRunner);
+      // 2. Seed station groups first
+      const stationGroups = await this.seedStationGroups(queryRunner);
+      console.log(`✅ Created ${stationGroups.length} station groups`);
+
+      // 3. Seed stations
+      const stations = await this.seedStations(queryRunner, stationGroups);
       console.log(`✅ Created ${stations.length} stations`);
 
-      // 3. Seed suppliers
+      // 4. Seed station contacts
+      await this.seedStationContacts(queryRunner, stations);
+      console.log(`✅ Created station contacts`);
+
+      // 5. Seed suppliers
       const fournisseurs = await this.seedFournisseurs(queryRunner);
       console.log(`✅ Created ${fournisseurs.length} suppliers`);
 
-      // 4. Seed platforms
+      // 6. Seed platforms
       const platforms = await this.seedPlatforms(queryRunner);
       console.log(`✅ Created ${platforms.length} platforms`);
 
-      // 5. Seed users (depends on stations and suppliers)
+      // 7. Seed users (depends on stations and suppliers)
       const users = await this.seedUsers(queryRunner, stations, fournisseurs);
       console.log(`✅ Created ${users.length} users`);
 
-      // 6. Seed articles
+      // 8. Seed articles
       const articles = await this.seedArticles(queryRunner);
       console.log(`✅ Created ${articles.length} articles`);
 
-      // 7. Seed article-supplier relationships
+      // 9. Seed article-supplier relationships
       await this.seedArticleFournisseurs(queryRunner, articles, fournisseurs);
       console.log(`✅ Created article-supplier relationships`);
 
-      // 8. Seed initial stock
+      // 10. Seed initial stock
       await this.seedInitialStock(queryRunner, articles, stations);
       console.log(`✅ Created initial station stock data`);
 
-      // 9. Seed platform stock
+      // 11. Seed platform stock
       await this.seedPlatformStock(queryRunner, articles, platforms);
       console.log(`✅ Created initial platform stock data`);
 
@@ -106,7 +115,9 @@ export class DatabaseSeeder {
         'DELETE FROM platforms',
         'DELETE FROM fournisseur_sites',
         'DELETE FROM fournisseurs',
-        'DELETE FROM stations'
+        'DELETE FROM station_contacts',
+        'DELETE FROM stations',
+        'DELETE FROM station_groups'
       ];
 
       for (const query of clearQueries) {
@@ -144,32 +155,108 @@ export class DatabaseSeeder {
     }
   }
 
-  private async seedStations(queryRunner: any): Promise<Station[]> {
+  private async seedStationGroups(queryRunner: any): Promise<StationGroup[]> {
+    const stationGroupsData = this.loadJsonData('station-groups.json');
+    const stationGroups = await queryRunner.manager.save(StationGroup, stationGroupsData);
+    return stationGroups;
+  }
+
+  private async seedStations(queryRunner: any, stationGroups: StationGroup[]): Promise<Station[]> {
     const stationsData = this.loadJsonData('stations.json');
-    const stations = await queryRunner.manager.save(Station, stationsData);
+    
+    // Create lookup map for station groups by identifiant
+    const groupMap = new Map(stationGroups.map(group => [group.identifiant, group.id]));
+    
+    // Process stations data to resolve group references
+    const processedStations = stationsData.map(stationData => {
+      const { groupeId, ...stationInfo } = stationData;
+      
+      return {
+        ...stationInfo,
+        groupeId: groupeId && groupMap.has(groupeId) ? groupMap.get(groupeId) : null,
+      };
+    });
+
+    const stations = await queryRunner.manager.save(Station, processedStations);
     return stations;
+  }
+
+  private async seedStationContacts(queryRunner: any, stations: Station[]): Promise<void> {
+    const contactsData = this.loadJsonData('station-contacts.json');
+    
+    // Create lookup map for stations by their identifiant
+    const stationMap = new Map(stations.map(station => [station.identifiantInterne, station]));
+    
+    const processedContacts = [];
+    
+    for (const contactData of contactsData) {
+      const { stationIdentifiant, ...contactInfo } = contactData;
+      
+      const station = stationMap.get(stationIdentifiant);
+      if (station) {
+        processedContacts.push({
+          ...contactInfo,
+          stationId: station.id,
+        });
+      } else {
+        console.warn(`⚠️  Station not found for contact: ${stationIdentifiant}`);
+      }
+    }
+
+    if (processedContacts.length > 0) {
+      await queryRunner.manager.save(StationContact, processedContacts);
+    }
   }
 
   private async seedFournisseurs(queryRunner: any): Promise<Fournisseur[]> {
     const fournisseursData = this.loadJsonData('fournisseurs.json');
-    const fournisseurs = await queryRunner.manager.save(Fournisseur, fournisseursData);
+    const fournisseurs = [];
 
-    // Add sites for each supplier
-    for (const fournisseur of fournisseurs) {
-      const siteData = {
-        fournisseurId: fournisseur.id,
-        nom: `Site Principal ${fournisseur.nom}`,
-        adresse: fournisseur.adresse,
-        ville: fournisseur.ville,
-        codePostal: fournisseur.codePostal,
-        telephone: fournisseur.telephone,
-        email: fournisseur.email,
-        contact: fournisseur.contact,
-        estPrincipal: true,
-        isActive: true,
-      };
+    // Create suppliers and their sites from JSON data
+    for (const fournisseurData of fournisseursData) {
+      const { sites, ...fournisseurInfo } = fournisseurData;
       
-      await queryRunner.manager.save(FournisseurSite, siteData);
+      // Create supplier
+      const fournisseur = await queryRunner.manager.save(Fournisseur, fournisseurInfo);
+      fournisseurs.push(fournisseur);
+
+      // Create supplier sites
+      if (sites && sites.length > 0) {
+        for (const siteData of sites) {
+          const processedSiteData = {
+            fournisseurId: fournisseur.id,
+            nom: siteData.nom,
+            adresse: siteData.adresse.rue,
+            ville: siteData.adresse.ville,
+            codePostal: siteData.adresse.codePostal,
+            telephone: siteData.contact.telephone,
+            email: siteData.contact.email,
+            contact: siteData.contact.nom,
+            specialites: siteData.specialites,
+            estPrincipal: siteData.estPrincipal,
+            isActive: true,
+          };
+          
+          await queryRunner.manager.save(FournisseurSite, processedSiteData);
+        }
+      } else {
+        // Fallback: create a default principal site if no sites defined
+        const siteData = {
+          fournisseurId: fournisseur.id,
+          nom: `Site Principal ${fournisseur.nom}`,
+          adresse: fournisseur.adresse,
+          ville: fournisseur.ville,
+          codePostal: fournisseur.codePostal,
+          telephone: fournisseur.telephone,
+          email: fournisseur.email,
+          contact: fournisseur.contact,
+          specialites: fournisseur.specialites,
+          estPrincipal: true,
+          isActive: true,
+        };
+        
+        await queryRunner.manager.save(FournisseurSite, siteData);
+      }
     }
 
     return fournisseurs;
@@ -209,7 +296,7 @@ export class DatabaseSeeder {
     const fournisseurMap = new Map(fournisseurs.map(fournisseur => [fournisseur.nom, fournisseur]));
 
     for (const userData of usersData) {
-      const { password, entiteRef, ...userInfo } = userData;
+      const { password, entityRef, ...userInfo } = userData;
       
       // Hash the password from JSON file
       const passwordHash = await bcrypt.hash(password, 10);
@@ -218,21 +305,21 @@ export class DatabaseSeeder {
       const roleEnum = userData.role as UserRole;
       
       // Resolve entity ID if needed
-      let entiteId = undefined;
-      let entiteType = undefined;
+      let entityId = undefined;
+      let entityType = undefined;
       
-      if (entiteRef) {
-        if (userData.entiteType === 'Station') {
-          const station = stationMap.get(entiteRef);
+      if (entityRef) {
+        if (userData.entityType === 'STATION') {
+          const station = stationMap.get(entityRef);
           if (station) {
-            entiteId = station.id;
-            entiteType = EntityType.STATION;
+            entityId = station.id;
+            entityType = EntityType.STATION;
           }
-        } else if (userData.entiteType === 'Fournisseur') {
-          const fournisseur = fournisseurMap.get(entiteRef);
+        } else if (userData.entityType === 'SUPPLIER') {
+          const fournisseur = fournisseurMap.get(entityRef);
           if (fournisseur) {
-            entiteId = fournisseur.id;
-            entiteType = EntityType.FOURNISSEUR;
+            entityId = fournisseur.id;
+            entityType = EntityType.SUPPLIER;
           }
         }
       }
@@ -241,8 +328,8 @@ export class DatabaseSeeder {
         ...userInfo,
         passwordHash,
         role: roleEnum,
-        entiteId,
-        entiteType,
+        entityId,
+        entityType,
       });
     }
 

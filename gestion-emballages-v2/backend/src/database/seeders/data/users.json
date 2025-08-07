@@ -1,86 +1,374 @@
 [
-  {
-    "nomComplet": "System Administrator",
-    "email": "admin@embadif.com",
-    "password": "Claude-Whale2025!",
-    "role": "Admin",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Thomas Decoudun",
-    "email": "manager@dev.com",
-    "password": "Claude-Whale2025!",
-    "role": "Manager",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Nicole Lang",
-    "email": "nicole@embadif.com",
-    "password": "Claude-Whale2025!",
-    "role": "Gestionnaire",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Jean Martin",
-    "email": "j.martin@valdegaronne.com",
-    "password": "Claude-Whale2025!",
-    "role": "Station",
-    "entiteType": "Station",
-    "entiteRef": "Station Val-de-Garonne",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Marie Lebrun",
-    "email": "m.lebrun@coop-pyrenees.fr",
-    "password": "Claude-Whale2025!",
-    "role": "Station",
-    "entiteType": "Station",
-    "entiteRef": "Coopérative des Pyrénées",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Pierre Dubois",
-    "email": "p.dubois@agri-station.fr",
-    "password": "Claude-Whale2025!",
-    "role": "Station",
-    "entiteType": "Station",
-    "entiteRef": "Station Agricole Bordeaux",
-    "isActive": true
-  },
-  {
-    "nomComplet": "François Martinez",
-    "email": "f.martinez@emballages-so.fr",
-    "password": "Claude-Whale2025!",
-    "role": "Fournisseur",
-    "entiteType": "Fournisseur",
-    "entiteRef": "Emballages du Sud-Ouest",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Elisabeth Dubois",
-    "email": "e.dubois@plastiques-aquitaine.com",
-    "password": "Claude-Whale2025!",
-    "role": "Fournisseur",
-    "entiteType": "Fournisseur",
-    "entiteRef": "Plastiques Aquitaine",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Station Test",
-    "email": "station@test.com",
-    "password": "Claude-Whale2025!",
-    "role": "Station",
-    "entiteType": "Station",
-    "entiteRef": "Station Val-de-Garonne",
-    "isActive": true
-  },
-  {
-    "nomComplet": "Supplier Test",
-    "email": "supplier@test.com",
-    "password": "Claude-Whale2025!",
-    "role": "Fournisseur",
-    "entiteType": "Fournisseur",
-    "entiteRef": "Emballages du Sud-Ouest",
-    "isActive": true
-  }
+    {
+        "fullName": "System Administrator",
+        "email": "admin@embadif.com",
+        "password": "Claude-Whale2025!",
+        "role": "ADMIN",
+        "phone": "01 48 92 34 55",
+        "isActive": true
+    },
+    {
+        "fullName": "Thomas Decoudun",
+        "email": "thomas.decoudun@embadif.com",
+        "password": "Claude-Whale2025!",
+        "role": "MANAGER",
+        "phone": "01 48 92 34 56",
+        "isActive": true
+    },
+    {
+        "fullName": "Nicole Lang",
+        "email": "nicole.lang@embadif.com",
+        "password": "Claude-Whale2025!",
+        "role": "HANDLER",
+        "phone": "01 48 92 34 57",
+        "isActive": true
+    },
+    {
+        "fullName": "Stéphanie Coordinator",
+        "email": "stephanie.coord@embadif.com",
+        "password": "Claude-Whale2025!",
+        "role": "HANDLER",
+        "phone": "01 48 92 34 58",
+        "isActive": true
+    },
+    {
+        "fullName": "Michel Dauphiné",
+        "email": "m.dauphine@dauphi.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Coop Fruitière du Dauphiné",
+        "phone": "04 76 87 34 21",
+        "isActive": true
+    },
+    {
+        "fullName": "Sophie Grenobloise",
+        "email": "s.grenobloise@dauphi.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Coop Fruitière du Dauphiné",
+        "phone": "04 76 87 34 22",
+        "isActive": true
+    },
+    {
+        "fullName": "Élise Montagnard",
+        "email": "e.montagnard@savmon.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Saveurs des Montagnes SICA",
+        "phone": "04 50 23 56 78",
+        "isActive": true
+    },
+    {
+        "fullName": "Pierre Ardéchois",
+        "email": "p.ardechois@ardeche.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Coopérative Agricole de l'Ardèche",
+        "phone": "04 75 64 89 12",
+        "isActive": true
+    },
+    {
+        "fullName": "Carole Méditerranée",
+        "email": "c.mediterranee@solmed.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Fruits du Soleil Méditerranéen",
+        "phone": "04 67 45 23 67",
+        "isActive": true
+    },
+    {
+        "fullName": "Laurent Montpelliérain",
+        "email": "l.montpellierain@solmed.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Fruits du Soleil Méditerranéen",
+        "phone": "04 67 45 23 68",
+        "isActive": true
+    },
+    {
+        "fullName": "Jean-Luc Cévenol",
+        "email": "jl.cevenol@cevennes.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Coopérative des Cévennes",
+        "phone": "04 66 78 34 56",
+        "isActive": true
+    },
+    {
+        "fullName": "Philippe Gardois",
+        "email": "p.gardois@vigpri.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Vignobles et Primeurs du Gard",
+        "phone": "04 66 23 78 90",
+        "isActive": true
+    },
+    {
+        "fullName": "Amélie Loire",
+        "email": "a.loire@loireorg.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Loire Valley Organics",
+        "phone": "02 40 34 67 89",
+        "isActive": true
+    },
+    {
+        "fullName": "Sylvain Angevin",
+        "email": "s.angevin@maranjou.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Maraîchers de l'Anjou",
+        "phone": "02 41 56 78 23",
+        "isActive": true
+    },
+    {
+        "fullName": "Marine Vendéenne",
+        "email": "m.vendeenne@vendee.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Producteurs de la Vendée",
+        "phone": "02 51 45 89 34",
+        "isActive": true
+    },
+    {
+        "fullName": "Estelle Garonnaise",
+        "email": "e.garonnaise@biogar.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Bio Garonne Coopérative",
+        "phone": "05 56 78 23 45",
+        "isActive": true
+    },
+    {
+        "fullName": "Alain Périgourdin",
+        "email": "a.perigourdin@bioperig.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Fermes Bio du Périgord",
+        "phone": "05 53 45 67 89",
+        "isActive": true
+    },
+    {
+        "fullName": "François Nordiste",
+        "email": "f.nordiste@legnord.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Légumes du Nord Coopératif",
+        "phone": "03 20 67 89 23",
+        "isActive": true
+    },
+    {
+        "fullName": "Isabelle Picarde",
+        "email": "i.picarde@picard.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Maraîchers Picards Unis",
+        "phone": "03 22 45 67 12",
+        "isActive": true
+    },
+    {
+        "fullName": "Yann Le Breton",
+        "email": "y.lebreton@artbret.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Ferme Artisanale Bretonne",
+        "phone": "02 98 34 56 78",
+        "isActive": true
+    },
+    {
+        "fullName": "Hans Alsacien",
+        "email": "h.alsacien@alsace.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Domaine Familial Alsacien",
+        "phone": "03 88 23 45 67",
+        "isActive": true
+    },
+    {
+        "fullName": "Antoine Corse",
+        "email": "a.corse@corse.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Producteurs Corses Indépendants",
+        "phone": "04 95 56 78 90",
+        "isActive": true
+    },
+    {
+        "fullName": "Marie-Claire Savoyarde",
+        "email": "mc.savoyarde@savoie.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Exploitation Savoyarde Traditionnelle",
+        "phone": "04 79 23 45 67",
+        "isActive": true
+    },
+    {
+        "fullName": "Thierry Champenois",
+        "email": "t.champenois@champag.fr",
+        "password": "Claude-Whale2025!",
+        "role": "STATION",
+        "entityType": "STATION",
+        "entityRef": "Maraîchers de Champagne",
+        "phone": "03 26 78 90 12",
+        "isActive": true
+    },
+    {
+        "fullName": "Olivier Durand",
+        "email": "o.durand@packagingtech.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "PackagingTech Solutions",
+        "phone": "01 45 12 34 56",
+        "isActive": true
+    },
+    {
+        "fullName": "Marie-Claire Lyonnaise",
+        "email": "mc.lyonnaise@packagingtech.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "PackagingTech Solutions",
+        "phone": "04 74 23 56 78",
+        "isActive": true
+    },
+    {
+        "fullName": "Philippe Provençal",
+        "email": "p.provencal@emballages-med.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Emballages Méditerranéens",
+        "phone": "04 91 78 45 23",
+        "isActive": true
+    },
+    {
+        "fullName": "Sandrine Héraultaise",
+        "email": "s.heraultaise@emballages-med.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Emballages Méditerranéens",
+        "phone": "04 67 34 78 90",
+        "isActive": true
+    },
+    {
+        "fullName": "Yann Breton",
+        "email": "y.breton@plastiques-ouest.com",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Plastiques de l'Ouest",
+        "phone": "02 99 34 56 78",
+        "isActive": true
+    },
+    {
+        "fullName": "Gwenaëlle Angevine",
+        "email": "g.angevine@plastiques-ouest.com",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Plastiques de l'Ouest",
+        "phone": "02 41 67 89 12",
+        "isActive": true
+    },
+    {
+        "fullName": "François Nordiste Packaging",
+        "email": "f.nordiste@agropack-nord.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "AgroPackaging Nord",
+        "phone": "03 20 45 67 89",
+        "isActive": true
+    },
+    {
+        "fullName": "Brigitte Picarde Packaging",
+        "email": "b.picarde@agropack-nord.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "AgroPackaging Nord",
+        "phone": "03 22 56 78 90",
+        "isActive": true
+    },
+    {
+        "fullName": "Klaus Alsacien",
+        "email": "k.alsacien@ecopack-solutions.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "EcoPack Solutions",
+        "phone": "03 89 23 45 67",
+        "isActive": true
+    },
+    {
+        "fullName": "Martine Orléanaise",
+        "email": "m.orleanaise@conditionnements-centre.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Conditionnements du Centre",
+        "phone": "02 38 56 78 90",
+        "isActive": true
+    },
+    {
+        "fullName": "Christine Tourangelle",
+        "email": "c.tourangelle@conditionnements-centre.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Conditionnements du Centre",
+        "phone": "02 47 45 67 89",
+        "isActive": true
+    },
+    {
+        "fullName": "Sandrine Bordelaise",
+        "email": "s.bordelaise@emballages-bio-so.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Emballages Bio Sud-Ouest",
+        "phone": "05 56 78 90 12",
+        "isActive": true
+    },
+    {
+        "fullName": "Pierre Toulousain",
+        "email": "p.toulousain@emballages-bio-so.fr",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "Emballages Bio Sud-Ouest",
+        "phone": "05 61 34 56 78",
+        "isActive": true
+    },
+    {
+        "fullName": "Alain Charentais",
+        "email": "a.charentais@flexipack-industries.com",
+        "password": "Claude-Whale2025!",
+        "role": "SUPPLIER",
+        "entityType": "SUPPLIER",
+        "entityRef": "FlexiPack Industries",
+        "phone": "05 45 67 89 01",
+        "isActive": true
+    }
 ]

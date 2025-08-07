@@ -29,13 +29,13 @@ import {
         *ngIf="sidebarOpen" 
         class="fixed inset-0 z-50 lg:hidden"
         (click)="closeMobileSidebar()">
-        <div class="fixed inset-0 bg-gray-900/80 transition-opacity opacity-100">
+        <div class="fixed inset-0 bg-gray-900/80 opacity-100">
         </div>
       </div>
 
       <!-- Mobile sidebar -->
       <div class="fixed inset-0 flex z-50 lg:hidden" *ngIf="sidebarOpen">
-        <div class="relative mr-16 flex w-full max-w-xs flex-1 transition-transform duration-300 translate-x-0">
+        <div class="relative mr-16 flex w-full max-w-xs flex-1 translate-x-0">
           
           <!-- Close button -->
           <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
@@ -53,7 +53,7 @@ import {
                   <span class="text-sm font-medium text-white">{{ userInitials() }}</span>
                 </div>
                 <div class="flex flex-col">
-                  <span class="text-sm font-semibold text-gray-900">{{ authService.user()?.nomComplet }}</span>
+                  <span class="text-sm font-semibold text-gray-900">{{ authService.user()?.fullName }}</span>
                   <span class="text-xs text-gray-500">{{ getRoleDisplayName() }}</span>
                   <span *ngIf="entityName()" class="text-xs text-primary-600">{{ entityName() }}</span>
                 </div>
@@ -116,13 +116,13 @@ import {
       </div>
 
       <!-- Desktop sidebar -->
-      <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col lg:block transition-all duration-300" 
+      <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col lg:block" 
            [class]="sidebarCollapsed ? 'lg:w-16' : 'lg:w-72'">
         
         <!-- Collapse/Expand Button -->
         <button
           (click)="onToggleSidebarCollapse()"
-          class="absolute -right-3 top-6 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm hover:bg-gray-50 transition-colors">
+          class="absolute -right-3 top-6 z-50 flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm hover:bg-gray-50">
           <lucide-icon 
             [name]="sidebarCollapsed ? 'chevron-right' : 'chevron-left'" 
             class="h-4 w-4 text-gray-600">
@@ -134,11 +134,11 @@ import {
           
           <!-- User Profile -->
           <div class="flex h-16 shrink-0 items-center" [class]="sidebarCollapsed ? 'justify-center' : 'gap-x-4'">
-            <div [class]="'rounded-full bg-primary-600 flex items-center justify-center transition-all duration-300 ' + (sidebarCollapsed ? 'h-8 w-8' : 'h-10 w-10')">
-              <span [class]="'font-medium text-white transition-all duration-300 ' + (sidebarCollapsed ? 'text-xs' : 'text-sm')">{{ userInitials() }}</span>
+            <div [class]="'rounded-full bg-primary-600 flex items-center justify-center ' + (sidebarCollapsed ? 'h-8 w-8' : 'h-10 w-10')">
+              <span [class]="'font-medium text-white ' + (sidebarCollapsed ? 'text-xs' : 'text-sm')">{{ userInitials() }}</span>
             </div>
             <div *ngIf="!sidebarCollapsed" class="flex flex-col">
-              <span class="text-sm font-semibold text-gray-900">{{ authService.user()?.nomComplet }}</span>
+              <span class="text-sm font-semibold text-gray-900">{{ authService.user()?.fullName }}</span>
               <span class="text-xs text-gray-500">{{ getRoleDisplayName() }}</span>
               <span *ngIf="entityName()" class="text-xs text-primary-600">{{ entityName() }}</span>
             </div>
@@ -228,12 +228,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
   
   public userInitials = computed(() => {
     const user = this.authService.user();
-    if (!user?.nomComplet) return '??';
-    const parts = user.nomComplet.split(' ');
+    if (!user?.fullName) return '??';
+    const parts = user.fullName.split(' ');
     if (parts.length > 1) {
       return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     }
-    return user.nomComplet.substring(0, 2).toUpperCase();
+    return user.fullName.substring(0, 2).toUpperCase();
   });
   
   public cartItemsCount = computed(() => {
@@ -272,10 +272,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   
   private updateNavigationStrategy(): void {
     const userRole = this.authService.userRole();
-    console.log('Updating navigation strategy for role:', userRole);
     const strategy = SidebarNavigationStrategyFactory.createStrategy(userRole || null);
-    const navigation = strategy.getNavigation();
-    console.log('Navigation sections:', navigation);
     this.navigationStrategy.set(strategy);
   }
   
@@ -315,9 +312,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const roleNames = {
       [UserRole.ADMIN]: 'Admin',
       [UserRole.MANAGER]: 'Manager',
-      [UserRole.GESTIONNAIRE]: 'Gestionnaire',
+      [UserRole.HANDLER]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',
-      [UserRole.FOURNISSEUR]: 'Fournisseur'
+      [UserRole.SUPPLIER]: 'Fournisseur'
     };
     return role ? roleNames[role] : '';
   }

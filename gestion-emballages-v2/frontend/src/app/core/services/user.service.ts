@@ -18,7 +18,7 @@ export interface UserFilters {
   sortOrder?: 'ASC' | 'DESC';
   status?: 'active' | 'inactive' | '';
   role?: UserRole | '';
-  entiteType?: 'Station' | 'Fournisseur' | '';
+  entityType?: 'STATION' | 'SUPPLIER' | '';
 }
 
 export interface PaginatedUsersResponse {
@@ -74,6 +74,10 @@ export class UserService {
     return this.http.patch<User>(`${this.baseUrl}/${id}/reactivate`, {});
   }
 
+  sendPasswordResetLink(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/password-reset-link`, { email });
+  }
+
   // Development-only method
   getDevUsers(): Observable<PaginatedUsersResponse> {
     return this.http.get<PaginatedUsersResponse>(`${this.baseUrl}/dev/list`);
@@ -100,9 +104,9 @@ export class UserService {
     const roleNames = {
       [UserRole.ADMIN]: 'Admin',
       [UserRole.MANAGER]: 'Manager',
-      [UserRole.GESTIONNAIRE]: 'Gestionnaire',
+      [UserRole.HANDLER]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',
-      [UserRole.FOURNISSEUR]: 'Fournisseur'
+      [UserRole.SUPPLIER]: 'Fournisseur'
     };
     return roleNames[role] || role;
   }
@@ -110,16 +114,16 @@ export class UserService {
   getEntityTypeDisplayName(entityType?: string): string {
     if (!entityType) return '';
     const entityNames = {
-      'Station': 'Station',
-      'Fournisseur': 'Fournisseur'
+      'STATION': 'Station',
+      'SUPPLIER': 'Fournisseur'
     };
     return entityNames[entityType as keyof typeof entityNames] || entityType;
   }
 
-  getUserInitials(nomComplet: string): string {
-    if (!nomComplet) return '?';
+  getUserInitials(fullName: string): string {
+    if (!fullName) return '?';
     
-    return nomComplet
+    return fullName
       .split(' ')
       .map(name => name.charAt(0))
       .slice(0, 2)
@@ -128,17 +132,11 @@ export class UserService {
   }
 
   canEditUser(currentUserRole: UserRole, targetUserRole: UserRole): boolean {
-    // Admin can edit everyone
-    if (currentUserRole === UserRole.ADMIN) return true;
-    
-    // Manager can edit everyone except Admin
-    if (currentUserRole === UserRole.MANAGER) {
-      return targetUserRole !== UserRole.ADMIN;
-    }
-    
-    // Gestionnaire can edit Station and Fournisseur users, but not Admin/Manager/other Gestionnaires
-    if (currentUserRole === UserRole.GESTIONNAIRE) {
-      return targetUserRole === UserRole.STATION || targetUserRole === UserRole.FOURNISSEUR;
+    // Admin, Manager, and Gestionnaire can all edit any user independently of its role
+    if (currentUserRole === UserRole.ADMIN || 
+        currentUserRole === UserRole.MANAGER || 
+        currentUserRole === UserRole.HANDLER) {
+      return true;
     }
     
     return false;
@@ -149,23 +147,18 @@ export class UserService {
   }
 
   getAvailableRoles(currentUserRole: UserRole): UserRole[] {
-    if (currentUserRole === UserRole.ADMIN) {
-      return [UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR];
-    }
-    
-    if (currentUserRole === UserRole.MANAGER) {
-      return [UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR];
-    }
-    
-    if (currentUserRole === UserRole.GESTIONNAIRE) {
-      return [UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR];
+    // Admin, Manager, and Gestionnaire can filter on all roles
+    if (currentUserRole === UserRole.ADMIN || 
+        currentUserRole === UserRole.MANAGER || 
+        currentUserRole === UserRole.HANDLER) {
+      return [UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION, UserRole.SUPPLIER];
     }
     
     return [];
   }
 
   requiresEntity(role: UserRole): boolean {
-    return role === UserRole.STATION || role === UserRole.FOURNISSEUR;
+    return role === UserRole.STATION || role === UserRole.SUPPLIER;
   }
 
   validateEmail(email: string): boolean {
@@ -199,12 +192,12 @@ export class UserService {
   }
 
   formatUserDisplay(user: User): string {
-    let display = user.nomComplet;
+    let display = user.fullName;
     
     if (user.role === UserRole.STATION && user.station) {
-      display += ` (${user.station.nom})`;
-    } else if (user.role === UserRole.FOURNISSEUR && user.fournisseur) {
-      display += ` (${user.fournisseur.nom})`;
+      display += ` (${user.station.name})`;
+    } else if (user.role === UserRole.SUPPLIER && user.supplier) {
+      display += ` (${user.supplier.name})`;
     }
     
     return display;

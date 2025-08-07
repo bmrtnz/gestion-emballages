@@ -44,7 +44,7 @@ export class PaginationService {
   validatePaginationOptions(options: PaginationOptions): PaginationOptions {
     return {
       page: Math.max(1, options.page || 1),
-      limit: Math.min(100, Math.max(1, options.limit || 20)),
+      limit: Math.min(100, Math.max(1, options.limit || 10)),
       sortBy: options.sortBy || 'createdAt',
       sortOrder: options.sortOrder || 'DESC',
     };

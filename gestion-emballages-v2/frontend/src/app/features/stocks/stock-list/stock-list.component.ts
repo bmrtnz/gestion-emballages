@@ -8,6 +8,7 @@ import { StockFilters } from '@core/models/stock.model';
 import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
+import { UserRole } from '@core/models/user.model';
 import { 
   StockStation, 
   PaginatedStockStationsResponse,
@@ -60,7 +61,7 @@ import {
 
       <!-- Stock Analytics Dashboard -->
       <div *ngIf="analytics()" class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <div class="w-8 h-8 bg-blue-100 rounded-md flex items-center justify-center">
@@ -76,7 +77,7 @@ import {
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <div class="w-8 h-8 bg-yellow-100 rounded-md flex items-center justify-center">
@@ -92,7 +93,7 @@ import {
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <div class="w-8 h-8 bg-red-100 rounded-md flex items-center justify-center">
@@ -108,7 +109,7 @@ import {
           </div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
           <div class="flex items-center">
             <div class="flex-shrink-0">
               <div class="w-8 h-8 bg-gray-100 rounded-md flex items-center justify-center">
@@ -312,7 +313,7 @@ import {
                     {{ stockService.formatDate(stock.derniereMiseAJour) }}
                   </div>
                   <div *ngIf="stock.updatedBy" class="text-xs text-gray-500">
-                    par {{ stock.updatedBy.nomComplet }}
+                    par {{ stock.updatedBy.fullName }}
                   </div>
                 </td>
 
@@ -442,82 +443,6 @@ import {
         </div>
       </div>
 
-      <!-- Pagination -->
-      <div *ngIf="paginatedResponse() && paginatedResponse()!.totalPages > 1" 
-           class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
-        
-        <!-- Results Info -->
-        <div class="flex flex-1 justify-between sm:hidden">
-          <button
-            [disabled]="!paginatedResponse()?.hasPreviousPage"
-            (click)="goToPage(currentPage() - 1)"
-            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Précédent
-          </button>
-          <button
-            [disabled]="!paginatedResponse()?.hasNextPage"
-            (click)="goToPage(currentPage() + 1)"
-            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Suivant
-          </button>
-        </div>
-        
-        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-          <div>
-            <p class="text-sm text-gray-700">
-              Affichage de
-              <span class="font-medium">{{ getResultStart() }}</span>
-              à
-              <span class="font-medium">{{ getResultEnd() }}</span>
-              sur
-              <span class="font-medium">{{ paginatedResponse()?.total }}</span>
-              résultats
-            </p>
-          </div>
-          
-          <div class="flex items-center space-x-2">
-            <label class="text-sm text-gray-700">Afficher:</label>
-            <select
-              [value]="itemsPerPage()"
-              (change)="changeItemsPerPage($event)"
-              class="form-select text-sm">
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-            </select>
-            <span class="text-sm text-gray-700">par page</span>
-          </div>
-          
-          <div>
-            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-              <button
-                [disabled]="!paginatedResponse()?.hasPreviousPage"
-                (click)="goToPage(currentPage() - 1)"
-                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              
-              <button
-                *ngFor="let page of getVisiblePages()"
-                [class]="getPageButtonClass(page)"
-                (click)="goToPage(page)">
-                {{ page }}
-              </button>
-              
-              <button
-                [disabled]="!paginatedResponse()?.hasNextPage"
-                (click)="goToPage(currentPage() + 1)"
-                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </div>
     </div>
   `,
   styles: []
@@ -535,7 +460,7 @@ export class StockListComponent implements OnInit {
   public analytics = signal<StockAnalytics | null>(null);
   public paginatedResponse = signal<PaginatedStockStationsResponse | null>(null);
   public currentPage = signal(1);
-  public itemsPerPage = signal(20);
+  public itemsPerPage = signal(10);
   
   // Quick filters state
   private quickFilters = signal<Set<string>>(new Set());
@@ -567,7 +492,7 @@ export class StockListComponent implements OnInit {
   }
 
   private loadAnalytics() {
-    const stationId = this.authService.userRole() === 'Station' ? this.authService.user()?.entiteId : undefined;
+    const stationId = this.authService.userRole() === UserRole.STATION ? this.authService.user()?.entityId : undefined;
     
     this.stockService.getStockAnalytics(stationId).subscribe({
       next: (analytics) => {
@@ -731,11 +656,11 @@ export class StockListComponent implements OnInit {
 
   // Stock actions
   viewStock(stock: StockStation) {
-    console.log('View stock:', stock);
+    // TODO: Navigate to stock detail view
   }
 
   editStock(stock: StockStation) {
-    console.log('Edit stock:', stock);
+    // TODO: Open edit modal or navigate to edit page
   }
 
   adjustStock(stock: StockStation) {
@@ -761,7 +686,7 @@ export class StockListComponent implements OnInit {
   }
 
   openAddStockModal() {
-    console.log('Add new stock');
+    // TODO: Open add stock modal
   }
 
   deleteStock(stock: StockStation) {

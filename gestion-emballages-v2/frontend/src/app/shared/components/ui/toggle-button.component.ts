@@ -14,11 +14,11 @@ import { LucideAngularModule } from 'lucide-angular';
       
       <!-- Icon (optional) -->
       <ng-container *ngIf="icon">
-        <lucide-icon 
+        <lucide-angular 
           *ngIf="!useCustomIcon" 
           [name]="icon" 
           [class]="iconClasses">
-        </lucide-icon>
+        </lucide-angular>
         <ng-content *ngIf="useCustomIcon" select="[slot=icon]"></ng-content>
       </ng-container>
       
@@ -33,10 +33,10 @@ import { LucideAngularModule } from 'lucide-angular';
       </span>
       
       <!-- Chevron indicator -->
-      <lucide-icon 
+      <lucide-angular 
         [name]="isToggled ? 'chevron-up' : 'chevron-down'" 
         [class]="chevronClasses">
-      </lucide-icon>
+      </lucide-angular>
     </button>
   `,
   styles: []

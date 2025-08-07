@@ -308,6 +308,6 @@ export class UiShowcaseComponent {
   }
 
   onSelectionChange(selection: DropdownItem | DropdownItem[]) {
-    console.log('Selection changed:', selection);
+    // Handle selection change
   }
 }

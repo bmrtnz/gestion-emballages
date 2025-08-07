@@ -33,7 +33,7 @@ export class TransfertsController {
   constructor(private readonly transfertsService: TransfertsService) {}
 
   @Post()
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Create a new transfer request' })
   @ApiResponse({ status: 201, description: 'Transfer request created successfully' })
   async create(@Body() createDemandeTransfertDto: CreateDemandeTransfertDto, @Request() req) {
@@ -55,7 +55,7 @@ export class TransfertsController {
   }
 
   @Get('pending-approvals')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get transfer requests pending approval' })
   @ApiResponse({ status: 200, description: 'Pending transfer requests retrieved successfully' })
   async getPendingApprovals(@Request() req) {
@@ -65,7 +65,7 @@ export class TransfertsController {
   }
 
   @Get('analytics')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get transfer analytics' })
   @ApiResponse({ status: 200, description: 'Transfer analytics retrieved successfully' })
   async getAnalytics(@Query('stationId') stationId?: string, @Request() req?) {
@@ -82,7 +82,7 @@ export class TransfertsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update transfer request' })
   @ApiResponse({ status: 200, description: 'Transfer request updated successfully' })
   async update(
@@ -93,7 +93,7 @@ export class TransfertsController {
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update transfer request status' })
   @ApiResponse({ status: 200, description: 'Transfer request status updated successfully' })
   async updateStatus(
@@ -104,7 +104,7 @@ export class TransfertsController {
   }
 
   @Patch(':id/approve')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Approve transfer request with quantities' })
   @ApiResponse({ status: 200, description: 'Transfer request approved successfully' })
   async approve(
@@ -115,7 +115,7 @@ export class TransfertsController {
   }
 
   @Patch(':id/reject')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Reject transfer request' })
   @ApiResponse({ status: 200, description: 'Transfer request rejected successfully' })
   async reject(
@@ -126,7 +126,7 @@ export class TransfertsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Delete transfer request' })
   @ApiResponse({ status: 200, description: 'Transfer request deleted successfully' })
   async remove(@Param('id') id: string) {

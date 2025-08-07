@@ -31,9 +31,9 @@ export class AuthService {
   public userRole = computed(() => this.userSignal()?.role);
   public isAdmin = computed(() => this.userSignal()?.role === UserRole.ADMIN);
   public isManager = computed(() => this.userSignal()?.role === UserRole.MANAGER);
-  public isGestionnaire = computed(() => this.userSignal()?.role === UserRole.GESTIONNAIRE);
+  public isHandler = computed(() => this.userSignal()?.role === UserRole.HANDLER);
   public isStation = computed(() => this.userSignal()?.role === UserRole.STATION);
-  public isFournisseur = computed(() => this.userSignal()?.role === UserRole.FOURNISSEUR);
+  public isSupplier = computed(() => this.userSignal()?.role === UserRole.SUPPLIER);
 
   private baseUrl = `${environment.apiUrl}/auth`;
 
@@ -139,27 +139,27 @@ export class AuthService {
   // Role-based access methods
   canAccessArticleManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
   }
 
   canAccessUserManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
   }
 
   canAccessStationManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
   }
 
   canAccessSupplierManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
   }
 
   canAccessOrderManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE || role === UserRole.STATION;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER || role === UserRole.STATION;
   }
 
   canManageOrders(): boolean {
@@ -168,6 +168,11 @@ export class AuthService {
 
   canViewFinancialData(): boolean {
     const role = this.userRole();
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
+  }
+
+  resetPassword(token: string, password: string): Observable<{ message: string }> {
+    const url = `${environment.apiUrl}/users/reset-password`;
+    return this.http.post<{ message: string }>(url, { token, password });
   }
 }

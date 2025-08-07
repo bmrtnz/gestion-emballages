@@ -1,13 +1,16 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 
-import { User, EntityType } from './entities/user.entity';
+import { User } from './entities/user.entity';
+import { UserRole, EntityType } from '@common/enums/user-role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
+import { EmailService } from '@common/services/email.service';
 import { Station } from '@modules/stations/entities/station.entity';
 import { Fournisseur } from '@modules/fournisseurs/entities/fournisseur.entity';
 
@@ -15,12 +18,13 @@ import { Fournisseur } from '@modules/fournisseurs/entities/fournisseur.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    public userRepository: Repository<User>,
     @InjectRepository(Station)
     private stationRepository: Repository<Station>,
     @InjectRepository(Fournisseur)
     private fournisseurRepository: Repository<Fournisseur>,
     private paginationService: PaginationService,
+    private emailService: EmailService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -48,18 +52,17 @@ export class UsersService {
   async findAll(paginationDto: PaginationDto) {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
-      limit: paginationDto.limit || 20,
+      limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
       sortOrder: paginationDto.sortOrder || 'DESC'
     });
 
-    const queryBuilder = this.userRepository
-      .createQueryBuilder('user');
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(user.nomComplet ILIKE :search OR user.email ILIKE :search)',
+        '(user.full_name ILIKE :search OR user.email ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
@@ -77,8 +80,8 @@ export class UsersService {
     }
 
     // Add entity type filter
-    if (paginationDto['entiteType']) {
-      queryBuilder.andWhere('user.entiteType = :entiteType', { entiteType: paginationDto['entiteType'] });
+    if (paginationDto['entityType']) {
+      queryBuilder.andWhere('user.entityType = :entityType', { entityType: paginationDto['entityType'] });
     }
 
     // Add sorting and pagination
@@ -91,21 +94,32 @@ export class UsersService {
     
     // Populate entity details for each user
     const data = await Promise.all(users.map(async (user) => {
-      if (user.entiteType === EntityType.STATION && user.entiteId) {
+      if (user.entityType === EntityType.STATION && user.entityId) {
         const station = await this.stationRepository.findOne({
-          where: { id: user.entiteId },
+          where: { id: user.entityId },
           select: ['id', 'nom', 'identifiantInterne']
         });
         if (station) {
-          (user as any).station = station;
+          (user as any).station = {
+            id: station.id,
+            name: station.nom,
+            internalIdentifier: station.identifiantInterne
+          };
+          console.log('Added station to user:', user.email, (user as any).station);
         }
-      } else if (user.entiteType === EntityType.FOURNISSEUR && user.entiteId) {
+      } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
         const fournisseur = await this.fournisseurRepository.findOne({
-          where: { id: user.entiteId },
+          where: { id: user.entityId },
           select: ['id', 'nom', 'siret', 'type']
         });
         if (fournisseur) {
-          (user as any).fournisseur = fournisseur;
+          (user as any).supplier = {
+            id: fournisseur.id,
+            name: fournisseur.nom,
+            siret: fournisseur.siret,
+            type: fournisseur.type
+          };
+          console.log('Added supplier to user:', user.email, (user as any).supplier);
         }
       }
       return user;
@@ -124,21 +138,30 @@ export class UsersService {
     }
 
     // Populate entity details
-    if (user.entiteType === EntityType.STATION && user.entiteId) {
+    if (user.entityType === EntityType.STATION && user.entityId) {
       const station = await this.stationRepository.findOne({
-        where: { id: user.entiteId },
+        where: { id: user.entityId },
         select: ['id', 'nom', 'identifiantInterne']
       });
       if (station) {
-        (user as any).station = station;
+        (user as any).station = {
+          id: station.id,
+          name: station.nom,
+          internalIdentifier: station.identifiantInterne
+        };
       }
-    } else if (user.entiteType === EntityType.FOURNISSEUR && user.entiteId) {
+    } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
       const fournisseur = await this.fournisseurRepository.findOne({
-        where: { id: user.entiteId },
+        where: { id: user.entityId },
         select: ['id', 'nom', 'siret', 'type']
       });
       if (fournisseur) {
-        (user as any).fournisseur = fournisseur;
+        (user as any).supplier = {
+          id: fournisseur.id,
+          name: fournisseur.nom,
+          siret: fournisseur.siret,
+          type: fournisseur.type
+        };
       }
     }
 
@@ -149,10 +172,10 @@ export class UsersService {
     const user = await this.findOne(id);
     
     let entity: Station | Fournisseur | null = null;
-    if (user.entiteType === EntityType.STATION && user.entiteId) {
-      entity = await this.stationRepository.findOne({ where: { id: user.entiteId } });
-    } else if (user.entiteType === EntityType.FOURNISSEUR && user.entiteId) {
-      entity = await this.fournisseurRepository.findOne({ where: { id: user.entiteId } });
+    if (user.entityType === EntityType.STATION && user.entityId) {
+      entity = await this.stationRepository.findOne({ where: { id: user.entityId } });
+    } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
+      entity = await this.fournisseurRepository.findOne({ where: { id: user.entityId } });
     }
 
     return { user, entity };
@@ -186,5 +209,79 @@ export class UsersService {
     const user = await this.findOne(id);
     user.isActive = true;
     return this.userRepository.save(user);
+  }
+
+  async sendPasswordResetLink(email: string): Promise<{ message: string }> {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new BadRequestException('Format d\'email invalide');
+    }
+
+    // Find user (only active users can reset passwords)
+    const user = await this.userRepository.findOne({
+      where: { email, isActive: true }
+    });
+
+    // For security reasons, always return success message
+    // even if user doesn't exist (prevents email enumeration)
+    if (!user) {
+      return { message: `Lien de réinitialisation envoyé à ${email}` };
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Store reset token (you would typically have a separate PasswordResetToken entity)
+    // For now, we'll store it in the user entity temporarily
+    user.resetToken = resetToken;
+    user.resetTokenExpiry = expiresAt;
+    await this.userRepository.save(user);
+
+    // Send password reset email
+    try {
+      await this.emailService.sendPasswordResetEmail(user.email, resetToken, user.fullName);
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      // Don't expose email sending errors to client for security
+    }
+
+    return { message: `Lien de réinitialisation envoyé à ${email}` };
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    // Validate inputs
+    if (!token || !newPassword) {
+      throw new BadRequestException('Token et mot de passe requis');
+    }
+
+    if (newPassword.length < 6) {
+      throw new BadRequestException('Le mot de passe doit contenir au moins 6 caractères');
+    }
+
+    // Find user with valid token
+    const user = await this.userRepository.findOne({
+      where: {
+        resetToken: token,
+        isActive: true
+      }
+    });
+
+    if (!user || !user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+      throw new BadRequestException('Token invalide ou expiré');
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const passwordHash = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update user password and clear reset token
+    user.passwordHash = passwordHash;
+    user.resetToken = null;
+    user.resetTokenExpiry = null;
+    await this.userRepository.save(user);
+
+    return { message: 'Mot de passe réinitialisé avec succès' };
   }
 }

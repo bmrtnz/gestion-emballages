@@ -39,7 +39,7 @@ export class StationsController {
   }
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Create a new station' })
   @ApiResponse({ status: 201, description: 'Station created successfully' })
   async create(@Body() createStationDto: CreateStationDto, @Request() req) {
@@ -51,7 +51,7 @@ export class StationsController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Get all stations with pagination' })
   @ApiResponse({ status: 200, description: 'Stations retrieved successfully' })
   async findAll(@Query() paginationDto: PaginationDto) {
@@ -59,7 +59,7 @@ export class StationsController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Get station by ID' })
   @ApiResponse({ status: 200, description: 'Station retrieved successfully' })
   async findOne(@Param('id') id: string) {
@@ -67,7 +67,7 @@ export class StationsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update station' })
   @ApiResponse({ status: 200, description: 'Station updated successfully' })
   async update(
@@ -83,7 +83,7 @@ export class StationsController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Deactivate station' })
   @ApiResponse({ status: 200, description: 'Station deactivated successfully' })
   async remove(@Param('id') id: string) {
@@ -91,7 +91,7 @@ export class StationsController {
   }
 
   @Patch(':id/reactivate')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Reactivate station' })
   @ApiResponse({ status: 200, description: 'Station reactivated successfully' })
   async reactivate(@Param('id') id: string) {

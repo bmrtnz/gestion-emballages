@@ -1,0 +1,78 @@
+{
+  "common": {
+    "actions": "Actions",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive", 
+    "all": "All",
+    "search": "Search",
+    "filters": "Filters",
+    "edit": "Edit",
+    "activate": "Activate",
+    "deactivate": "Deactivate", 
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "update": "Update",
+    "reset": "Reset",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "yes": "Yes", 
+    "no": "No",
+    "blueWhale": "Blue Whale"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "stations": "Stations", 
+    "suppliers": "Suppliers",
+    "articles": "Articles",
+    "orders": "Orders",
+    "stock": "Stock",
+    "reports": "Reports"
+  },
+  "users": {
+    "title": "User Management",
+    "user": "User",
+    "role": "Role", 
+    "entity": "Entity",
+    "email": "Email",
+    "phone": "Phone",
+    "fullName": "Full Name",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "searchPlaceholder": "Search by name or email...",
+    "resetFilters": "Reset filters",
+    "showPerPage": "per page",
+    "displaying": "Showing {{start}} to {{end}} of {{total}} results"
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager",
+    "handler": "Handler",
+    "station": "Station", 
+    "supplier": "Supplier"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next", 
+    "show": "Show",
+    "perPage": "per page",
+    "of": "of",
+    "results": "results"
+  },
+  "messages": {
+    "userActivated": "User activated successfully",
+    "userDeactivated": "User deactivated successfully", 
+    "userUpdated": "User updated successfully",
+    "userCreated": "User created successfully",
+    "errorOccurred": "An error occurred",
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "confirmDeactivate": "Are you sure you want to deactivate this user?",
+    "confirmActivate": "Are you sure you want to activate this user?"
+  }
+}

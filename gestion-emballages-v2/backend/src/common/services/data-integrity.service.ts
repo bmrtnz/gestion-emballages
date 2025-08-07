@@ -223,22 +223,53 @@ export class DataIntegrityService {
   private async checkUserReferences(userId: string): Promise<DataIntegrityCheck[]> {
     const checks: DataIntegrityCheck[] = [];
 
-    // Check created entities (audit trails)
-    const createdEntitiesCount = await this.dataSource.query(
-      'SELECT COUNT(*) as count FROM (' +
-      'SELECT "createdBy" FROM commandes WHERE "createdBy" = $1 ' +
-      'UNION ALL ' +
-      'SELECT "createdBy" FROM demandes_transfert WHERE "createdBy" = $1 ' +
-      'UNION ALL ' +
-      'SELECT "createdBy" FROM stock_stations WHERE "createdBy" = $1' +
-      ') as created_entities',
-      [userId]
-    );
-    checks.push({
-      entity: 'audit_trails',
-      count: parseInt(createdEntitiesCount[0].count),
-      references: ['Entities created by this user (audit trail)']
-    });
+    // Check all tables with audit trail columns
+    try {
+      // Tables with created_by only
+      const createdOnlyTables = ['commandes', 'commandes_globales', 'previsions', 'demandes_transfert', 'liste_achats'];
+      
+      // Tables with both created_by and updated_by
+      const fullAuditTables = ['stations', 'fournisseurs', 'articles', 'platforms', 'station_groups', 'station_contacts'];
+      
+      // Tables with updated_by only
+      const updatedOnlyTables = ['stock_stations', 'stocks_platform'];
+
+      // Build comprehensive audit trail query
+      const auditQueries = [
+        // created_by checks
+        ...createdOnlyTables.map(table => `SELECT '${table}' as table_name, COUNT(*) as count FROM ${table} WHERE created_by = $1`),
+        ...fullAuditTables.map(table => `SELECT '${table}_created' as table_name, COUNT(*) as count FROM ${table} WHERE created_by = $1`),
+        
+        // updated_by checks
+        ...fullAuditTables.map(table => `SELECT '${table}_updated' as table_name, COUNT(*) as count FROM ${table} WHERE updated_by = $1`),
+        ...updatedOnlyTables.map(table => `SELECT '${table}' as table_name, COUNT(*) as count FROM ${table} WHERE updated_by = $1`)
+      ];
+
+      const unionQuery = auditQueries.join(' UNION ALL ');
+      const results = await this.dataSource.query(unionQuery, [userId]);
+      
+      const totalCount = results.reduce((sum: number, row: any) => sum + parseInt(row.count), 0);
+      const referencingTables = results
+        .filter((row: any) => parseInt(row.count) > 0)
+        .map((row: any) => `${row.table_name}: ${row.count} records`);
+      
+      checks.push({
+        entity: 'audit_trails',
+        count: totalCount,
+        references: referencingTables.length > 0 
+          ? ['Entities created or updated by this user:', ...referencingTables]
+          : ['No audit trail references found']
+      });
+
+    } catch (error) {
+      // If audit trail check fails, skip it but don't block deletion
+      console.warn('Could not check audit trails for user references:', error.message);
+      checks.push({
+        entity: 'audit_trails',
+        count: 0,
+        references: ['Audit trail check skipped due to schema mismatch']
+      });
+    }
 
     return checks;
   }

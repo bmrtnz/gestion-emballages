@@ -1,222 +1,308 @@
 [
-  {
-    "nom": "GP 05 SA",
-    "adresse": "PARC D'ACTIVITE ZA VAL  DURANCE, 4 Allées des Pommiers",
-    "ville": "SISTERON",
-    "codePostal": "4200",
-    "telephone": "",
-    "email": "user@gp05.fr",
-    "identifiantInterne": "GP05",
-    "isActive": true
-  },
-  {
-    "nom": "PROVENCE COMTAT SICA",
-    "adresse": "QUARTIER LAGALERE, 225 CHEMIN DES TAILLADES",
-    "ville": "CHATEAUNEUF DE GADAGNE",
-    "codePostal": "84470",
-    "telephone": "",
-    "email": "user@comtat.fr",
-    "identifiantInterne": "COMTAT",
-    "isActive": true
-  },
-  {
-    "nom": "DOMAINE ST GEORGES (OP des CIMES)",
-    "adresse": "(OP DES CIMES ), MR  MIOLLAN, DABISSE",
-    "ville": "LES MEES",
-    "codePostal": "4190",
-    "telephone": "",
-    "email": "user@stgeor.fr",
-    "identifiantInterne": "STGEOR",
-    "isActive": true
-  },
-  {
-    "nom": "D.L.F GIE",
-    "adresse": "GROUPEMENT DES FRUITS DE CAVAILLON, 423 CHEMIN DU PONT",
-    "ville": "CHEVAL BLANC",
-    "codePostal": "84460",
-    "telephone": "",
-    "email": "user@dlf.fr",
-    "identifiantInterne": "DLF",
-    "isActive": true
-  },
-  {
-    "nom": "COOPERATIVE DES 2 VALLEES SCA",
-    "adresse": "230 RUE DES POMMES, ZI ST MICHEL",
-    "ville": "MOISSAC",
-    "codePostal": "82200",
-    "telephone": "",
-    "email": "user@moissaccdv.fr",
-    "identifiantInterne": "MOISSACCDV",
-    "isActive": true
-  },
-  {
-    "nom": "STANOR SCA",
-    "adresse": "BP 38, 655, rue des Pommes",
-    "ville": "MOISSAC",
-    "codePostal": "82200",
-    "telephone": "",
-    "email": "user@stanor.fr",
-    "identifiantInterne": "STANOR",
-    "isActive": true
-  },
-  {
-    "nom": "LES VERGERS JACQUES TIMMERMAN SARL",
-    "adresse": "(OP VALDIPOM), LE LEARD",
-    "ville": "VION",
-    "codePostal": "72300",
-    "telephone": "",
-    "email": "user@timmerman.fr",
-    "identifiantInterne": "TIMMERMAN",
-    "isActive": true
-  },
-  {
-    "nom": "KIWICOOP SCA",
-    "adresse": "LIEU DE CHARGEMENT STANOR, ZI ST MICHEL, BP 38",
-    "ville": "MOISSAC",
-    "codePostal": "82200",
-    "telephone": "",
-    "email": "user@kiwico.fr",
-    "identifiantInterne": "KIWICO",
-    "isActive": true
-  },
-  {
-    "nom": "LES VERGERS D ANJOU SCA",
-    "adresse": "16, ROUTE D’ECOUFLANT, SAINT-SYLVAIN D’ANJOU",
-    "ville": "VERRIERES EN ANJOU ",
-    "codePostal": "49481",
-    "telephone": "",
-    "email": "user@vergerdanjou.fr",
-    "identifiantInterne": "VERGERDANJOU",
-    "isActive": true
-  },
-  {
-    "nom": "LA MARTINOISE SCA",
-    "adresse": "2222 ROUTE DE L'ESTANG, CHARGEMENT LES HERMITES ",
-    "ville": "ST MARTIN D AUXIGNY",
-    "codePostal": "18110",
-    "telephone": "",
-    "email": "user@martinoise.fr",
-    "identifiantInterne": "MARTINOISE",
-    "isActive": true
-  },
-  {
-    "nom": "COOPERATIVE DES 2 VALLEES SCA",
-    "adresse": "(null), 11 BIS ROUTE DE GAILLAC",
-    "ville": "LAVAUR",
-    "codePostal": "81500",
-    "telephone": "",
-    "email": "user@lavaurcdv.fr",
-    "identifiantInterne": "LAVAURCDV",
-    "isActive": true
-  },
-  {
-    "nom": "TERRYLOIRE SCA",
-    "adresse": "Sté Coopérative Agricole , 10 rue des Moulins",
-    "ville": "PARCAY LES PINS",
-    "codePostal": "49390",
-    "telephone": "",
-    "email": "user@terryloire.fr",
-    "identifiantInterne": "TERRYLOIRE",
-    "isActive": true
-  },
-  {
-    "nom": "CLAUZURE SARL (OP QUALIFEL +)",
-    "adresse": "3241 CHEMIN DU RAMIEROU",
-    "ville": "MONTAUBAN",
-    "codePostal": "82000",
-    "telephone": "",
-    "email": "user@clauzure.fr",
-    "identifiantInterne": "CLAUZURE",
-    "isActive": true
-  },
-  {
-    "nom": "LA MOUTOUNADE SAS ( OP QUALIFEL+)",
-    "adresse": "LA MOUTOUNADE, ROUTE DE TRIXE",
-    "ville": "BRESSOLS",
-    "codePostal": "82710",
-    "telephone": "",
-    "email": "user@moutoun.fr",
-    "identifiantInterne": "MOUTOUN",
-    "isActive": true
-  },
-  {
-    "nom": "VERGERS ANJOU ANCENIS",
-    "adresse": "ZA  de l’aéropôle, 400 Rue Antoine De ST Exupéry  ",
-    "ville": "ANCENIS",
-    "codePostal": "44150",
-    "telephone": "",
-    "email": "user@scafla.fr",
-    "identifiantInterne": "SCAFLA",
-    "isActive": true
-  },
-  {
-    "nom": "LES VERGERS DE LA COURTOISE SICA",
-    "adresse": "4440 route de Cavaillon",
-    "ville": "ISLE SUR LA SORGUE",
-    "codePostal": "84800",
-    "telephone": "",
-    "email": "user@courto.fr",
-    "identifiantInterne": "COURTO",
-    "isActive": true
-  },
-  {
-    "nom": "JADANA FRUITS SCA",
-    "adresse": "169 Chemin de Thoumaze, chez M. BURATTI",
-    "ville": "MONTAUBAN",
-    "codePostal": "82000",
-    "telephone": "",
-    "email": "user@jadana.fr",
-    "identifiantInterne": "JADANA",
-    "isActive": true
-  },
-  {
-    "nom": "MOULLET et Fils ",
-    "adresse": "QUARTIER DE VILLARET",
-    "ville": "RIBIERS",
-    "codePostal": "5300",
-    "telephone": "",
-    "email": "user@moullet.fr",
-    "identifiantInterne": "MOULLET",
-    "isActive": true
-  },
-  {
-    "nom": "COSTE ALAIN ETS",
-    "adresse": "34 ROUTE DE LA PENTE D EAU",
-    "ville": "MONTECH",
-    "codePostal": "82700",
-    "telephone": "",
-    "email": "user@costes.fr",
-    "identifiantInterne": "COSTES",
-    "isActive": true
-  },
-  {
-    "nom": "VALLEE DU LOT SCEA",
-    "adresse": "15 AVENUE DES DEPORTES ",
-    "ville": "CLAIRAC",
-    "codePostal": "47320",
-    "telephone": "",
-    "email": "user@valleelot.fr",
-    "identifiantInterne": "VALLEELOT",
-    "isActive": true
-  },
-  {
-    "nom": "VALBUZZI ET FILS SARL ",
-    "adresse": "LE THIL",
-    "ville": "SAINTE LIVRADE SUR LOT",
-    "codePostal": "47110",
-    "telephone": "",
-    "email": "user@valbuzzi.fr",
-    "identifiantInterne": "VALBUZZI",
-    "isActive": true
-  },
-  {
-    "nom": "VERGERSANJOU ANCENIS",
-    "adresse": "ZA DE L'AEROPOLE, 400 RUE ANTOINE DE ST EXUPERY",
-    "ville": "ANCENIS",
-    "codePostal": "44150",
-    "telephone": "",
-    "email": "user@vancenis.fr",
-    "identifiantInterne": "VANCENIS",
-    "isActive": true
-  }
+    {
+        "nom": "Coop Fruitière du Dauphiné",
+        "identifiantInterne": "DAUPHI",
+        "adresse": {
+            "rue": "Zone Industrielle des Buclos, 245 Avenue des Alpes",
+            "ville": "Grenoble",
+            "codePostal": "38000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Michel Dauphiné",
+            "telephone": "04 76 87 34 21",
+            "email": "m.dauphine@dauphi.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "isActive": true
+    },
+    {
+        "nom": "Saveurs des Montagnes SICA",
+        "identifiantInterne": "SAVMON",
+        "adresse": {
+            "rue": "Hameau de la Montagne, Route des Cimes",
+            "ville": "Annecy",
+            "codePostal": "74000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Élise Montagnard",
+            "telephone": "04 50 23 56 78",
+            "email": "e.montagnard@savmon.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "isActive": true
+    },
+    {
+        "nom": "Coopérative Agricole de l'Ardèche",
+        "identifiantInterne": "ARDECHE",
+        "adresse": {
+            "rue": "Quartier Saint-Jean, 156 Chemin des Vignes",
+            "ville": "Privas",
+            "codePostal": "07000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Pierre Ardéchois",
+            "telephone": "04 75 64 89 12",
+            "email": "p.ardechois@ardeche.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "isActive": true
+    },
+    {
+        "nom": "Fruits du Soleil Méditerranéen",
+        "identifiantInterne": "SOLMED",
+        "adresse": {
+            "rue": "Zone d'Activité Méditerranée, 78 Avenue du Soleil",
+            "ville": "Montpellier",
+            "codePostal": "34000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Carole Méditerranée",
+            "telephone": "04 67 45 23 67",
+            "email": "c.mediterranee@solmed.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "isActive": true
+    },
+    {
+        "nom": "Coopérative des Cévennes",
+        "identifiantInterne": "CEVENNES",
+        "adresse": {
+            "rue": "Mas des Châtaigniers, Route de la Montagne",
+            "ville": "Alès",
+            "codePostal": "30100",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Jean-Luc Cévenol",
+            "telephone": "04 66 78 34 56",
+            "email": "jl.cevenol@cevennes.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "isActive": true
+    },
+    {
+        "nom": "Vignobles et Primeurs du Gard",
+        "identifiantInterne": "VIGPRI",
+        "adresse": {
+            "rue": "Domaine de la Costière, 234 Route des Vignes",
+            "ville": "Nîmes",
+            "codePostal": "30000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Philippe Gardois",
+            "telephone": "04 66 23 78 90",
+            "email": "p.gardois@vigpri.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "isActive": true
+    },
+    {
+        "nom": "Loire Valley Organics",
+        "identifiantInterne": "LOIREORG",
+        "adresse": {
+            "rue": "Château de la Vallée, 45 Route des Châteaux",
+            "ville": "Nantes",
+            "codePostal": "44000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Amélie Loire",
+            "telephone": "02 40 34 67 89",
+            "email": "a.loire@loireorg.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "isActive": true
+    },
+    {
+        "nom": "Maraîchers de l'Anjou",
+        "identifiantInterne": "MARANJOU",
+        "adresse": {
+            "rue": "Ferme Collective des Prairies, 67 Chemin Rural",
+            "ville": "Angers",
+            "codePostal": "49000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Sylvain Angevin",
+            "telephone": "02 41 56 78 23",
+            "email": "s.angevin@maranjou.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "isActive": true
+    },
+    {
+        "nom": "Producteurs de la Vendée",
+        "identifiantInterne": "VENDEE",
+        "adresse": {
+            "rue": "Zone Agricole des Marais, 123 Route de l'Océan",
+            "ville": "La Roche-sur-Yon",
+            "codePostal": "85000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Marine Vendéenne",
+            "telephone": "02 51 45 89 34",
+            "email": "m.vendeenne@vendee.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "isActive": true
+    },
+    {
+        "nom": "Bio Garonne Coopérative",
+        "identifiantInterne": "BIOGAR",
+        "adresse": {
+            "rue": "Écoparc de la Garonne, 89 Avenue Verte",
+            "ville": "Bordeaux",
+            "codePostal": "33000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Estelle Garonnaise",
+            "telephone": "05 56 78 23 45",
+            "email": "e.garonnaise@biogar.fr"
+        },
+        "groupeId": "groupe-aquitaine-bio",
+        "isActive": true
+    },
+    {
+        "nom": "Fermes Bio du Périgord",
+        "identifiantInterne": "BIOPERIG",
+        "adresse": {
+            "rue": "Domaine des Trufficulteurs, 156 Route de Périgueux",
+            "ville": "Périgueux",
+            "codePostal": "24000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Alain Périgourdin",
+            "telephone": "05 53 45 67 89",
+            "email": "a.perigourdin@bioperig.fr"
+        },
+        "groupeId": "groupe-aquitaine-bio",
+        "isActive": true
+    },
+    {
+        "nom": "Légumes du Nord Coopératif",
+        "identifiantInterne": "LEGNORD",
+        "adresse": {
+            "rue": "Parc Industriel du Nord, 234 Rue de l'Industrie",
+            "ville": "Lille",
+            "codePostal": "59000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "François Nordiste",
+            "telephone": "03 20 67 89 23",
+            "email": "f.nordiste@legnord.fr"
+        },
+        "groupeId": "groupe-nord-maraichage",
+        "isActive": true
+    },
+    {
+        "nom": "Maraîchers Picards Unis",
+        "identifiantInterne": "PICARD",
+        "adresse": {
+            "rue": "Zone Maraîchère de Picardie, 78 Route des Champs",
+            "ville": "Amiens",
+            "codePostal": "80000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Isabelle Picarde",
+            "telephone": "03 22 45 67 12",
+            "email": "i.picarde@picard.fr"
+        },
+        "groupeId": "groupe-nord-maraichage",
+        "isActive": true
+    },
+    {
+        "nom": "Ferme Artisanale Bretonne",
+        "identifiantInterne": "ARTBRET",
+        "adresse": {
+            "rue": "Kerléon, 23 Chemin du Bord de Mer",
+            "ville": "Quimper",
+            "codePostal": "29000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Yann Le Breton",
+            "telephone": "02 98 34 56 78",
+            "email": "y.lebreton@artbret.fr"
+        },
+        "groupeId": null,
+        "isActive": true
+    },
+    {
+        "nom": "Domaine Familial Alsacien",
+        "identifiantInterne": "ALSACE",
+        "adresse": {
+            "rue": "Route des Vignobles, 45 Rue Principale",
+            "ville": "Strasbourg",
+            "codePostal": "67000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Hans Alsacien",
+            "telephone": "03 88 23 45 67",
+            "email": "h.alsacien@alsace.fr"
+        },
+        "groupeId": null,
+        "isActive": true
+    },
+    {
+        "nom": "Producteurs Corses Indépendants",
+        "identifiantInterne": "CORSE",
+        "adresse": {
+            "rue": "U Castellu, Route de la Montagne",
+            "ville": "Ajaccio",
+            "codePostal": "20000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Antoine Corse",
+            "telephone": "04 95 56 78 90",
+            "email": "a.corse@corse.fr"
+        },
+        "groupeId": null,
+        "isActive": true
+    },
+    {
+        "nom": "Exploitation Savoyarde Traditionnelle",
+        "identifiantInterne": "SAVOIE",
+        "adresse": {
+            "rue": "Chalet des Alpages, 12 Route de la Montagne",
+            "ville": "Chambéry",
+            "codePostal": "73000",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Marie-Claire Savoyarde",
+            "telephone": "04 79 23 45 67",
+            "email": "mc.savoyarde@savoie.fr"
+        },
+        "groupeId": null,
+        "isActive": true
+    },
+    {
+        "nom": "Maraîchers de Champagne",
+        "identifiantInterne": "CHAMPAG",
+        "adresse": {
+            "rue": "Domaine de la Bulle, 234 Avenue des Vignes",
+            "ville": "Reims",
+            "codePostal": "51100",
+            "pays": "France"
+        },
+        "contactPrincipal": {
+            "nom": "Thierry Champenois",
+            "telephone": "03 26 78 90 12",
+            "email": "t.champenois@champag.fr"
+        },
+        "groupeId": null,
+        "isActive": true
+    }
 ]
