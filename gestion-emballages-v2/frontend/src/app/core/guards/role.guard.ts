@@ -31,4 +31,4 @@ export const managerGuard = createRoleGuard([UserRole.MANAGER]);
 export const gestionnaireGuard = createRoleGuard([UserRole.MANAGER, UserRole.GESTIONNAIRE]);
 export const stationGuard = createRoleGuard([UserRole.STATION]);
 export const fournisseurGuard = createRoleGuard([UserRole.FOURNISSEUR]);
-export const adminGuard = createRoleGuard([UserRole.MANAGER, UserRole.GESTIONNAIRE]);
+export const adminGuard = createRoleGuard([UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE]);

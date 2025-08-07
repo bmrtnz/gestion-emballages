@@ -8,7 +8,7 @@ import { UserRole } from '@core/models/user.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="space-y-6">
+    <div class="min-h-screen space-y-6">
       
       <!-- Welcome Header -->
       <div class="bg-white rounded-lg shadow-sm p-6">
@@ -106,8 +106,8 @@ import { UserRole } from '@core/models/user.model';
             </a>
           </ng-container>
 
-          <!-- Manager/Gestionnaire actions -->
-          <ng-container *ngIf="authService.isManager() || authService.isGestionnaire()">
+          <!-- Admin/Manager/Gestionnaire actions -->
+          <ng-container *ngIf="authService.isAdmin() || authService.isManager() || authService.isGestionnaire()">
             <a href="/articles" 
                class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200">
               <div class="flex items-center">
@@ -173,7 +173,8 @@ export class DashboardComponent {
   getRoleDisplayName(): string {
     const role = this.authService.userRole();
     const roleNames = {
-      [UserRole.MANAGER]: 'Gestionnaire',
+      [UserRole.ADMIN]: 'Administrateur',
+      [UserRole.MANAGER]: 'Manager',
       [UserRole.GESTIONNAIRE]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',
       [UserRole.FOURNISSEUR]: 'Fournisseur'

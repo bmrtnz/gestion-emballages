@@ -1,0 +1,92 @@
+[
+  {
+    "codeArticle": "BAR001",
+    "designation": "Barquette plastique 500g",
+    "categorie": "Barquette",
+    "isActive": true
+  },
+  {
+    "codeArticle": "BAR002",
+    "designation": "Barquette plastique 1kg",
+    "categorie": "Barquette",
+    "isActive": true
+  },
+  {
+    "codeArticle": "CAG001",
+    "designation": "Cagette bois 2kg",
+    "categorie": "Cagette",
+    "isActive": true
+  },
+  {
+    "codeArticle": "CAG002",
+    "designation": "Cagette carton 1kg",
+    "categorie": "Cagette",
+    "isActive": true
+  },
+  {
+    "codeArticle": "PLT001",
+    "designation": "Plateau carton 30x40cm",
+    "categorie": "Plateau",
+    "isActive": true
+  },
+  {
+    "codeArticle": "FIL001",
+    "designation": "Film plastique alimentaire 30cm",
+    "categorie": "Film Plastique",
+    "isActive": true
+  },
+  {
+    "codeArticle": "FIL002",
+    "designation": "Film plastique étirable 50cm",
+    "categorie": "Film Plastique",
+    "isActive": true
+  },
+  {
+    "codeArticle": "CAR001",
+    "designation": "Carton expédition 40x30x20cm",
+    "categorie": "Carton",
+    "isActive": true
+  },
+  {
+    "codeArticle": "CAR002",
+    "designation": "Carton présentoir fruits",
+    "categorie": "Carton",
+    "isActive": true
+  },
+  {
+    "codeArticle": "SAC001",
+    "designation": "Sac plastique 5kg",
+    "categorie": "Sac Plastique",
+    "isActive": true
+  },
+  {
+    "codeArticle": "SAC002",
+    "designation": "Sac papier kraft 2kg",
+    "categorie": "Sac Papier",
+    "isActive": true
+  },
+  {
+    "codeArticle": "ISO001",
+    "designation": "Emballage isotherme 10L",
+    "categorie": "Emballage Isotherme",
+    "isActive": true
+  },
+  {
+    "codeArticle": "ETI001",
+    "designation": "Étiquettes code-barres (x1000)",
+    "categorie": "Etiquette",
+    "isActive": true
+  },
+  {
+    "codeArticle": "AUT001",
+    "designation": "Attache plastique (x100)",
+    "categorie": "Autre",
+    "isActive": true
+  },
+  {
+    "codeArticle": "AUT002",
+    "designation": "Adhésif transparent 50mm",
+    "categorie": "Autre",
+    "isActive": true
+  }
+]

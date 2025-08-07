@@ -2,11 +2,17 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 
 import { UserService, UserFilters, PaginatedUsersResponse } from '@core/services/user.service';
 import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
+import { UserListSkeletonComponent } from '@shared/components/ui/user-list-skeleton.component';
+import { ButtonComponent } from '@shared/components/ui/button.component';
+import { SlidePanelComponent } from '@shared/components/ui/slide-panel.component';
+import { ToggleButtonComponent } from '@shared/components/ui/toggle-button.component';
+import { AddUserFormComponent } from '../components/add-user-form.component';
 import { User, UserRole, EntityType } from '@core/models/user.model';
 
 @Component({
@@ -16,49 +22,42 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    LoadingSpinnerComponent
+    LucideAngularModule,
+    LoadingSpinnerComponent,
+    UserListSkeletonComponent,
+    ButtonComponent,
+    SlidePanelComponent,
+    ToggleButtonComponent,
+    AddUserFormComponent
   ],
   template: `
-    <div class="space-y-6">
-      
-      <!-- Header -->
-      <div class="flex justify-between items-center">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Utilisateurs</h1>
-          <p class="text-gray-600">Gestion des comptes utilisateurs</p>
-        </div>
-        
-        <button
-          *ngIf="authService.canAccessUserManagement()"
-          type="button"
-          class="btn-primary"
-          (click)="openCreateModal()">
-          <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Nouvel utilisateur
-        </button>
+    <div class="min-h-screen">
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Utilisateurs</h1>
+        <p class="text-sm text-gray-500">Gérez les utilisateurs de la plateforme ici.</p>
       </div>
+      
+      <div class="space-y-6">
 
       <!-- Search and Filters -->
-      <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
         <form [formGroup]="searchForm" class="space-y-4">
           
           <!-- Search Bar -->
           <div class="flex items-center space-x-4">
-            <button
-              type="button"
-              class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-              (click)="showFilters.set(!showFilters())">
-              <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+            <ui-toggle-button
+              label="Filtres"
+              [useCustomIcon]="true"
+              [isToggled]="showFilters()"
+              [badgeCount]="activeFiltersCount()"
+              variant="outline"
+              size="md"
+              (toggle)="showFilters.set($event)">
+              <svg slot="icon" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v2.586a1 1 0 0 1-.293.707l-6.414 6.414a1 1 0 0 0-.293.707V17l-4 4v-6.586a1 1 0 0 0-.293-.707L3.293 7.207A1 1 0 0 1 3 6.5V4Z"/>
               </svg>
-              Filtres
-              <span *ngIf="activeFiltersCount() > 0" 
-                    class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                {{ activeFiltersCount() }}
-              </span>
-            </button>
+            </ui-toggle-button>
             
             <div class="flex-1 relative">
               <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,6 +70,15 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                 placeholder="Rechercher par nom ou email..."
                 (input)="onSearchChange()">
             </div>
+
+            <!-- Add User Button -->
+            <ui-button
+              *ngIf="authService.canAccessUserManagement()"
+              variant="primary"
+              size="md"
+              (click)="openCreateModal()">
+              Ajouter un Utilisateur
+            </ui-button>
           </div>
 
           <!-- Filters Panel -->
@@ -132,13 +140,15 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
         </form>
       </div>
 
-      <!-- Loading State -->
-      <div *ngIf="loading()" class="flex justify-center py-12">
-        <app-loading-spinner size="lg" message="Chargement des utilisateurs..."></app-loading-spinner>
-      </div>
+      <!-- Progressive content loading -->
+      <ng-container *ngIf="!initialLoading(); else skeleton">
+        <!-- Loading State for subsequent loads -->
+        <div *ngIf="loading()" class="flex justify-center py-12">
+          <app-loading-spinner size="lg" message="Chargement des utilisateurs..."></app-loading-spinner>
+        </div>
 
-      <!-- Users Table -->
-      <div *ngIf="!loading()" class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <!-- Users Table -->
+        <div *ngIf="!loading()" class="overflow-hidden">
         
         <!-- Desktop Table -->
         <div class="hidden md:block">
@@ -157,72 +167,54 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Statut
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Créé le
-                </th>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr *ngFor="let user of users()" class="hover:bg-gray-50">
+              <tr *ngFor="let user of users(); trackBy: trackByUserId" 
+                  class="hover:bg-gray-50">
                 
                 <!-- User Info -->
-                <td class="px-6 py-4">
-                  <div class="flex items-center">
-                    <div class="h-10 w-10 bg-primary-600 rounded-full flex items-center justify-center">
-                      <span class="text-sm font-medium text-white">
-                        {{ userService.getUserInitials(user.nomComplet) }}
-                      </span>
-                    </div>
-                    <div class="ml-4">
-                      <div class="font-medium text-gray-900">{{ user.nomComplet }}</div>
-                      <div class="text-sm text-gray-500">{{ user.email }}</div>
-                    </div>
+                <td class="px-6 py-2">
+                  <div>
+                    <div class="text-sm font-medium text-gray-900">{{ user.nomComplet }}</div>
+                    <div class="text-sm text-gray-500">{{ user.email }}</div>
                   </div>
                 </td>
 
                 <!-- Role -->
-                <td class="px-6 py-4">
+                <td class="px-6 py-2">
                   <span [class]="getRoleClass(user.role)">
                     {{ userService.getRoleDisplayName(user.role) }}
                   </span>
                 </td>
 
                 <!-- Entity -->
-                <td class="px-6 py-4">
+                <td class="px-6 py-2">
                   <div class="text-sm text-gray-900">
                     <div *ngIf="user.station">
                       <span class="font-medium">{{ user.station.nom }}</span>
-                      <div class="text-xs text-gray-500">Station</div>
                     </div>
                     <div *ngIf="user.fournisseur">
                       <span class="font-medium">{{ user.fournisseur.nom }}</span>
-                      <div class="text-xs text-gray-500">Fournisseur</div>
                     </div>
-                    <div *ngIf="!user.station && !user.fournisseur" class="text-gray-400">
-                      Aucune
+                    <div *ngIf="!user.station && !user.fournisseur">
+                      <!-- Empty for Manager/Gestionnaire -->
                     </div>
                   </div>
                 </td>
 
                 <!-- Status -->
-                <td class="px-6 py-4">
+                <td class="px-6 py-2">
                   <span [class]="getStatusClass(user.isActive)">
                     {{ user.isActive ? 'Actif' : 'Inactif' }}
                   </span>
                 </td>
 
-                <!-- Created Date -->
-                <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900">
-                    {{ formatDate(user.createdAt) }}
-                  </div>
-                </td>
-
                 <!-- Actions -->
-                <td class="px-6 py-4 text-right text-sm font-medium">
+                <td class="px-6 py-2 text-right text-sm font-medium">
                   <div class="flex items-center justify-end space-x-2">
                     <button
                       type="button"
@@ -268,17 +260,12 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
 
         <!-- Mobile Cards -->
         <div class="md:hidden space-y-4 p-4">
-          <div *ngFor="let user of users()" 
+          <div *ngFor="let user of users(); trackBy: trackByUserId" 
                class="border border-gray-200 rounded-lg p-4 space-y-3">
             
-            <div class="flex items-center space-x-3">
-              <div class="h-10 w-10 bg-primary-600 rounded-full flex items-center justify-center">
-                <span class="text-sm font-medium text-white">
-                  {{ userService.getUserInitials(user.nomComplet) }}
-                </span>
-              </div>
+            <div class="flex items-start justify-between mb-3">
               <div class="flex-1">
-                <h3 class="font-medium text-gray-900">{{ user.nomComplet }}</h3>
+                <h3 class="text-sm font-medium text-gray-900">{{ user.nomComplet }}</h3>
                 <p class="text-sm text-gray-500">{{ user.email }}</p>
               </div>
               <span [class]="getStatusClass(user.isActive)">
@@ -294,14 +281,9 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
               <div>
                 <span class="text-gray-500">Entité:</span>
                 <span class="ml-1 text-gray-900">
-                  {{ user.station?.nom || user.fournisseur?.nom || 'Aucune' }}
+                  {{ user.station?.nom || user.fournisseur?.nom || '' }}
                 </span>
               </div>
-            </div>
-
-            <div class="text-sm">
-              <span class="text-gray-500">Créé le:</span>
-              <span class="ml-1 text-gray-900">{{ formatDate(user.createdAt) }}</span>
             </div>
 
             <!-- Mobile Actions -->
@@ -332,9 +314,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
 
         <!-- Empty State -->
         <div *ngIf="users().length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-          </svg>
+          <lucide-icon name="users" class="mx-auto h-12 w-12 text-gray-400"></lucide-icon>
           <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun utilisateur trouvé</h3>
           <p class="mt-1 text-sm text-gray-500">
             {{ searchForm.get('search')?.value ? 'Essayez de modifier vos critères de recherche.' : 'Commencez par créer un nouvel utilisateur.' }}
@@ -344,7 +324,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
 
       <!-- Pagination -->
       <div *ngIf="paginatedResponse() && paginatedResponse()!.totalPages > 1" 
-           class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 rounded-lg">
+           class="flex items-center justify-between border-t border-gray-200 px-0 py-3 sm:px-0">
         
         <!-- Results Info -->
         <div class="flex flex-1 justify-between sm:hidden">
@@ -417,8 +397,27 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
             </nav>
           </div>
         </div>
-      </div>
+        </div> <!-- Close overflow-hidden wrapper -->
+      </ng-container>
+      
+      <ng-template #skeleton>
+        <app-user-list-skeleton></app-user-list-skeleton>
+      </ng-template>
+      </div> <!-- Close space-y-6 wrapper -->
     </div>
+
+    <!-- Add User Slide Panel -->
+    <ui-slide-panel
+      [open]="showAddUserPanel()"
+      title="Ajouter un utilisateur"
+      size="lg"
+      (close)="closeAddUserPanel()">
+      
+      <app-add-user-form
+        (cancel)="closeAddUserPanel()"
+        (userCreated)="onUserCreated()">
+      </app-add-user-form>
+    </ui-slide-panel>
   `,
   styles: []
 })
@@ -430,7 +429,9 @@ export class UserListComponent implements OnInit {
 
   // Reactive state
   public loading = signal(false);
+  public initialLoading = signal(true);
   public showFilters = signal(false);
+  public showAddUserPanel = signal(false);
   public users = signal<User[]>([]);
   public paginatedResponse = signal<PaginatedUsersResponse | null>(null);
   public currentPage = signal(1);
@@ -465,7 +466,10 @@ export class UserListComponent implements OnInit {
   private searchTimeout: any;
 
   ngOnInit() {
-    this.loadUsers();
+    // Set a minimal delay to ensure smooth transition and prevent flicker
+    setTimeout(() => {
+      this.loadUsers();
+    }, 50);
   }
 
   loadUsers() {
@@ -482,10 +486,12 @@ export class UserListComponent implements OnInit {
         this.users.set(response.data);
         this.paginatedResponse.set(response);
         this.loading.set(false);
+        this.initialLoading.set(false); // Critical: set after data loads
       },
       error: (error) => {
         console.error('Error loading users:', error);
         this.loading.set(false);
+        this.initialLoading.set(false);
       }
     });
   }
@@ -589,7 +595,17 @@ export class UserListComponent implements OnInit {
   }
 
   openCreateModal() {
-    console.log('Create new user');
+    this.showAddUserPanel.set(true);
+  }
+
+  closeAddUserPanel() {
+    this.showAddUserPanel.set(false);
+  }
+
+  onUserCreated() {
+    this.showAddUserPanel.set(false);
+    // Reload the user list to show the new user
+    this.loadUsers();
   }
 
   toggleUserStatus(user: User) {
@@ -636,6 +652,7 @@ export class UserListComponent implements OnInit {
   // Utility methods
   getRoleClass(role: UserRole): string {
     const roleClasses = {
+      [UserRole.ADMIN]: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800',
       [UserRole.MANAGER]: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800',
       [UserRole.GESTIONNAIRE]: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800',
       [UserRole.STATION]: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800',
@@ -650,11 +667,8 @@ export class UserListComponent implements OnInit {
       : 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800';
   }
 
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+  // TrackBy function for performance optimization
+  trackByUserId(index: number, user: User): string {
+    return user.id;
   }
 }

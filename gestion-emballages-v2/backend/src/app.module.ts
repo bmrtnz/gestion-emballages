@@ -13,6 +13,8 @@ import { User } from './modules/users/entities/user.entity';
 import { Station } from './modules/stations/entities/station.entity';
 import { Fournisseur } from './modules/fournisseurs/entities/fournisseur.entity';
 import { FournisseurSite } from './modules/fournisseurs/entities/fournisseur-site.entity';
+import { Platform } from './modules/platforms/entities/platform.entity';
+import { PlatformSite } from './modules/platforms/entities/platform-site.entity';
 import { Article } from './modules/articles/entities/article.entity';
 import { ArticleFournisseur } from './modules/articles/entities/article-fournisseur.entity';
 import { Commande } from './modules/commandes/entities/commande.entity';
@@ -20,6 +22,7 @@ import { CommandeGlobale } from './modules/commandes/entities/commande-globale.e
 import { CommandeArticle } from './modules/commandes/entities/commande-article.entity';
 import { StockStation } from './modules/stocks/entities/stock-station.entity';
 import { StockFournisseur } from './modules/stocks/entities/stock-fournisseur.entity';
+import { StockPlatform } from './modules/stocks/entities/stock-platform.entity';
 import { DemandeTransfert } from './modules/transferts/entities/demande-transfert.entity';
 import { DemandeTransfertArticle } from './modules/transferts/entities/demande-transfert-article.entity';
 import { Prevision } from './modules/previsions/entities/prevision.entity';
@@ -31,6 +34,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { StationsModule } from './modules/stations/stations.module';
 import { FournisseursModule } from './modules/fournisseurs/fournisseurs.module';
+import { PlatformsModule } from './modules/platforms/platforms.module';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { CommandesModule } from './modules/commandes/commandes.module';
 import { StocksModule } from './modules/stocks/stocks.module';
@@ -63,6 +67,8 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           Station,
           Fournisseur,
           FournisseurSite,
+          Platform,
+          PlatformSite,
           Article,
           ArticleFournisseur,
           Commande,
@@ -70,6 +76,7 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           CommandeArticle,
           StockStation,
           StockFournisseur,
+          StockPlatform,
           DemandeTransfert,
           DemandeTransfertArticle,
           Prevision,
@@ -77,7 +84,7 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           ListeAchatItem,
         ],
         synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true' || configService.get<string>('NODE_ENV') === 'development',
-        logging: configService.get<string>('DB_LOGGING') === 'true' || configService.get<string>('NODE_ENV') === 'development',
+        logging: configService.get<string>('DB_LOGGING') === 'true',
         ssl: configService.get<string>('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
       }),
       inject: [ConfigService],
@@ -91,6 +98,7 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
     UsersModule,
     StationsModule,
     FournisseursModule,
+    PlatformsModule,
     ArticlesModule,
     CommandesModule,
     StocksModule,

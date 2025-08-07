@@ -29,6 +29,7 @@ export class AuthService {
   public user = computed(() => this.userSignal());
   public isAuthenticated = computed(() => !!this.userSignal());
   public userRole = computed(() => this.userSignal()?.role);
+  public isAdmin = computed(() => this.userSignal()?.role === UserRole.ADMIN);
   public isManager = computed(() => this.userSignal()?.role === UserRole.MANAGER);
   public isGestionnaire = computed(() => this.userSignal()?.role === UserRole.GESTIONNAIRE);
   public isStation = computed(() => this.userSignal()?.role === UserRole.STATION);
@@ -42,7 +43,8 @@ export class AuthService {
 
     if (token && user) {
       this.setCurrentUser(user);
-      this.validateTokenAndRedirect();
+      // Don't validate token on every page load - only validate if needed
+      // This prevents the HTTP call that causes flickering
     }
   }
 
@@ -137,27 +139,27 @@ export class AuthService {
   // Role-based access methods
   canAccessArticleManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
   }
 
   canAccessUserManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
   }
 
   canAccessStationManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
   }
 
   canAccessSupplierManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
   }
 
   canAccessOrderManagement(): boolean {
     const role = this.userRole();
-    return role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE || role === UserRole.STATION;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE || role === UserRole.STATION;
   }
 
   canManageOrders(): boolean {
@@ -166,6 +168,6 @@ export class AuthService {
 
   canViewFinancialData(): boolean {
     const role = this.userRole();
-    return role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.GESTIONNAIRE;
   }
 }

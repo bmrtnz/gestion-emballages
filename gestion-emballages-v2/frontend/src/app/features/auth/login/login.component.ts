@@ -1,10 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthService } from '@core/services/auth.service';
+import { UserService } from '@core/services/user.service';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
+import { User } from '@core/models/user.model';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -51,26 +54,55 @@ import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/load
             <p class="text-lg text-gray-600">Entrez vos identifiants pour continuer.</p>
           </div>
 
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
-            <!-- Email Field -->
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" method="post" class="space-y-6">
+            <!-- Email Field (Development Mode with User Selector) -->
             <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Adresse e-mail *</label>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                Adresse e-mail *
+                <span *ngIf="isDevelopment()" class="text-xs text-orange-600 font-normal">(Mode développement)</span>
+              </label>
+              
+              <!-- Development Mode: Compact User Selector -->
+              <div *ngIf="isDevelopment()" class="mb-3">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <polyline points="16,11 18,13 22,9"/>
+                    </svg>
+                  </div>
+                  <select
+                    class="block w-full pl-10 pr-3 py-2 border border-orange-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm bg-orange-50 text-orange-900"
+                    (change)="onUserSelect($event)">
+                    <option value="">Sélectionner un utilisateur test</option>
+                    <option *ngFor="let user of availableUsers()" [value]="user.email">
+                      {{ getRoleIcon(user.role) }} {{ user.nomComplet }} ({{ user.email }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Email Input -->
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                    <path d="m22 7-10 5L2 7"/>
                   </svg>
                 </div>
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   formControlName="email"
                   placeholder="vous@exemple.com"
-                  autocomplete="email"
+                  autocomplete="username email"
                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm placeholder-gray-400"
                   [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
                 />
               </div>
+              
               <p *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
                 {{ getEmailError() }}
               </p>
@@ -81,12 +113,14 @@ import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/load
               <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe *</label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4.828-4.828z"/>
+                    <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/>
                   </svg>
                 </div>
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   formControlName="password"
                   placeholder="••••••••"
@@ -131,19 +165,27 @@ import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/load
   `,
   styles: []
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private userService = inject(UserService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   public isLoading = signal(false);
   public showPassword = signal(false);
+  public availableUsers = signal<User[]>([]);
 
   public loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['password123', [Validators.required]]
+    password: ['Claude-Whale2025!', [Validators.required]]
   });
+
+  ngOnInit(): void {
+    if (this.isDevelopment()) {
+      this.loadAvailableUsers();
+    }
+  }
 
   onSubmit(): void {
     if (this.loginForm.valid && !this.isLoading()) {
@@ -193,5 +235,60 @@ export class LoginComponent {
       }
     }
     return '';
+  }
+
+  // Development-only methods
+  isDevelopment(): boolean {
+    return !environment.production;
+  }
+
+  private loadAvailableUsers(): void {
+    // Use development endpoint that doesn't require authentication
+    this.userService.getDevUsers().subscribe({
+      next: (response) => {
+        // Sort users by role hierarchy for better UX
+        const sortedUsers = response.data.sort((a, b) => {
+          const roleOrder = { Admin: 0, Manager: 1, Gestionnaire: 2, Station: 3, Fournisseur: 4 };
+          const aOrder = roleOrder[a.role as keyof typeof roleOrder] ?? 999;
+          const bOrder = roleOrder[b.role as keyof typeof roleOrder] ?? 999;
+          
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          return a.nomComplet.localeCompare(b.nomComplet);
+        });
+        
+        this.availableUsers.set(sortedUsers);
+      },
+      error: (error) => {
+        console.warn('Failed to load users for development selector:', error);
+        this.availableUsers.set([]);
+      }
+    });
+  }
+
+  onUserSelect(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedEmail = target.value;
+    
+    if (selectedEmail) {
+      this.loginForm.patchValue({
+        email: selectedEmail
+      });
+      
+      // Auto-set default password
+      this.loginForm.patchValue({
+        password: 'Claude-Whale2025!'
+      });
+    }
+  }
+
+  getRoleIcon(role: string): string {
+    const roleIcons: { [key: string]: string } = {
+      'Admin': '🔐',
+      'Manager': '👑', 
+      'Gestionnaire': '⚙️',
+      'Station': '🏪',
+      'Fournisseur': '🏭'
+    };
+    return roleIcons[role] || '👤';
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IsInt, IsOptional, IsString, IsEnum, Min } from 'class-validator';
 
 export enum SortOrder {
@@ -25,11 +25,13 @@ export class PaginationDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   search?: string;
 
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   sortBy?: string;
 
   @ApiProperty({ enum: SortOrder, default: SortOrder.DESC })
@@ -40,5 +42,12 @@ export class PaginationDto {
   @ApiProperty({ required: false, description: 'Filter by status: active, inactive, or empty for all' })
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
   status?: string;
+
+  @ApiProperty({ required: false, description: 'Filter by speciality for platforms' })
+  @IsString()
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
+  specialite?: string;
 }

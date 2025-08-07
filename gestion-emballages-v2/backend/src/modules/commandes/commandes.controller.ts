@@ -36,7 +36,7 @@ export class CommandesController {
 
   // Individual Orders (Commandes)
   @Post()
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
   @ApiOperation({ summary: 'Create a new order' })
   @ApiResponse({ status: 201, description: 'Order created successfully' })
   async createCommande(@Body() createCommandeDto: CreateCommandeDto, @Request() req) {
@@ -65,7 +65,7 @@ export class CommandesController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR)
   @ApiOperation({ summary: 'Update order' })
   @ApiResponse({ status: 200, description: 'Order updated successfully' })
   async updateCommande(
@@ -76,7 +76,7 @@ export class CommandesController {
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR)
   @ApiOperation({ summary: 'Update order status' })
   @ApiResponse({ status: 200, description: 'Order status updated successfully' })
   async updateCommandeStatus(
@@ -87,7 +87,7 @@ export class CommandesController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
   @ApiOperation({ summary: 'Delete order' })
   @ApiResponse({ status: 200, description: 'Order deleted successfully' })
   async deleteCommande(@Param('id') id: string) {
@@ -96,7 +96,7 @@ export class CommandesController {
 
   // Global Orders (Commandes Globales)
   @Post('globales')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
   @ApiOperation({ summary: 'Create a new global order' })
   @ApiResponse({ status: 201, description: 'Global order created successfully' })
   async createCommandeGlobale(
@@ -126,7 +126,7 @@ export class CommandesController {
   }
 
   @Patch('globales/:id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
   @ApiOperation({ summary: 'Update global order' })
   @ApiResponse({ status: 200, description: 'Global order updated successfully' })
   async updateCommandeGlobale(
@@ -137,7 +137,7 @@ export class CommandesController {
   }
 
   @Patch('globales/:id/status')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
   @ApiOperation({ summary: 'Update global order status' })
   @ApiResponse({ status: 200, description: 'Global order status updated successfully' })
   async updateCommandeGlobaleStatus(
@@ -148,7 +148,7 @@ export class CommandesController {
   }
 
   @Delete('globales/:id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION)
   @ApiOperation({ summary: 'Delete global order' })
   @ApiResponse({ status: 200, description: 'Global order deleted successfully' })
   async deleteCommandeGlobale(@Param('id') id: string) {

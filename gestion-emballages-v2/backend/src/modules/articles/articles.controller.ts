@@ -47,7 +47,7 @@ export class ArticlesController {
   }
 
   @Post()
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Create a new article' })
   @ApiResponse({ status: 201, description: 'Article created successfully' })
   async create(@Body() createArticleDto: CreateArticleDto, @Request() req) {
@@ -74,7 +74,7 @@ export class ArticlesController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Update article' })
   @ApiResponse({ status: 200, description: 'Article updated successfully' })
   async update(
@@ -91,7 +91,7 @@ export class ArticlesController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Deactivate article' })
   @ApiResponse({ status: 200, description: 'Article deactivated successfully' })
   async remove(@Param('id') id: string) {
@@ -99,7 +99,7 @@ export class ArticlesController {
   }
 
   @Patch(':id/reactivate')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Reactivate article' })
   @ApiResponse({ status: 200, description: 'Article reactivated successfully' })
   async reactivate(@Param('id') id: string) {
@@ -108,7 +108,7 @@ export class ArticlesController {
 
   // Article-Fournisseur relationship endpoints
   @Post(':id/fournisseurs')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Add supplier to article' })
   @ApiResponse({ status: 201, description: 'Supplier added to article successfully' })
   async addFournisseur(
@@ -119,7 +119,7 @@ export class ArticlesController {
   }
 
   @Patch(':id/fournisseurs/:fournisseurInfoId')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Update article-supplier relationship' })
   @ApiResponse({ status: 200, description: 'Article-supplier relationship updated successfully' })
   async updateFournisseur(
@@ -131,7 +131,7 @@ export class ArticlesController {
   }
 
   @Delete(':id/fournisseurs/:fournisseurInfoId')
-  @Roles(UserRole.MANAGER, UserRole.GESTIONNAIRE)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE)
   @ApiOperation({ summary: 'Remove supplier from article' })
   @ApiResponse({ status: 200, description: 'Supplier removed from article successfully' })
   async removeFournisseur(

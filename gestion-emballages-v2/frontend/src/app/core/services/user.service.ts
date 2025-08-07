@@ -74,9 +74,31 @@ export class UserService {
     return this.http.patch<User>(`${this.baseUrl}/${id}/reactivate`, {});
   }
 
+  // Development-only method
+  getDevUsers(): Observable<PaginatedUsersResponse> {
+    return this.http.get<PaginatedUsersResponse>(`${this.baseUrl}/dev/list`);
+  }
+
+  // Admin-only hard delete methods
+  checkDataIntegrity(id: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${id}/integrity-check`);
+  }
+
+  hardDeleteUser(id: string, options?: { cascadeDelete?: boolean; confirmIntegrityCheck?: boolean }): Observable<any> {
+    let params = new HttpParams();
+    if (options?.cascadeDelete) {
+      params = params.set('cascadeDelete', 'true');
+    }
+    if (options?.confirmIntegrityCheck) {
+      params = params.set('confirmIntegrityCheck', 'true');
+    }
+    return this.http.delete(`${this.baseUrl}/${id}/hard-delete`, { params });
+  }
+
   // Utility methods
   getRoleDisplayName(role: UserRole): string {
     const roleNames = {
+      [UserRole.ADMIN]: 'Admin',
       [UserRole.MANAGER]: 'Manager',
       [UserRole.GESTIONNAIRE]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',
@@ -106,10 +128,15 @@ export class UserService {
   }
 
   canEditUser(currentUserRole: UserRole, targetUserRole: UserRole): boolean {
-    // Manager can edit everyone
-    if (currentUserRole === UserRole.MANAGER) return true;
+    // Admin can edit everyone
+    if (currentUserRole === UserRole.ADMIN) return true;
     
-    // Gestionnaire can edit Station and Fournisseur users, but not other Managers/Gestionnaires
+    // Manager can edit everyone except Admin
+    if (currentUserRole === UserRole.MANAGER) {
+      return targetUserRole !== UserRole.ADMIN;
+    }
+    
+    // Gestionnaire can edit Station and Fournisseur users, but not Admin/Manager/other Gestionnaires
     if (currentUserRole === UserRole.GESTIONNAIRE) {
       return targetUserRole === UserRole.STATION || targetUserRole === UserRole.FOURNISSEUR;
     }
@@ -122,12 +149,16 @@ export class UserService {
   }
 
   getAvailableRoles(currentUserRole: UserRole): UserRole[] {
+    if (currentUserRole === UserRole.ADMIN) {
+      return [UserRole.ADMIN, UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR];
+    }
+    
     if (currentUserRole === UserRole.MANAGER) {
       return [UserRole.MANAGER, UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR];
     }
     
     if (currentUserRole === UserRole.GESTIONNAIRE) {
-      return [UserRole.STATION, UserRole.FOURNISSEUR];
+      return [UserRole.GESTIONNAIRE, UserRole.STATION, UserRole.FOURNISSEUR];
     }
     
     return [];

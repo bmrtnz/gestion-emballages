@@ -313,6 +313,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public getRoleDisplayName(): string {
     const role = this.authService.userRole();
     const roleNames = {
+      [UserRole.ADMIN]: 'Admin',
       [UserRole.MANAGER]: 'Manager',
       [UserRole.GESTIONNAIRE]: 'Gestionnaire',
       [UserRole.STATION]: 'Station',

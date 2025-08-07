@@ -28,7 +28,7 @@ export abstract class SidebarNavigationStrategy {
 @Injectable({
   providedIn: 'root'
 })
-export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
+export class AdminSidebarStrategy extends SidebarNavigationStrategy {
   getNavigation(): NavigationSection[] {
     return [
       {
@@ -36,7 +36,7 @@ export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Tableau de bord',
             href: '/dashboard',
-            icon: 'factory'
+            icon: 'layout-dashboard'
           },
           {
             name: 'Analyses',
@@ -92,6 +92,111 @@ export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
             name: 'Stations',
             href: '/stations',
             icon: 'factory'
+          },
+          {
+            name: 'Plateformes',
+            href: '/platforms',
+            icon: 'warehouse'
+          },
+          {
+            name: 'Utilisateurs',
+            href: '/users',
+            icon: 'users'
+          }
+        ]
+      }
+    ];
+  }
+
+  getEntityName(user: any): string | null {
+    return null; // Admins don't have entity names
+  }
+
+  getStockUrl(): string {
+    return '/stocks/stations-dashboard';
+  }
+
+  shouldShowSearch(): boolean {
+    return true;
+  }
+
+  shouldLoadShoppingCart(): boolean {
+    return false;
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
+  getNavigation(): NavigationSection[] {
+    return [
+      {
+        items: [
+          {
+            name: 'Tableau de bord',
+            href: '/dashboard',
+            icon: 'layout-dashboard'
+          },
+          {
+            name: 'Analyses',
+            href: '#',
+            icon: 'bar-chart-3'
+          }
+        ]
+      },
+      {
+        title: 'GESTION',
+        items: [
+          {
+            name: 'Commandes',
+            href: '/commandes',
+            icon: 'clipboard-list'
+          },
+          {
+            name: 'Transferts',
+            href: '/transferts',
+            icon: 'arrow-left-right'
+          },
+          {
+            name: 'Stocks des stations',
+            href: '/stocks/stations-dashboard',
+            icon: 'layers'
+          },
+          {
+            name: 'Stocks des fournisseurs',
+            href: '/stocks/suppliers-dashboard',
+            icon: 'package'
+          },
+          {
+            name: 'Prévisions',
+            href: '/previsions',
+            icon: 'trending-up'
+          }
+        ]
+      },
+      {
+        title: 'PARAMETRES',
+        items: [
+          {
+            name: 'Catalogue des articles',
+            href: '/articles',
+            icon: 'gallery-vertical-end'
+          },
+          {
+            name: 'Fournisseurs',
+            href: '/fournisseurs',
+            icon: 'store'
+          },
+          {
+            name: 'Stations',
+            href: '/stations',
+            icon: 'factory'
+          },
+          {
+            name: 'Plateformes',
+            href: '/platforms',
+            icon: 'warehouse'
           },
           {
             name: 'Utilisateurs',
@@ -131,7 +236,7 @@ export class GestionnaireSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Tableau de bord',
             href: '/dashboard',
-            icon: 'factory'
+            icon: 'layout-dashboard'
           },
           {
             name: 'Analyses',
@@ -189,6 +294,11 @@ export class GestionnaireSidebarStrategy extends SidebarNavigationStrategy {
             icon: 'factory'
           },
           {
+            name: 'Plateformes',
+            href: '/platforms',
+            icon: 'warehouse'
+          },
+          {
             name: 'Utilisateurs',
             href: '/users',
             icon: 'users'
@@ -226,7 +336,7 @@ export class StationSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Tableau de bord',
             href: '/dashboard',
-            icon: 'factory'
+            icon: 'layout-dashboard'
           }
         ]
       },
@@ -236,7 +346,7 @@ export class StationSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Ma liste d\'achat',
             href: '/liste-achat',
-            icon: 'factory',
+            icon: 'shopping-cart',
             badge: 'cart'
           },
           {
@@ -302,7 +412,7 @@ export class FournisseurSidebarStrategy extends SidebarNavigationStrategy {
           {
             name: 'Tableau de bord',
             href: '/dashboard',
-            icon: 'factory'
+            icon: 'layout-dashboard'
           }
         ]
       },
@@ -362,6 +472,8 @@ export class FournisseurSidebarStrategy extends SidebarNavigationStrategy {
 export class SidebarNavigationStrategyFactory {
   static createStrategy(userRole: UserRole | null): SidebarNavigationStrategy {
     switch (userRole) {
+      case UserRole.ADMIN:
+        return new AdminSidebarStrategy();
       case UserRole.MANAGER:
         return new ManagerSidebarStrategy();
       case UserRole.GESTIONNAIRE:

@@ -1,0 +1,50 @@
+[
+  {
+    "nom": "Emballages du Sud-Ouest",
+    "adresse": "12 Zone Industrielle Nord",
+    "ville": "Toulouse",
+    "codePostal": "31000",
+    "telephone": "05 61 23 45 67",
+    "email": "contact@emballages-so.fr",
+    "contact": "François Martinez",
+    "siret": "12345678901234",
+    "specialites": ["Carton", "Plastique"],
+    "isActive": true
+  },
+  {
+    "nom": "Plastiques Aquitaine",
+    "adresse": "45 Rue de l'Industrie",
+    "ville": "Bayonne",
+    "codePostal": "64100",
+    "telephone": "05 59 46 78 90",
+    "email": "info@plastiques-aquitaine.com",
+    "contact": "Elisabeth Dubois",
+    "siret": "23456789012345",
+    "specialites": ["Film Plastique", "Barquette"],
+    "isActive": true
+  },
+  {
+    "nom": "Cartons de France",
+    "adresse": "78 Avenue des Pyrénées",
+    "ville": "Tarbes",
+    "codePostal": "65000",
+    "telephone": "05 62 34 56 78",
+    "email": "commercial@cartons-france.fr",
+    "contact": "Michel Laurent",
+    "siret": "34567890123456",
+    "specialites": ["Carton", "Cagette"],
+    "isActive": true
+  },
+  {
+    "nom": "Eco-Emballages Nouvelle-Aquitaine",
+    "adresse": "90 Parc d'Activités",
+    "ville": "Limoges",
+    "codePostal": "87000",
+    "telephone": "05 55 12 34 56",
+    "email": "eco@emballages-na.fr",
+    "contact": "Catherine Moreau",
+    "siret": "45678901234567",
+    "specialites": ["Emballage Isotherme", "Sac Papier"],
+    "isActive": true
+  }
+]

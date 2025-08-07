@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { importProvidersFrom } from '@angular/core';
@@ -20,6 +20,7 @@ import {
   Factory,
   Layers,
   GalleryVerticalEnd,
+  Cpu,
   Search,
   LogOut,
   ChevronLeft,
@@ -35,7 +36,7 @@ import { loadingInterceptor } from './app/core/interceptors/loading.interceptor'
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(
       withInterceptors([
         authInterceptor,
@@ -61,6 +62,7 @@ bootstrapApplication(AppComponent, {
         Factory,
         Layers,
         GalleryVerticalEnd,
+        Cpu,
         Search,
         LogOut,
         ChevronLeft,

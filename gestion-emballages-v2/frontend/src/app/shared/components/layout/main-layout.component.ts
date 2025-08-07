@@ -1,9 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationStart, NavigationEnd } from '@angular/router';
 
 import { AuthService } from '@core/services/auth.service';
-import { HeaderComponent } from './header.component';
 import { SidebarComponent } from './sidebar.component';
 
 @Component({
@@ -12,40 +11,58 @@ import { SidebarComponent } from './sidebar.component';
   imports: [
     CommonModule,
     RouterOutlet,
-    HeaderComponent,
     SidebarComponent
   ],
   template: `
-    <div class="min-h-screen bg-gray-50">
-      <!-- Sidebar -->
-      <app-sidebar
-        [sidebarOpen]="sidebarOpen()"
-        [sidebarCollapsed]="sidebarCollapsed()"
-        (closeSidebar)="closeSidebar()"
-        (toggleSidebarCollapse)="toggleSidebarCollapse()">
-      </app-sidebar>
+    <div class="min-h-screen relative overflow-hidden bg-gray-50">
+      <!-- Animated gradient background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-gray-50 via-primary-50/30 to-accent-50/20 pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-sunshine-50/10 to-energy-50/10 pointer-events-none"></div>
+      
+      <!-- Content wrapper -->
+      <div class="relative z-10">
+        <!-- Sidebar -->
+        <app-sidebar
+          [sidebarOpen]="sidebarOpen()"
+          [sidebarCollapsed]="sidebarCollapsed()"
+          (closeSidebar)="closeSidebar()"
+          (toggleSidebarCollapse)="toggleSidebarCollapse()">
+        </app-sidebar>
 
-      <!-- Main Content -->
-      <div class="flex flex-col flex-1 transition-all duration-300"
-           [class]="getMainContentClasses()">
-        
-        <!-- Header -->
-        <app-header 
-          (menuClick)="toggleSidebar()">
-        </app-header>
+        <!-- Mobile header -->
+        <div class="sticky top-0 z-40 flex items-center gap-x-6 bg-white/95 backdrop-blur-sm px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+          <button
+            type="button"
+            class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+            (click)="toggleSidebar()">
+            <span class="sr-only">Ouvrir le menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+          <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">
+            Gestion Emballages
+          </div>
+        </div>
 
-        <!-- Page Content -->
-        <main class="flex-1 overflow-auto">
-          <div class="py-6">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Main Content -->
+        <div class="min-h-screen" [class]="getMainContentClasses()">
+          <main class="py-10 min-h-screen bg-gray-50">
+            <div class="px-4 sm:px-6 lg:px-8">
               <router-outlet></router-outlet>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   `,
-  styles: []
+  styles: [`
+    :host {
+      display: block;
+      min-height: 100vh;
+      background-color: #f9fafb;
+    }
+  `]
 })
 export class MainLayoutComponent {
   private authService = inject(AuthService);
@@ -66,9 +83,9 @@ export class MainLayoutComponent {
   }
 
   getMainContentClasses(): string {
-    // Desktop: adjust margin based on sidebar state
-    // Mobile: no margin adjustment needed
-    const desktopMargin = this.sidebarCollapsed() ? 'lg:ml-16' : 'lg:ml-72';
-    return desktopMargin;
+    // Desktop: adjust padding-left based on sidebar state (matching Vue.js)
+    // Mobile: no padding adjustment needed
+    const desktopPadding = this.sidebarCollapsed() ? 'lg:pl-16' : 'lg:pl-72';
+    return desktopPadding;
   }
 }

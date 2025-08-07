@@ -1,0 +1,86 @@
+[
+  {
+    "nomComplet": "System Administrator",
+    "email": "admin@embadif.com",
+    "password": "Claude-Whale2025!",
+    "role": "Admin",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Thomas Decoudun",
+    "email": "manager@dev.com",
+    "password": "Claude-Whale2025!",
+    "role": "Manager",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Nicole Lang",
+    "email": "nicole@embadif.com",
+    "password": "Claude-Whale2025!",
+    "role": "Gestionnaire",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Jean Martin",
+    "email": "j.martin@valdegaronne.com",
+    "password": "Claude-Whale2025!",
+    "role": "Station",
+    "entiteType": "Station",
+    "entiteRef": "Station Val-de-Garonne",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Marie Lebrun",
+    "email": "m.lebrun@coop-pyrenees.fr",
+    "password": "Claude-Whale2025!",
+    "role": "Station",
+    "entiteType": "Station",
+    "entiteRef": "Coopérative des Pyrénées",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Pierre Dubois",
+    "email": "p.dubois@agri-station.fr",
+    "password": "Claude-Whale2025!",
+    "role": "Station",
+    "entiteType": "Station",
+    "entiteRef": "Station Agricole Bordeaux",
+    "isActive": true
+  },
+  {
+    "nomComplet": "François Martinez",
+    "email": "f.martinez@emballages-so.fr",
+    "password": "Claude-Whale2025!",
+    "role": "Fournisseur",
+    "entiteType": "Fournisseur",
+    "entiteRef": "Emballages du Sud-Ouest",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Elisabeth Dubois",
+    "email": "e.dubois@plastiques-aquitaine.com",
+    "password": "Claude-Whale2025!",
+    "role": "Fournisseur",
+    "entiteType": "Fournisseur",
+    "entiteRef": "Plastiques Aquitaine",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Station Test",
+    "email": "station@test.com",
+    "password": "Claude-Whale2025!",
+    "role": "Station",
+    "entiteType": "Station",
+    "entiteRef": "Station Val-de-Garonne",
+    "isActive": true
+  },
+  {
+    "nomComplet": "Supplier Test",
+    "email": "supplier@test.com",
+    "password": "Claude-Whale2025!",
+    "role": "Fournisseur",
+    "entiteType": "Fournisseur",
+    "entiteRef": "Emballages du Sud-Ouest",
+    "isActive": true
+  }
+]

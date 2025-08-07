@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
+import { adminGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
   // Public routes
@@ -31,7 +32,8 @@ export const routes: Routes = [
       },
       {
         path: 'users',
-        loadChildren: () => import('./features/users/users.routes').then(m => m.usersRoutes)
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/users/user-list/user-list.component').then(c => c.UserListComponent)
       },
       {
         path: 'stations',
@@ -40,6 +42,11 @@ export const routes: Routes = [
       {
         path: 'fournisseurs',
         loadChildren: () => import('./features/fournisseurs/fournisseurs.routes').then(m => m.fournisseursRoutes)
+      },
+      {
+        path: 'platforms',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/platforms/platform-list/platform-list.component').then(c => c.PlatformListComponent)
       },
       {
         path: 'commandes',

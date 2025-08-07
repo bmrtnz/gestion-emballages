@@ -1,0 +1,36 @@
+[
+  {
+    "nom": "Plateforme Logistique Sud-Ouest",
+    "siret": "56789012345678",
+    "type": "Plateforme de distribution",
+    "specialites": ["Distribution générale", "Stockage sécurisé", "Logistique"],
+    "isActive": true,
+    "site": {
+      "nom": "Site Principal Toulouse",
+      "adresse": "150 Zone Industrielle Aerospace",
+      "ville": "Toulouse",
+      "codePostal": "31700",
+      "telephone": "05 61 89 12 34",
+      "email": "toulouse@plateforme-so.fr",
+      "isPrincipal": true,
+      "isActive": true
+    }
+  },
+  {
+    "nom": "Hub Emballages Nouvelle-Aquitaine",
+    "siret": "67890123456789",
+    "type": "Hub logistique",
+    "specialites": ["Conditionnement", "Cross-docking", "Stockage réfrigéré"],
+    "isActive": true,
+    "site": {
+      "nom": "Hub Central Bordeaux",
+      "adresse": "88 Port de la Lune",
+      "ville": "Bordeaux",
+      "codePostal": "33100",
+      "telephone": "05 56 78 45 67",
+      "email": "bordeaux@hub-emballages.fr",
+      "isPrincipal": true,
+      "isActive": true
+    }
+  }
+]

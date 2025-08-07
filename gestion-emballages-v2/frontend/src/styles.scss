@@ -1,3 +1,28 @@
+/* Critical styles - prevent flicker */
+html {
+  background-color: #f9fafb !important;
+}
+
+/* Ensure body always has background during all loading states */
+body {
+  background-color: #f9fafb !important;
+  min-height: 100vh;
+}
+
+/* App root container - ensure immediate background */
+app-root {
+  display: block;
+  min-height: 100vh;
+  background-color: #f9fafb !important;
+}
+
+/* Main layout should render immediately with background */
+app-main-layout {
+  display: block;
+  min-height: 100vh;
+  background-color: #f9fafb !important;
+}
+
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
@@ -5,12 +30,59 @@
 /* Global styles */
 html, body {
   height: 100%;
-  font-family: 'Poppins', 'Inter', sans-serif;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f9fafb;
 }
 
 body {
   margin: 0;
   @apply bg-gray-50 text-gray-900;
+}
+
+/* Router outlet container fix - enhanced */
+router-outlet {
+  display: none;
+}
+
+/* Ensure immediate background for all routed components */
+router-outlet + * {
+  display: block;
+  min-height: 100vh;
+  background-color: #f9fafb !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Prevent any flicker during route changes */
+.ng-star-inserted {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Ensure main content area always has background */
+main {
+  background-color: #f9fafb !important;
+}
+
+/* Prevent content shift during loading */
+.content-container {
+  min-height: calc(100vh - 80px);
+  background-color: #f9fafb !important;
+}
+
+/* All Angular components should have immediate background */
+[ng-version] {
+  background-color: #f9fafb;
+}
+
+/* Feature components background */
+app-user-list,
+app-platform-list,
+app-station-list,
+app-fournisseur-list {
+  display: block;
+  min-height: 100vh;
+  background-color: #f9fafb !important;
 }
 
 /* Custom scrollbar */
@@ -74,6 +146,10 @@ body {
   @apply bg-white rounded-lg shadow-sm border border-gray-200;
 }
 
+.shadow-soft {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
 .card-header {
   @apply px-6 py-4 border-b border-gray-200;
 }
@@ -98,6 +174,63 @@ body {
 /* Custom utilities */
 .text-shadow {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Poppins font optimizations */
+.text-poppins-display {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced typography scale for Poppins */
+.text-display-2xl {
+  font-size: 4.5rem;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.text-display-xl {
+  font-size: 3.75rem;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
+
+.text-display-lg {
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+.text-display {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+/* Optimized body text */
+.text-body-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 400;
+}
+
+.text-body {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+}
+
+.text-body-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
 }
 
 .glass {

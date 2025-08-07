@@ -54,16 +54,12 @@ export class UsersService {
     });
 
     const queryBuilder = this.userRepository
-      .createQueryBuilder('user')
-      .leftJoin(Station, 'station', 'user.entiteType = :stationType AND "user"."entite_id"::uuid = station.id', { stationType: EntityType.STATION })
-      .leftJoin(Fournisseur, 'fournisseur', 'user.entiteType = :fournisseurType AND "user"."entite_id"::uuid = fournisseur.id', { fournisseurType: EntityType.FOURNISSEUR })
-      .addSelect('station.nom', 'stationNom')
-      .addSelect('fournisseur.nom', 'fournisseurNom');
+      .createQueryBuilder('user');
 
-    // Add search functionality - include station and supplier names
+    // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(user.nomComplet ILIKE :search OR user.email ILIKE :search OR station.nom ILIKE :search OR fournisseur.nom ILIKE :search)',
+        '(user.nomComplet ILIKE :search OR user.email ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
@@ -91,7 +87,29 @@ export class UsersService {
       .skip(this.paginationService.getSkip(paginationOptions.page, paginationOptions.limit))
       .take(paginationOptions.limit);
 
-    const [data, total] = await queryBuilder.getManyAndCount();
+    const [users, total] = await queryBuilder.getManyAndCount();
+    
+    // Populate entity details for each user
+    const data = await Promise.all(users.map(async (user) => {
+      if (user.entiteType === EntityType.STATION && user.entiteId) {
+        const station = await this.stationRepository.findOne({
+          where: { id: user.entiteId },
+          select: ['id', 'nom', 'identifiantInterne']
+        });
+        if (station) {
+          (user as any).station = station;
+        }
+      } else if (user.entiteType === EntityType.FOURNISSEUR && user.entiteId) {
+        const fournisseur = await this.fournisseurRepository.findOne({
+          where: { id: user.entiteId },
+          select: ['id', 'nom', 'siret', 'type']
+        });
+        if (fournisseur) {
+          (user as any).fournisseur = fournisseur;
+        }
+      }
+      return user;
+    }));
 
     return this.paginationService.createPaginatedResponse(data, total, paginationOptions);
   }
@@ -103,6 +121,25 @@ export class UsersService {
 
     if (!user) {
       throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    // Populate entity details
+    if (user.entiteType === EntityType.STATION && user.entiteId) {
+      const station = await this.stationRepository.findOne({
+        where: { id: user.entiteId },
+        select: ['id', 'nom', 'identifiantInterne']
+      });
+      if (station) {
+        (user as any).station = station;
+      }
+    } else if (user.entiteType === EntityType.FOURNISSEUR && user.entiteId) {
+      const fournisseur = await this.fournisseurRepository.findOne({
+        where: { id: user.entiteId },
+        select: ['id', 'nom', 'siret', 'type']
+      });
+      if (fournisseur) {
+        (user as any).fournisseur = fournisseur;
+      }
     }
 
     return user;

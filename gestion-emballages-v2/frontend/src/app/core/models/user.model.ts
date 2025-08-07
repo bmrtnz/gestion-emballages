@@ -1,4 +1,5 @@
 export enum UserRole {
+  ADMIN = 'Admin',
   MANAGER = 'Manager',
   GESTIONNAIRE = 'Gestionnaire', 
   STATION = 'Station',
@@ -22,6 +23,7 @@ export interface User {
   updatedAt: Date;
   
   // Virtual properties
+  isAdmin: boolean;
   isManager: boolean;
   isGestionnaire: boolean;
   isStation: boolean;

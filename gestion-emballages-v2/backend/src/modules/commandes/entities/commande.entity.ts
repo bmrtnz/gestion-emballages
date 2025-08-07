@@ -3,6 +3,7 @@ import { BaseEntity } from '@common/entities/base.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 import { Station } from '@modules/stations/entities/station.entity';
 import { Fournisseur } from '@modules/fournisseurs/entities/fournisseur.entity';
+import { Platform } from '@modules/platforms/entities/platform.entity';
 import { User } from '@modules/users/entities/user.entity';
 import { CommandeGlobale } from './commande-globale.entity';
 import { CommandeArticle } from './commande-article.entity';
@@ -20,6 +21,12 @@ export class Commande extends BaseEntity {
 
   @Column({ name: 'fournisseur_id' })
   fournisseurId: string;
+
+  @Column({ name: 'platform_id', nullable: true })
+  platformId?: string;
+
+  @Column({ name: 'is_platform_delivery', default: false })
+  isPlatformDelivery: boolean;
 
   @Column({
     type: 'enum',
@@ -64,6 +71,10 @@ export class Commande extends BaseEntity {
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'created_by' })
   createdBy?: User;
+
+  @ManyToOne(() => Platform, (platform) => platform.commandesPlatform, { nullable: true })
+  @JoinColumn({ name: 'platform_id' })
+  platform?: Platform;
 
   @OneToMany(() => CommandeArticle, (commandeArticle) => commandeArticle.commande)
   commandeArticles: CommandeArticle[];

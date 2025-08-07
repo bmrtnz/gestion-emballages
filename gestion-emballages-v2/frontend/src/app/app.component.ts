@@ -19,7 +19,11 @@ import { NotificationComponent } from './shared/components/notification/notifica
     NotificationComponent
   ],
   template: `
-    <div class="min-h-screen bg-gray-50">
+    <!-- Persistent background layer -->
+    <div class="fixed inset-0 bg-gray-50"></div>
+    
+    <!-- Main app container -->
+    <div class="relative min-h-screen">
       <!-- Global Loading Spinner -->
       <app-loading-spinner 
         *ngIf="isLoading"
