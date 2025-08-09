@@ -5,15 +5,15 @@ import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
   StockStation,
-  StockFournisseur,
+  StockSupplier,
   CreateStockStationRequest,
   UpdateStockStationRequest,
   AdjustStockRequest,
-  CreateStockFournisseurRequest,
-  UpdateStockFournisseurRequest,
+  CreateStockSupplierRequest,
+  UpdateStockSupplierRequest,
   StockFilters,
   PaginatedStockStationsResponse,
-  PaginatedStockFournisseursResponse,
+  PaginatedStockSuppliersResponse,
   StockAnalytics,
   StockMovements,
   StockStatus
@@ -67,7 +67,7 @@ export class StockService {
   }
 
   // Supplier Stock Management
-  getStockFournisseurs(filters?: StockFilters): Observable<PaginatedStockFournisseursResponse> {
+  getStockSuppliers(filters?: StockFilters): Observable<PaginatedStockSuppliersResponse> {
     let params = new HttpParams();
     
     if (filters) {
@@ -79,27 +79,27 @@ export class StockService {
       });
     }
 
-    return this.http.get<PaginatedStockFournisseursResponse>(`${this.baseUrl}/fournisseurs`, { params });
+    return this.http.get<PaginatedStockSuppliersResponse>(`${this.baseUrl}/suppliers`, { params });
   }
 
-  getStockFournisseur(id: string): Observable<StockFournisseur> {
-    return this.http.get<StockFournisseur>(`${this.baseUrl}/fournisseurs/${id}`);
+  getStockSupplier(id: string): Observable<StockSupplier> {
+    return this.http.get<StockSupplier>(`${this.baseUrl}/suppliers/${id}`);
   }
 
-  getStockByFournisseurSiteAndArticle(fournisseurSiteId: string, articleId: string): Observable<StockFournisseur> {
-    return this.http.get<StockFournisseur>(`${this.baseUrl}/fournisseurs/by-location/${fournisseurSiteId}/article/${articleId}`);
+  getStockBySupplierSiteAndProduct(supplierSiteId: string, productId: string): Observable<StockSupplier> {
+    return this.http.get<StockSupplier>(`${this.baseUrl}/suppliers/by-location/${supplierSiteId}/product/${productId}`);
   }
 
-  createStockFournisseur(stock: CreateStockFournisseurRequest): Observable<StockFournisseur> {
-    return this.http.post<StockFournisseur>(`${this.baseUrl}/fournisseurs`, stock);
+  createStockSupplier(stock: CreateStockSupplierRequest): Observable<StockSupplier> {
+    return this.http.post<StockSupplier>(`${this.baseUrl}/suppliers`, stock);
   }
 
-  updateStockFournisseur(id: string, stock: UpdateStockFournisseurRequest): Observable<StockFournisseur> {
-    return this.http.patch<StockFournisseur>(`${this.baseUrl}/fournisseurs/${id}`, stock);
+  updateStockSupplier(id: string, stock: UpdateStockSupplierRequest): Observable<StockSupplier> {
+    return this.http.patch<StockSupplier>(`${this.baseUrl}/suppliers/${id}`, stock);
   }
 
-  deleteStockFournisseur(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/fournisseurs/${id}`);
+  deleteStockSupplier(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/suppliers/${id}`);
   }
 
   // Analytics and Reports
@@ -198,9 +198,9 @@ export class StockService {
   }
 
   getStockHealthPercentage(analytics: StockAnalytics): number {
-    if (analytics.totalArticles === 0) return 100;
+    if (analytics.totalProducts === 0) return 100;
     const healthyItems = analytics.stockStatus.normal;
-    return Math.round((healthyItems / analytics.totalArticles) * 100);
+    return Math.round((healthyItems / analytics.totalProducts) * 100);
   }
 
   getRecommendedOrderQuantity(stock: StockStation, averageConsumption?: number): number {

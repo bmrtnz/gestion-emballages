@@ -6,19 +6,19 @@ import { StockPlatform } from '@modules/stocks/entities/stock-platform.entity';
 @Entity('platform_sites')
 export class PlatformSite extends BaseEntity {
   @Column()
-  nom: string;
+  name: string;
 
   @Column({ nullable: true })
-  adresse?: string;
+  address?: string;
 
   @Column({ nullable: true })
-  ville?: string;
+  city?: string;
 
   @Column({ name: 'code_postal', nullable: true })
-  codePostal?: string;
+  postalCode?: string;
 
   @Column({ nullable: true })
-  telephone?: string;
+  phone?: string;
 
   @Column({ nullable: true })
   email?: string;
@@ -33,7 +33,7 @@ export class PlatformSite extends BaseEntity {
   platformId: string;
 
   // Relations
-  @ManyToOne(() => Platform, (platform) => platform.sites)
+  @ManyToOne(() => Platform)
   @JoinColumn({ name: 'platform_id' })
   platform: Platform;
 

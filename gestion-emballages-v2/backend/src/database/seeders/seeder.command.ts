@@ -36,7 +36,7 @@ if (command === '--help' || command === '-h') {
   - 4 Suppliers with sites
   - 9 Users (admin, managers, station users, supplier users)
   - 15 Articles (packaging items)
-  - Article-Supplier relationships with pricing
+  - Product-Supplier relationships with pricing
   - Initial stock data for stations
 
 🔐 Default Credentials:

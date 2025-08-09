@@ -17,8 +17,8 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { StocksService } from './stocks.service';
 import { CreateStockStationDto } from './dto/create-stock-station.dto';
 import { UpdateStockStationDto, AdjustStockDto } from './dto/update-stock-station.dto';
-import { CreateStockFournisseurDto } from './dto/create-stock-fournisseur.dto';
-import { UpdateStockFournisseurDto } from './dto/update-stock-fournisseur.dto';
+import { CreateStockSupplierDto } from './dto/create-stock-Supplier.dto';
+import { UpdateStockSupplierDto } from './dto/update-stock-Supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
@@ -61,8 +61,8 @@ export class StocksController {
     return this.stocksService.findOneStockStation(id);
   }
 
-  @Get('stations/by-location/:stationId/article/:articleId')
-  @ApiOperation({ summary: 'Get stock by station and article' })
+  @Get('stations/by-location/:stationId/Product/:articleId')
+  @ApiOperation({ summary: 'Get stock by station and Product' })
   @ApiResponse({ status: 200, description: 'Stock retrieved successfully' })
   async findStockByStationAndArticle(
     @Param('stationId') stationId: string,
@@ -108,8 +108,8 @@ export class StocksController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.SUPPLIER)
   @ApiOperation({ summary: 'Create supplier stock entry' })
   @ApiResponse({ status: 201, description: 'Supplier stock created successfully' })
-  async createStockFournisseur(@Body() createStockFournisseurDto: CreateStockFournisseurDto) {
-    return this.stocksService.createStockFournisseur(createStockFournisseurDto);
+  async createStockFournisseur(@Body() CreateStockSupplierDto: CreateStockSupplierDto) {
+    return this.stocksService.createStockFournisseur(CreateStockSupplierDto);
   }
 
   @Get('fournisseurs')
@@ -131,8 +131,8 @@ export class StocksController {
     return this.stocksService.findOneStockFournisseur(id);
   }
 
-  @Get('fournisseurs/by-location/:fournisseurSiteId/article/:articleId')
-  @ApiOperation({ summary: 'Get stock by supplier site and article' })
+  @Get('fournisseurs/by-location/:fournisseurSiteId/Product/:articleId')
+  @ApiOperation({ summary: 'Get stock by supplier site and Product' })
   @ApiResponse({ status: 200, description: 'Stock retrieved successfully' })
   async findStockByFournisseurSiteAndArticle(
     @Param('fournisseurSiteId') fournisseurSiteId: string,
@@ -147,9 +147,9 @@ export class StocksController {
   @ApiResponse({ status: 200, description: 'Supplier stock updated successfully' })
   async updateStockFournisseur(
     @Param('id') id: string,
-    @Body() updateStockFournisseurDto: UpdateStockFournisseurDto
+    @Body() UpdateStockSupplierDto: UpdateStockSupplierDto
   ) {
-    return this.stocksService.updateStockFournisseur(id, updateStockFournisseurDto);
+    return this.stocksService.updateStockFournisseur(id, UpdateStockSupplierDto);
   }
 
   @Delete('fournisseurs/:id')
@@ -183,7 +183,7 @@ export class StocksController {
 
   @Get('movements/:articleId')
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
-  @ApiOperation({ summary: 'Get stock movements for an article' })
+  @ApiOperation({ summary: 'Get stock movements for an Product' })
   @ApiResponse({ status: 200, description: 'Stock movements retrieved successfully' })
   async getStockMovements(
     @Param('articleId') articleId: string,

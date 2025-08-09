@@ -6,20 +6,20 @@ import { StationContact } from './entities/station-contact.entity';
 import { Station } from './entities/station.entity';
 
 export interface CreateStationContactDto {
-  nomComplet: string;
-  poste?: string;
-  telephone?: string;
+  fullName: string;
+  position?: string;
+  phone?: string;
   email?: string;
-  estPrincipal?: boolean;
+  isPrincipal?: boolean;
   stationId: string;
 }
 
 export interface UpdateStationContactDto {
-  nomComplet?: string;
-  poste?: string;
-  telephone?: string;
+  fullName?: string;
+  position?: string;
+  phone?: string;
   email?: string;
-  estPrincipal?: boolean;
+  isPrincipal?: boolean;
 }
 
 @Injectable()
@@ -42,7 +42,7 @@ export class StationContactsService {
     }
 
     // If this is to be the principal contact, ensure no other principal contact exists
-    if (createDto.estPrincipal) {
+    if (createDto.isPrincipal) {
       await this.ensureNoPrincipalContact(createDto.stationId);
     }
 
@@ -53,7 +53,7 @@ export class StationContactsService {
   async findByStation(stationId: string): Promise<StationContact[]> {
     return this.stationContactRepository.find({
       where: { stationId, isActive: true },
-      order: { estPrincipal: 'DESC', nomComplet: 'ASC' },
+      order: { isPrincipal: 'DESC', fullName: 'ASC' },
     });
   }
 
@@ -74,7 +74,7 @@ export class StationContactsService {
     const contact = await this.findOne(id);
 
     // If setting as principal contact, ensure no other principal contact exists
-    if (updateDto.estPrincipal && !contact.estPrincipal) {
+    if (updateDto.isPrincipal && !contact.isPrincipal) {
       await this.ensureNoPrincipalContact(contact.stationId, id);
     }
 
@@ -99,18 +99,18 @@ export class StationContactsService {
 
     // Remove principal status from other contacts in the same station
     await this.stationContactRepository.update(
-      { stationId: contact.stationId, estPrincipal: true },
-      { estPrincipal: false },
+      { stationId: contact.stationId, isPrincipal: true },
+      { isPrincipal: false },
     );
 
     // Set this contact as principal
-    contact.estPrincipal = true;
+    contact.isPrincipal = true;
     return this.stationContactRepository.save(contact);
   }
 
   async getPrincipalContact(stationId: string): Promise<StationContact | null> {
     return this.stationContactRepository.findOne({
-      where: { stationId, estPrincipal: true, isActive: true },
+      where: { stationId, isPrincipal: true, isActive: true },
     });
   }
 
@@ -118,7 +118,7 @@ export class StationContactsService {
     const queryBuilder = this.stationContactRepository
       .createQueryBuilder('contact')
       .where('contact.stationId = :stationId', { stationId })
-      .andWhere('contact.estPrincipal = :estPrincipal', { estPrincipal: true })
+      .andWhere('contact.isPrincipal = :estPrincipal', { isPrincipal: true })
       .andWhere('contact.isActive = :isActive', { isActive: true });
 
     if (excludeId) {

@@ -8,6 +8,7 @@ import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { UserService, UserFilters, PaginatedUsersResponse } from '@core/services/user.service';
 import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
+import { LoadingService } from '@core/services/loading.service';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
 import { UserListSkeletonComponent } from '@shared/components/ui/user-list-skeleton.component';
 import { ButtonComponent } from '@shared/components/ui/button.component';
@@ -121,30 +122,26 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
         </div>
       </div>
 
-      <!-- Progressive content loading -->
+      <!-- Content with skeleton -->
       <ng-container *ngIf="!initialLoading(); else skeleton">
-        <!-- Loading State for subsequent loads -->
-        <div *ngIf="loading()" class="flex justify-center py-12">
-          <app-loading-spinner size="lg" [message]="'common.loading' | transloco"></app-loading-spinner>
-        </div>
-
+        
         <!-- Users Table -->
-        <div *ngIf="!loading()" class="overflow-hidden">
+        <div class="overflow-hidden">
         
         <!-- Pagination Controls -->
-        <div *ngIf="paginatedResponse() && paginatedResponse()!.totalPages > 1" 
+        <div *ngIf="users().length > 0" 
              class="flex items-center justify-between border-b border-gray-200 px-6 py-2">
           
           <!-- Mobile pagination (Previous/Next only) -->
           <div class="flex flex-1 justify-between sm:hidden">
             <button
-              [disabled]="!paginatedResponse()?.hasPreviousPage"
+              [disabled]="!paginatedResponse()?.hasPreviousPage || (paginatedResponse()?.totalPages || 0) <= 1"
               (click)="goToPage(currentPage() - 1)"
               class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-0.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
               {{ 'pagination.previous' | transloco }}
             </button>
             <button
-              [disabled]="!paginatedResponse()?.hasNextPage"
+              [disabled]="!paginatedResponse()?.hasNextPage || (paginatedResponse()?.totalPages || 0) <= 1"
               (click)="goToPage(currentPage() + 1)"
               class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-0.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
               {{ 'pagination.next' | transloco }}
@@ -180,7 +177,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
               <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
                 <!-- Previous Page -->
                 <button
-                  [disabled]="!paginatedResponse()?.hasPreviousPage"
+                  [disabled]="!paginatedResponse()?.hasPreviousPage || (paginatedResponse()?.totalPages || 0) <= 1"
                   (click)="goToPage(currentPage() - 1)"
                   class="relative inline-flex items-center rounded-l-md px-2 py-0.5 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
                   <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -191,14 +188,15 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                 <!-- Page Numbers -->
                 <button
                   *ngFor="let page of getVisiblePages(); trackBy: trackByPage"
-                  (click)="goToPage(page)"
+                  (click)="(paginatedResponse()?.totalPages || 0) > 1 ? goToPage(page) : null"
+                  [disabled]="(paginatedResponse()?.totalPages || 0) <= 1"
                   [class]="getPageButtonClass(page)">
                   {{ page }}
                 </button>
                 
                 <!-- Next Page -->
                 <button
-                  [disabled]="!paginatedResponse()?.hasNextPage"
+                  [disabled]="!paginatedResponse()?.hasNextPage || (paginatedResponse()?.totalPages || 0) <= 1"
                   (click)="goToPage(currentPage() + 1)"
                   class="relative inline-flex items-center rounded-r-md px-2 py-0.5 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
                   <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -395,10 +393,15 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
       </div>
 
       </ng-container>
-      
+
+      <!-- Skeleton Loading Template -->
       <ng-template #skeleton>
-        <app-user-list-skeleton></app-user-list-skeleton>
+        <app-user-list-skeleton
+          [showFilters]="showFilters()"
+          [rowCount]="5">
+        </app-user-list-skeleton>
       </ng-template>
+
     </div> <!-- Close space-y-6 wrapper -->
 
     <!-- Add User Slide Panel -->
@@ -437,6 +440,7 @@ export class UserListComponent implements OnInit {
   public authService = inject(AuthService);
   private notificationService = inject(NotificationService);
   private translocoService = inject(TranslocoService);
+  private loadingService = inject(LoadingService);
 
   // Reactive state
   public loading = signal(false);
@@ -490,11 +494,6 @@ export class UserListComponent implements OnInit {
   private searchTimeout: any;
 
   ngOnInit() {
-    // Set a minimal delay to ensure smooth transition and prevent flicker
-    setTimeout(() => {
-      this.loadUsers();
-    }, 50);
-    
     // Subscribe to form changes to update the signal
     this.searchForm.valueChanges.subscribe(values => {
       this.formValues.set({
@@ -503,10 +502,16 @@ export class UserListComponent implements OnInit {
         role: values.role || ''
       });
     });
+
+    // Initial load with skeleton loading
+    this.loadUsers();
   }
 
   loadUsers() {
-    this.loading.set(true);
+    // Only show loading spinner on subsequent loads, not initial load
+    if (!this.initialLoading()) {
+      this.loading.set(true);
+    }
     
     const filters: UserFilters = {
       page: this.currentPage(),
@@ -521,12 +526,22 @@ export class UserListComponent implements OnInit {
         this.users.set(response.data);
         this.paginatedResponse.set(response);
         this.loading.set(false);
-        this.initialLoading.set(false); // Critical: set after data loads
+        
+        // Mark initial loading as complete
+        if (this.initialLoading()) {
+          this.loadingService.markInitialLoadComplete();
+          this.initialLoading.set(false);
+        }
       },
       error: (error) => {
         console.error('Error loading users:', error);
         this.loading.set(false);
-        this.initialLoading.set(false);
+        
+        // Mark initial loading as complete even on error
+        if (this.initialLoading()) {
+          this.loadingService.markInitialLoadComplete();
+          this.initialLoading.set(false);
+        }
       }
     });
   }
@@ -559,6 +574,8 @@ export class UserListComponent implements OnInit {
       status: 'active',
       role: ''
     });
+    // Collapse the filter panel automatically
+    this.showFilters.set(false);
     this.currentPage.set(1);
     this.loadUsers();
   }
@@ -582,6 +599,11 @@ export class UserListComponent implements OnInit {
     const delta = 2;
     const range = [];
     
+    // Always show at least page 1
+    if (totalPages === 0) {
+      return [1];
+    }
+    
     for (let i = Math.max(2, current - delta); i <= Math.min(totalPages - 1, current + delta); i++) {
       range.push(i);
     }
@@ -598,6 +620,9 @@ export class UserListComponent implements OnInit {
       if (totalPages > 1) {
         range.push(totalPages);
       }
+    } else {
+      // Show page 1 even when totalPages is 1
+      range.unshift(1);
     }
     
     return range.filter((v, i, arr) => arr.indexOf(v) === i && v > 0);

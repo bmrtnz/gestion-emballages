@@ -25,22 +25,13 @@ services:
     minio:
         image: minio/minio:latest
         ports:
-            - "9000:9000" # API
-            - "9001:9001" # Console Web
+            - "9100:91000" # API
+            - "9101:9101" # Console Web
         env_file:
             - ./backend/.env
         command: server /data --console-address ":9001"
         volumes:
             - minio-data:/data
-
-    # Service pour MailCatcher (développement email)
-    mailcatcher:
-        image: schickling/mailcatcher
-        container_name: gestion-emballages-mailcatcher
-        ports:
-            - "1025:1025"  # Port SMTP pour l'application
-            - "1080:1080"  # Interface web pour voir les emails
-        restart: unless-stopped
 
 volumes:
     mongo-data:

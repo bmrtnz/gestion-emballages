@@ -34,10 +34,10 @@ export class DataIntegrityService {
       case 'station':
         checks.push(...await this.checkStationReferences(entityId));
         break;
-      case 'fournisseur':
+      case 'Supplier':
         checks.push(...await this.checkFournisseurReferences(entityId));
         break;
-      case 'article':
+      case 'Product':
         checks.push(...await this.checkArticleReferences(entityId));
         break;
       case 'user':
@@ -126,7 +126,7 @@ export class DataIntegrityService {
     // Check users
     const userCount = await this.dataSource.query(
       'SELECT COUNT(*) as count FROM users WHERE "entiteId" = $1 AND "entiteType" = $2',
-      [fournisseurId, 'Fournisseur']
+      [fournisseurId, 'Supplier']
     );
     checks.push({
       entity: 'users',
@@ -134,7 +134,7 @@ export class DataIntegrityService {
       references: ['Users assigned to this supplier']
     });
 
-    // Check article-fournisseur relationships
+    // Check Product-Supplier relationships
     const articleCount = await this.dataSource.query(
       'SELECT COUNT(*) as count FROM article_fournisseurs WHERE "fournisseurId" = $1',
       [fournisseurId]
@@ -156,7 +156,7 @@ export class DataIntegrityService {
       references: ['Orders placed with this supplier']
     });
 
-    // Check fournisseur sites
+    // Check Supplier sites
     const siteCount = await this.dataSource.query(
       'SELECT COUNT(*) as count FROM fournisseur_sites WHERE "fournisseurId" = $1',
       [fournisseurId]
@@ -173,7 +173,7 @@ export class DataIntegrityService {
   private async checkArticleReferences(articleId: string): Promise<DataIntegrityCheck[]> {
     const checks: DataIntegrityCheck[] = [];
 
-    // Check article-fournisseur relationships
+    // Check Product-Supplier relationships
     const supplierCount = await this.dataSource.query(
       'SELECT COUNT(*) as count FROM article_fournisseurs WHERE "articleId" = $1',
       [articleId]
@@ -181,7 +181,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'article_fournisseurs',
       count: parseInt(supplierCount[0].count),
-      references: ['Supplier relationships for this article']
+      references: ['Supplier relationships for this Product']
     });
 
     // Check order items
@@ -192,7 +192,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'commande_items',
       count: parseInt(orderItemCount[0].count),
-      references: ['Order items containing this article']
+      references: ['Order items containing this Product']
     });
 
     // Check stock stations
@@ -203,7 +203,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'stock_stations',
       count: parseInt(stockStationCount[0].count),
-      references: ['Station stock records for this article']
+      references: ['Station stock records for this Product']
     });
 
     // Check platform stock
@@ -214,7 +214,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'stocks_platform',
       count: parseInt(stockPlatformCount[0].count),
-      references: ['Platform stock records for this article']
+      references: ['Platform stock records for this Product']
     });
 
     return checks;
@@ -354,14 +354,14 @@ export class DataIntegrityService {
         await queryRunner.query('DELETE FROM demandes_transfert WHERE "stationSourceId" = $1 OR "stationDestinationId" = $1', [entityId]);
         break;
       
-      case 'fournisseur':
+      case 'Supplier':
         // Delete supplier-related data (but keep historical orders)
         await queryRunner.query('DELETE FROM article_fournisseurs WHERE "fournisseurId" = $1', [entityId]);
         await queryRunner.query('DELETE FROM fournisseur_sites WHERE "fournisseurId" = $1', [entityId]);
         break;
       
-      case 'article':
-        // Delete article-related data (but keep historical order items)
+      case 'Product':
+        // Delete Product-related data (but keep historical order items)
         await queryRunner.query('DELETE FROM article_fournisseurs WHERE "articleId" = $1', [entityId]);
         await queryRunner.query('DELETE FROM stock_stations WHERE "articleId" = $1', [entityId]);
         await queryRunner.query('DELETE FROM stocks_platform WHERE "articleId" = $1', [entityId]);
@@ -374,8 +374,8 @@ export class DataIntegrityService {
   private async deleteMainEntity(entityType: string, entityId: string, queryRunner: any): Promise<void> {
     const tableMap = {
       'station': 'stations',
-      'fournisseur': 'fournisseurs',
-      'article': 'articles',
+      'Supplier': 'fournisseurs',
+      'Product': 'articles',
       'user': 'users'
     };
 

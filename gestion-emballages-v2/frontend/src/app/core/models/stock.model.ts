@@ -1,12 +1,12 @@
 import { Station } from './station.model';
-import { Article } from './article.model';
+import { Product } from './product.model';
 import { User } from './user.model';
-import { FournisseurSite } from './fournisseur.model';
+import { SupplierSite } from './supplier.model';
 
 export interface StockStation {
   id: string;
   stationId: string;
-  articleId: string;
+  productId: string;
   quantiteActuelle: number;
   seuilAlerte?: number;
   seuilCritique?: number;
@@ -17,28 +17,28 @@ export interface StockStation {
 
   // Relations
   station: Station;
-  article: Article;
+  product: Product;
   updatedBy?: User;
 }
 
-export interface StockFournisseur {
+export interface StockSupplier {
   id: string;
-  fournisseurSiteId: string;
-  articleId: string;
+  supplierSiteId: string;
+  productId: string;
   quantiteDisponible: number;
   derniereMiseAJour: Date;
   createdAt: Date;
   updatedAt: Date;
 
   // Relations
-  fournisseurSite: FournisseurSite;
-  article: Article;
+  supplierSite: SupplierSite;
+  product: Product;
 }
 
 // Request/Response interfaces
 export interface CreateStockStationRequest {
   stationId: string;
-  articleId: string;
+  productId: string;
   quantiteActuelle: number;
   seuilAlerte?: number;
   seuilCritique?: number;
@@ -55,13 +55,13 @@ export interface AdjustStockRequest {
   raison?: string;
 }
 
-export interface CreateStockFournisseurRequest {
-  fournisseurSiteId: string;
-  articleId: string;
+export interface CreateStockSupplierRequest {
+  supplierSiteId: string;
+  productId: string;
   quantiteDisponible: number;
 }
 
-export interface UpdateStockFournisseurRequest {
+export interface UpdateStockSupplierRequest {
   quantiteDisponible?: number;
 }
 
@@ -72,8 +72,8 @@ export interface StockFilters {
   sortBy?: string;
   sortOrder?: 'ASC' | 'DESC';
   stationId?: string;
-  fournisseurId?: string;
-  articleId?: string;
+  supplierId?: string;
+  productId?: string;
   lowStock?: boolean;
   criticalStock?: boolean;
   availableOnly?: boolean;
@@ -89,8 +89,8 @@ export interface PaginatedStockStationsResponse {
   hasPreviousPage: boolean;
 }
 
-export interface PaginatedStockFournisseursResponse {
-  data: StockFournisseur[];
+export interface PaginatedStockSuppliersResponse {
+  data: StockSupplier[];
   total: number;
   page: number;
   limit: number;
@@ -100,7 +100,7 @@ export interface PaginatedStockFournisseursResponse {
 }
 
 export interface StockAnalytics {
-  totalArticles: number;
+  totalProducts: number;
   lowStockItems: number;
   criticalStockItems: number;
   outOfStockItems: number;
@@ -124,7 +124,7 @@ export interface StockMovement {
 }
 
 export interface StockMovements {
-  articleId: string;
+  productId: string;
   stationId?: string;
   movements: StockMovement[];
   period: string;

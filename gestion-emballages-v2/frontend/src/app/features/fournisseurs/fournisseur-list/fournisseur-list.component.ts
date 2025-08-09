@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { Fournisseur, FournisseurFilters } from '../../../core/models/fournisseur.model';
-import { FournisseurService } from '../../../core/services/fournisseur.service';
+import { Supplier, SupplierFilters } from '../../../core/models/supplier.model';
+import { SupplierService } from '../../../core/services/supplier.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingService } from '../../../core/services/loading.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -20,7 +20,7 @@ import { UserRole } from '../../../core/models/user.model';
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold text-gray-900">Gestion des Fournisseurs</h1>
         <button 
-          *ngIf="canCreateFournisseur()"
+          *ngIf="canCreateSupplier()"
           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           [routerLink]="['/fournisseurs/nouveau']">
           Nouveau Fournisseur
@@ -74,7 +74,7 @@ import { UserRole } from '../../../core/models/user.model';
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Spécialité</label>
               <select 
-                [(ngModel)]="filters.specialite"
+                [(ngModel)]="filters.specialty"
                 (change)="applyFilters()"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 <option value="">Toutes</option>
@@ -158,49 +158,49 @@ import { UserRole } from '../../../core/models/user.model';
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let fournisseur of fournisseurs()" class="hover:bg-gray-50">
+            <tr *ngFor="let supplier of suppliers()" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div>
-                  <div class="text-sm font-medium text-gray-900">{{ fournisseur.nom }}</div>
-                  <div class="text-sm text-gray-500">{{ fournisseur.ville }}</div>
+                  <div class="text-sm font-medium text-gray-900">{{ supplier.name }}</div>
+                  <div class="text-sm text-gray-500">{{ supplier.type }}</div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ fournisseur.siret }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ supplier.siret }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ fournisseur.contact }}</div>
-                <div class="text-sm text-gray-500">{{ fournisseur.email }}</div>
+                <div class="text-sm text-gray-900">{{ supplier.contacts?.[0]?.fullName }}</div>
+                <div class="text-sm text-gray-500">{{ supplier.contacts?.[0]?.email }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex flex-wrap gap-1">
-                  <span *ngFor="let specialite of fournisseur.specialites" 
+                  <span *ngFor="let specialty of supplier.specialties" 
                         class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                    {{ specialite }}
+                    {{ specialty }}
                   </span>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="getStatusBadgeClass(fournisseur.isActive)">
-                  {{ fournisseur.isActive ? 'Actif' : 'Inactif' }}
+                <span [class]="getStatusBadgeClass(supplier.isActive)">
+                  {{ supplier.isActive ? 'Actif' : 'Inactif' }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
                   <button 
-                    [routerLink]="['/fournisseurs', fournisseur.id]"
+                    [routerLink]="['/fournisseurs', supplier.id]"
                     class="text-blue-600 hover:text-blue-900">
                     Voir
                   </button>
                   <button 
-                    *ngIf="canEditFournisseur()"
-                    [routerLink]="['/fournisseurs', fournisseur.id, 'modifier']"
+                    *ngIf="canEditSupplier()"
+                    [routerLink]="['/fournisseurs', supplier.id, 'modifier']"
                     class="text-green-600 hover:text-green-900">
                     Modifier
                   </button>
                   <button 
                     *ngIf="canToggleStatus()"
-                    (click)="toggleStatus(fournisseur)"
-                    [class]="fournisseur.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'">
-                    {{ fournisseur.isActive ? 'Désactiver' : 'Activer' }}
+                    (click)="toggleStatus(supplier)"
+                    [class]="supplier.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'">
+                    {{ supplier.isActive ? 'Désactiver' : 'Activer' }}
                   </button>
                 </div>
               </td>
@@ -211,28 +211,28 @@ import { UserRole } from '../../../core/models/user.model';
 
       <!-- Mobile Cards -->
       <div *ngIf="!loading()" class="md:hidden space-y-4">
-        <div *ngFor="let fournisseur of fournisseurs()" 
+        <div *ngFor="let supplier of suppliers()" 
              class="bg-white p-4 rounded-lg shadow border border-gray-200">
           <div class="flex items-start justify-between mb-3">
             <div>
-              <h3 class="font-medium text-gray-900">{{ fournisseur.nom }}</h3>
-              <p class="text-sm text-gray-500">{{ fournisseur.ville }}</p>
+              <h3 class="font-medium text-gray-900">{{ supplier.name }}</h3>
+              <p class="text-sm text-gray-500">{{ supplier.type }}</p>
             </div>
-            <span [class]="getStatusBadgeClass(fournisseur.isActive)">
-              {{ fournisseur.isActive ? 'Actif' : 'Inactif' }}
+            <span [class]="getStatusBadgeClass(supplier.isActive)">
+              {{ supplier.isActive ? 'Actif' : 'Inactif' }}
             </span>
           </div>
           
           <div class="space-y-2 text-sm">
-            <div><span class="font-medium">SIRET:</span> {{ fournisseur.siret }}</div>
-            <div *ngIf="fournisseur.contact"><span class="font-medium">Contact:</span> {{ fournisseur.contact }}</div>
-            <div *ngIf="fournisseur.email"><span class="font-medium">Email:</span> {{ fournisseur.email }}</div>
-            <div *ngIf="fournisseur.specialites.length > 0">
+            <div><span class="font-medium">SIRET:</span> {{ supplier.siret }}</div>
+            <div *ngIf="supplier.contacts?.[0]?.fullName"><span class="font-medium">Contact:</span> {{ supplier.contacts?.[0]?.fullName }}</div>
+            <div *ngIf="supplier.contacts?.[0]?.email"><span class="font-medium">Email:</span> {{ supplier.contacts?.[0]?.email }}</div>
+            <div *ngIf="supplier.specialties.length > 0">
               <span class="font-medium">Spécialités:</span>
               <div class="flex flex-wrap gap-1 mt-1">
-                <span *ngFor="let specialite of fournisseur.specialites" 
+                <span *ngFor="let specialty of supplier.specialties" 
                       class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                  {{ specialite }}
+                  {{ specialty }}
                 </span>
               </div>
             </div>
@@ -240,34 +240,34 @@ import { UserRole } from '../../../core/models/user.model';
           
           <div class="flex items-center justify-end space-x-3 mt-4 pt-3 border-t border-gray-200">
             <button 
-              [routerLink]="['/fournisseurs', fournisseur.id]"
+              [routerLink]="['/fournisseurs', supplier.id]"
               class="text-blue-600 hover:text-blue-900 text-sm">
               Voir
             </button>
             <button 
-              *ngIf="canEditFournisseur()"
-              [routerLink]="['/fournisseurs', fournisseur.id, 'modifier']"
+              *ngIf="canEditSupplier()"
+              [routerLink]="['/fournisseurs', supplier.id, 'modifier']"
               class="text-green-600 hover:text-green-900 text-sm">
               Modifier
             </button>
             <button 
               *ngIf="canToggleStatus()"
-              (click)="toggleStatus(fournisseur)"
-              [class]="fournisseur.isActive ? 'text-red-600 hover:text-red-900 text-sm' : 'text-green-600 hover:text-green-900 text-sm'">
-              {{ fournisseur.isActive ? 'Désactiver' : 'Activer' }}
+              (click)="toggleStatus(supplier)"
+              [class]="supplier.isActive ? 'text-red-600 hover:text-red-900 text-sm' : 'text-green-600 hover:text-green-900 text-sm'">
+              {{ supplier.isActive ? 'Désactiver' : 'Activer' }}
             </button>
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="!loading() && fournisseurs().length === 0" class="text-center py-12">
+      <div *ngIf="!loading() && suppliers().length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-4 0H3m2 0h3M9 7h6m-6 4h6m-6 4h6"/>
         </svg>
         <p class="mt-4 text-gray-500">Aucun fournisseur trouvé</p>
         <button 
-          *ngIf="canCreateFournisseur()"
+          *ngIf="canCreateSupplier()"
           [routerLink]="['/fournisseurs/nouveau']"
           class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
           Créer le premier fournisseur
@@ -276,9 +276,9 @@ import { UserRole } from '../../../core/models/user.model';
     </div>
   `
 })
-export class FournisseurListComponent implements OnInit {
+export class SupplierListComponent implements OnInit {
   // Signals
-  fournisseurs = signal<Fournisseur[]>([]);
+  suppliers = signal<Supplier[]>([]);
   loading = signal(false);
   showFilters = signal(false);
   currentPage = signal(1);
@@ -288,21 +288,21 @@ export class FournisseurListComponent implements OnInit {
 
   // Filter state
   searchQuery = '';
-  filters: FournisseurFilters = {
+  filters: SupplierFilters = {
     page: 1,
     limit: 10,
     search: '',
-    sortBy: 'nom',
+    sortBy: 'name',
     sortOrder: 'ASC',
     status: '',
-    specialite: ''
+    specialty: ''
   };
 
   // Computed
   activeFiltersCount = computed(() => {
     let count = 0;
     if (this.filters.status) count++;
-    if (this.filters.specialite) count++;
+    if (this.filters.specialty) count++;
     return count;
   });
 
@@ -312,21 +312,21 @@ export class FournisseurListComponent implements OnInit {
   Math = Math;
 
   constructor(
-    private fournisseurService: FournisseurService,
+    private supplierService: SupplierService,
     private authService: AuthService,
     private loadingService: LoadingService,
     private toastService: ToastService
   ) {}
 
   ngOnInit() {
-    this.loadFournisseurs();
+    this.loadSuppliers();
   }
 
-  async loadFournisseurs() {
+  async loadSuppliers() {
     this.loading.set(true);
     try {
-      const response = await this.fournisseurService.getFournisseurs(this.filters);
-      this.fournisseurs.set(response.data);
+      const response = await this.supplierService.getSuppliers(this.filters);
+      this.suppliers.set(response.data);
       this.totalPages.set(response.totalPages);
       this.totalItems.set(response.total);
       this.currentPage.set(response.page);
@@ -344,13 +344,13 @@ export class FournisseurListComponent implements OnInit {
     this.searchTimeout = setTimeout(() => {
       this.filters.search = this.searchQuery;
       this.filters.page = 1;
-      this.loadFournisseurs();
+      this.loadSuppliers();
     }, 300);
   }
 
   applyFilters() {
     this.filters.page = 1;
-    this.loadFournisseurs();
+    this.loadSuppliers();
   }
 
   clearFilters() {
@@ -359,12 +359,12 @@ export class FournisseurListComponent implements OnInit {
       page: 1,
       limit: 10,
       search: '',
-      sortBy: 'nom',
+      sortBy: 'name',
       sortOrder: 'ASC',
       status: '',
-      specialite: ''
+      specialty: ''
     };
-    this.loadFournisseurs();
+    this.loadSuppliers();
   }
 
   toggleSort(field: string) {
@@ -374,13 +374,13 @@ export class FournisseurListComponent implements OnInit {
       this.filters.sortBy = field;
       this.filters.sortOrder = 'ASC';
     }
-    this.loadFournisseurs();
+    this.loadSuppliers();
   }
 
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages()) {
       this.filters.page = page;
-      this.loadFournisseurs();
+      this.loadSuppliers();
     }
   }
 
@@ -389,7 +389,7 @@ export class FournisseurListComponent implements OnInit {
     this.itemsPerPage.set(parseInt(target.value));
     this.filters.limit = parseInt(target.value);
     this.filters.page = 1;
-    this.loadFournisseurs();
+    this.loadSuppliers();
   }
 
   getVisiblePages(): number[] {
@@ -424,16 +424,16 @@ export class FournisseurListComponent implements OnInit {
     return pages;
   }
 
-  async toggleStatus(fournisseur: Fournisseur) {
+  async toggleStatus(supplier: Supplier) {
     try {
-      if (fournisseur.isActive) {
-        await this.fournisseurService.deactivateFournisseur(fournisseur.id);
+      if (supplier.isActive) {
+        await this.supplierService.deactivateSupplier(supplier.id);
         this.toastService.success('Fournisseur désactivé avec succès');
       } else {
-        await this.fournisseurService.reactivateFournisseur(fournisseur.id);
+        await this.supplierService.reactivateSupplier(supplier.id);
         this.toastService.success('Fournisseur réactivé avec succès');
       }
-      this.loadFournisseurs();
+      this.loadSuppliers();
     } catch (error) {
       this.toastService.error('Erreur lors de la modification du statut');
     }
@@ -446,12 +446,12 @@ export class FournisseurListComponent implements OnInit {
   }
 
   // Permission methods
-  canCreateFournisseur(): boolean {
+  canCreateSupplier(): boolean {
     const user = this.authService.currentUser();
     return user?.role === UserRole.MANAGER || user?.role === UserRole.HANDLER;
   }
 
-  canEditFournisseur(): boolean {
+  canEditSupplier(): boolean {
     const user = this.authService.currentUser();
     return user?.role === UserRole.MANAGER || user?.role === UserRole.HANDLER;
   }

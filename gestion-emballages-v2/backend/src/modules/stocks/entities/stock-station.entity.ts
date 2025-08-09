@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { Station } from '@modules/stations/entities/station.entity';
-import { Article } from '@modules/articles/entities/article.entity';
+import { Product } from '@modules/products/entities/product.entity';
 import { User } from '@modules/users/entities/user.entity';
 
 @Entity('stock_stations')
@@ -10,7 +10,7 @@ export class StockStation extends BaseEntity {
   @Column({ name: 'station_id' })
   stationId: string;
 
-  @Column({ name: 'article_id' })
+  @Column({ name: 'product_id' })
   articleId: string;
 
   @Column({ name: 'quantite_actuelle', default: 0 })
@@ -33,9 +33,9 @@ export class StockStation extends BaseEntity {
   @JoinColumn({ name: 'station_id' })
   station: Station;
 
-  @ManyToOne(() => Article, (article) => article.stocksStation)
-  @JoinColumn({ name: 'article_id' })
-  article: Article;
+  @ManyToOne(() => Product, (product) => product.stocksStation)
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
 
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'updated_by' })

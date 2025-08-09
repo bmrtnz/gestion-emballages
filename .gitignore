@@ -1,6 +1,9 @@
 # Fichiers système
 .DS_Store
 npm-debug.log
+.claude
+.vscode
+/frontend/.vscode
 
 # Dossiers de dépendances
 /backend/node_modules

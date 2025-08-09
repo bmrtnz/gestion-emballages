@@ -5,6 +5,6 @@ export const articlesRoutes: Routes = [
   {
     path: '',
     canActivate: [adminGuard],
-    loadComponent: () => import('./article-list/article-list.component').then(c => c.ArticleListComponent)
+    loadComponent: () => import('./article-list/article-list.component').then(c => c.ProductListComponent)
   }
 ];

@@ -1,25 +1,41 @@
 export interface Station {
   id: string;
-  nom: string;
-  adresse: string;
-  ville: string;
-  codePostal: string;
-  telephone?: string;
-  email?: string;
-  contact?: string;
+  name: string;
+  internalId?: string;
+  address: {
+    street?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  groupId?: string;
+  mainContact: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  createdById?: string;
+  updatedById?: string;
 }
 
 export interface CreateStationRequest {
-  nom: string;
-  adresse: string;
-  ville: string;
-  codePostal: string;
-  telephone?: string;
-  email?: string;
-  contact?: string;
+  name: string;
+  internalId?: string;
+  address: {
+    street?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  groupId?: string;
+  mainContact: {
+    name?: string;
+    phone?: string;
+    email?: string;
+  };
 }
 
 export interface UpdateStationRequest extends Partial<CreateStationRequest> {}

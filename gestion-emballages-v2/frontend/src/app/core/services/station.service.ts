@@ -64,11 +64,8 @@ export class StationService {
   }
 
   async getActiveStations(): Promise<Station[]> {
-    const params = new HttpParams()
-      .set('status', 'active')
-      .set('limit', '1000'); // Get all active stations
-
-    const response = await this.getStations({ status: 'active', limit: 1000 });
-    return response.data;
+    return firstValueFrom(
+      this.http.get<Station[]>(`${this.baseUrl}/active`)
+    );
   }
 }

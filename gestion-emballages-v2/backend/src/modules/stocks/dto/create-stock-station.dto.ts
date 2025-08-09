@@ -6,7 +6,7 @@ export class CreateStockStationDto {
   @IsUUID()
   stationId: string;
 
-  @ApiProperty({ description: 'Article ID' })
+  @ApiProperty({ description: 'Product ID' })
   @IsUUID()
   articleId: string;
 

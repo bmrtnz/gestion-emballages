@@ -3,11 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 
 import { StockStation } from './entities/stock-station.entity';
-import { StockFournisseur } from './entities/stock-fournisseur.entity';
+import { StockSupplier } from './entities/stock-supplier.entity';
 import { CreateStockStationDto } from './dto/create-stock-station.dto';
 import { UpdateStockStationDto, AdjustStockDto } from './dto/update-stock-station.dto';
-import { CreateStockFournisseurDto } from './dto/create-stock-fournisseur.dto';
-import { UpdateStockFournisseurDto } from './dto/update-stock-fournisseur.dto';
+import { CreateStockSupplierDto } from './dto/create-stock-supplier.dto';
+import { UpdateStockSupplierDto } from './dto/update-stock-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService } from '@common/services/pagination.service';
 
@@ -16,8 +16,8 @@ export class StocksService {
   constructor(
     @InjectRepository(StockStation)
     private stockStationRepository: Repository<StockStation>,
-    @InjectRepository(StockFournisseur)
-    private stockFournisseurRepository: Repository<StockFournisseur>,
+    @InjectRepository(StockSupplier)
+    private stockFournisseurRepository: Repository<StockSupplier>,
     private dataSource: DataSource,
     private paginationService: PaginationService,
   ) {}
@@ -33,7 +33,7 @@ export class StocksService {
     });
 
     if (existingStock) {
-      throw new BadRequestException('Un stock existe déjà pour cet article dans cette station');
+      throw new BadRequestException('Un stock existe déjà pour cet Product dans cette station');
     }
 
     const stockStation = this.stockStationRepository.create({
@@ -56,13 +56,13 @@ export class StocksService {
     const queryBuilder = this.stockStationRepository
       .createQueryBuilder('stock')
       .leftJoinAndSelect('stock.station', 'station')
-      .leftJoinAndSelect('stock.article', 'article')
+      .leftJoinAndSelect('stock.Product', 'Product')
       .leftJoinAndSelect('stock.updatedBy', 'updatedBy');
 
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(station.nom ILIKE :search OR article.designation ILIKE :search OR article.codeArticle ILIKE :search)',
+        '(station.name ILIKE :search OR Product.designation ILIKE :search OR Product.codeArticle ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
@@ -74,7 +74,7 @@ export class StocksService {
       });
     }
 
-    // Add article filter
+    // Add Product filter
     if (paginationDto['articleId']) {
       queryBuilder.andWhere('stock.articleId = :articleId', { 
         articleId: paginationDto['articleId'] 
@@ -110,7 +110,7 @@ export class StocksService {
   async findOneStockStation(id: string): Promise<StockStation> {
     const stockStation = await this.stockStationRepository.findOne({
       where: { id },
-      relations: ['station', 'article', 'updatedBy']
+      relations: ['station', 'Product', 'updatedBy']
     });
 
     if (!stockStation) {
@@ -123,7 +123,7 @@ export class StocksService {
   async findStockByStationAndArticle(stationId: string, articleId: string): Promise<StockStation | null> {
     return this.stockStationRepository.findOne({
       where: { stationId, articleId },
-      relations: ['station', 'article', 'updatedBy']
+      relations: ['station', 'Product', 'updatedBy']
     });
   }
 
@@ -161,25 +161,25 @@ export class StocksService {
   }
 
   // Supplier Stock Management
-  async createStockFournisseur(createStockFournisseurDto: CreateStockFournisseurDto): Promise<StockFournisseur> {
+  async createStockFournisseur(CreateStockSupplierDto: CreateStockSupplierDto): Promise<StockSupplier> {
     // Check if stock entry already exists
     const existingStock = await this.stockFournisseurRepository.findOne({
       where: {
-        fournisseurSiteId: createStockFournisseurDto.fournisseurSiteId,
-        articleId: createStockFournisseurDto.articleId
+        fournisseurSiteId: CreateStockSupplierDto.fournisseurSiteId,
+        articleId: CreateStockSupplierDto.articleId
       }
     });
 
     if (existingStock) {
-      throw new BadRequestException('Un stock existe déjà pour cet article chez ce fournisseur');
+      throw new BadRequestException('Un stock existe déjà pour cet Product chez ce Supplier');
     }
 
-    const stockFournisseur = this.stockFournisseurRepository.create({
-      ...createStockFournisseurDto,
+    const StockSupplier = this.stockFournisseurRepository.create({
+      ...CreateStockSupplierDto,
       derniereMiseAJour: new Date()
     });
 
-    return this.stockFournisseurRepository.save(stockFournisseur);
+    return this.stockFournisseurRepository.save(StockSupplier);
   }
 
   async findAllStockFournisseurs(paginationDto: PaginationDto) {
@@ -192,26 +192,26 @@ export class StocksService {
 
     const queryBuilder = this.stockFournisseurRepository
       .createQueryBuilder('stock')
-      .leftJoinAndSelect('stock.fournisseurSite', 'fournisseurSite')
-      .leftJoinAndSelect('fournisseurSite.fournisseur', 'fournisseur')
-      .leftJoinAndSelect('stock.article', 'article');
+      .leftJoinAndSelect('stock.SupplierSite', 'SupplierSite')
+      .leftJoinAndSelect('SupplierSite.Supplier', 'Supplier')
+      .leftJoinAndSelect('stock.Product', 'Product');
 
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(fournisseur.nom ILIKE :search OR article.designation ILIKE :search OR article.codeArticle ILIKE :search)',
+        '(Supplier.name ILIKE :search OR Product.designation ILIKE :search OR Product.codeArticle ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
 
-    // Add fournisseur filter for role-based access
+    // Add Supplier filter for role-based access
     if (paginationDto['fournisseurId']) {
-      queryBuilder.andWhere('fournisseur.id = :fournisseurId', { 
-        fournisseurId: paginationDto['fournisseurId'] 
+      queryBuilder.andWhere('Supplier.id = :fournisseurId', { 
+        supplierId: paginationDto['fournisseurId'] 
       });
     }
 
-    // Add article filter
+    // Add Product filter
     if (paginationDto['articleId']) {
       queryBuilder.andWhere('stock.articleId = :articleId', { 
         articleId: paginationDto['articleId'] 
@@ -234,40 +234,40 @@ export class StocksService {
     return this.paginationService.createPaginatedResponse(data, total, paginationOptions);
   }
 
-  async findOneStockFournisseur(id: string): Promise<StockFournisseur> {
-    const stockFournisseur = await this.stockFournisseurRepository.findOne({
+  async findOneStockFournisseur(id: string): Promise<StockSupplier> {
+    const StockSupplier = await this.stockFournisseurRepository.findOne({
       where: { id },
-      relations: ['fournisseurSite', 'fournisseurSite.fournisseur', 'article']
+      relations: ['SupplierSite', 'SupplierSite.Supplier', 'Product']
     });
 
-    if (!stockFournisseur) {
-      throw new NotFoundException('Stock fournisseur non trouvé');
+    if (!StockSupplier) {
+      throw new NotFoundException('Stock Supplier non trouvé');
     }
 
-    return stockFournisseur;
+    return StockSupplier;
   }
 
-  async findStockByFournisseurSiteAndArticle(fournisseurSiteId: string, articleId: string): Promise<StockFournisseur | null> {
+  async findStockByFournisseurSiteAndArticle(fournisseurSiteId: string, articleId: string): Promise<StockSupplier | null> {
     return this.stockFournisseurRepository.findOne({
       where: { fournisseurSiteId, articleId },
-      relations: ['fournisseurSite', 'fournisseurSite.fournisseur', 'article']
+      relations: ['SupplierSite', 'SupplierSite.Supplier', 'Product']
     });
   }
 
-  async updateStockFournisseur(id: string, updateStockFournisseurDto: UpdateStockFournisseurDto): Promise<StockFournisseur> {
-    const stockFournisseur = await this.findOneStockFournisseur(id);
+  async updateStockFournisseur(id: string, UpdateStockSupplierDto: UpdateStockSupplierDto): Promise<StockSupplier> {
+    const StockSupplier = await this.findOneStockFournisseur(id);
 
-    Object.assign(stockFournisseur, {
-      ...updateStockFournisseurDto,
+    Object.assign(StockSupplier, {
+      ...UpdateStockSupplierDto,
       derniereMiseAJour: new Date()
     });
 
-    return this.stockFournisseurRepository.save(stockFournisseur);
+    return this.stockFournisseurRepository.save(StockSupplier);
   }
 
   async deleteStockFournisseur(id: string): Promise<void> {
-    const stockFournisseur = await this.findOneStockFournisseur(id);
-    await this.stockFournisseurRepository.remove(stockFournisseur);
+    const StockSupplier = await this.findOneStockFournisseur(id);
+    await this.stockFournisseurRepository.remove(StockSupplier);
   }
 
   // Analytics and Reports
@@ -275,7 +275,7 @@ export class StocksService {
     const queryBuilder = this.stockStationRepository
       .createQueryBuilder('stock')
       .leftJoinAndSelect('stock.station', 'station')
-      .leftJoinAndSelect('stock.article', 'article');
+      .leftJoinAndSelect('stock.Product', 'Product');
 
     if (stationId) {
       queryBuilder.where('stock.stationId = :stationId', { stationId });
@@ -313,7 +313,7 @@ export class StocksService {
     const queryBuilder = this.stockStationRepository
       .createQueryBuilder('stock')
       .leftJoinAndSelect('stock.station', 'station')
-      .leftJoinAndSelect('stock.article', 'article')
+      .leftJoinAndSelect('stock.Product', 'Product')
       .where(
         '(stock.seuilAlerte IS NOT NULL AND stock.quantiteActuelle <= stock.seuilAlerte) OR ' +
         '(stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique)'

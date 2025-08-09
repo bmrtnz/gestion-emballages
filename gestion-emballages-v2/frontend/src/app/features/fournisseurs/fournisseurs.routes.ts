@@ -5,6 +5,6 @@ export const fournisseursRoutes: Routes = [
   {
     path: '',
     canActivate: [adminGuard],
-    loadComponent: () => import('./fournisseur-list/fournisseur-list.component').then(c => c.FournisseurListComponent)
+    loadComponent: () => import('./fournisseur-list/fournisseur-list.component').then(c => c.SupplierListComponent)
   }
 ];

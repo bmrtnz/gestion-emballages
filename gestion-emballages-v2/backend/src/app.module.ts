@@ -13,32 +13,37 @@ import { User } from './modules/users/entities/user.entity';
 import { Station } from './modules/stations/entities/station.entity';
 import { StationGroup } from './modules/stations/entities/station-group.entity';
 import { StationContact } from './modules/stations/entities/station-contact.entity';
-import { Fournisseur } from './modules/fournisseurs/entities/fournisseur.entity';
-import { FournisseurSite } from './modules/fournisseurs/entities/fournisseur-site.entity';
+import { Supplier } from './modules/suppliers/entities/supplier.entity';
+import { SupplierSite } from './modules/suppliers/entities/supplier-site.entity';
+import { SupplierContact } from './modules/suppliers/entities/supplier-contact.entity';
 import { Platform } from './modules/platforms/entities/platform.entity';
 import { PlatformSite } from './modules/platforms/entities/platform-site.entity';
-import { Article } from './modules/articles/entities/article.entity';
-import { ArticleFournisseur } from './modules/articles/entities/article-fournisseur.entity';
-import { Commande } from './modules/commandes/entities/commande.entity';
-import { CommandeGlobale } from './modules/commandes/entities/commande-globale.entity';
-import { CommandeArticle } from './modules/commandes/entities/commande-article.entity';
+import { PlatformContact } from './modules/platforms/entities/platform-contact.entity';
+import { Product } from './modules/products/entities/product.entity';
+import { ProductSupplier } from './modules/products/entities/product-supplier.entity';
+import { Order } from './modules/orders/entities/order.entity';
+import { MasterOrder } from './modules/orders/entities/master-order.entity';
+import { PurchaseOrder } from './modules/orders/entities/purchase-order.entity';
+import { SalesOrder } from './modules/orders/entities/sales-order.entity';
+import { OrderProduct } from './modules/orders/entities/order-product.entity';
+import { SalesOrderProduct } from './modules/orders/entities/sales-order-product.entity';
 import { StockStation } from './modules/stocks/entities/stock-station.entity';
-import { StockFournisseur } from './modules/stocks/entities/stock-fournisseur.entity';
+import { StockSupplier } from './modules/stocks/entities/stock-supplier.entity';
 import { StockPlatform } from './modules/stocks/entities/stock-platform.entity';
-import { DemandeTransfert } from './modules/transferts/entities/demande-transfert.entity';
-import { DemandeTransfertArticle } from './modules/transferts/entities/demande-transfert-article.entity';
-import { Prevision } from './modules/previsions/entities/prevision.entity';
-import { ListeAchat } from './modules/listes-achat/entities/liste-achat.entity';
-import { ListeAchatItem } from './modules/listes-achat/entities/liste-achat-item.entity';
+import { TransferRequest } from './modules/transfers/entities/transfer-request.entity';
+import { TransferRequestProduct } from './modules/transfers/entities/transfer-request-product.entity';
+import { Forecast } from './modules/forecasts/entities/forecast.entity';
+import { ShoppingCart } from './modules/shopping-carts/entities/shopping-cart.entity';
+import { ShoppingCartItem } from './modules/shopping-carts/entities/shopping-cart-item.entity';
 
 // Modules
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { StationsModule } from './modules/stations/stations.module';
-import { FournisseursModule } from './modules/fournisseurs/fournisseurs.module';
+import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { PlatformsModule } from './modules/platforms/platforms.module';
-import { ArticlesModule } from './modules/articles/articles.module';
-import { CommandesModule } from './modules/commandes/commandes.module';
+import { ProductsModule } from './modules/products/products.module';
+import { OrdersModule } from './modules/orders/orders.module';
 import { StocksModule } from './modules/stocks/stocks.module';
 import { CommonModule } from './common/common.module';
 
@@ -69,23 +74,28 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           Station,
           StationGroup,
           StationContact,
-          Fournisseur,
-          FournisseurSite,
+          Supplier,
+          SupplierSite,
+          SupplierContact,
           Platform,
           PlatformSite,
-          Article,
-          ArticleFournisseur,
-          Commande,
-          CommandeGlobale,
-          CommandeArticle,
+          PlatformContact,
+          Product,
+          ProductSupplier,
+          Order,
+          MasterOrder,
+          PurchaseOrder,
+          SalesOrder,
+          OrderProduct,
+          SalesOrderProduct,
           StockStation,
-          StockFournisseur,
+          StockSupplier,
           StockPlatform,
-          DemandeTransfert,
-          DemandeTransfertArticle,
-          Prevision,
-          ListeAchat,
-          ListeAchatItem,
+          TransferRequest,
+          TransferRequestProduct,
+          Forecast,
+          ShoppingCart,
+          ShoppingCartItem,
         ],
         synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true' || configService.get<string>('NODE_ENV') === 'development',
         logging: configService.get<string>('DB_LOGGING') === 'true',
@@ -101,10 +111,10 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
     AuthModule,
     UsersModule,
     StationsModule,
-    FournisseursModule,
+    SuppliersModule,
     PlatformsModule,
-    ArticlesModule,
-    CommandesModule,
+    ProductsModule,
+    OrdersModule,
     StocksModule,
   ],
   controllers: [],

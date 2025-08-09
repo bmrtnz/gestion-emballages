@@ -1,6 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
-import { Article } from '@modules/articles/entities/article.entity';
+import { Product } from '@modules/products/entities/product.entity';
 import { Platform } from '@modules/platforms/entities/platform.entity';
 import { PlatformSite } from '@modules/platforms/entities/platform-site.entity';
 import { User } from '@modules/users/entities/user.entity';
@@ -11,7 +11,7 @@ export class StockPlatform extends BaseEntity {
   @Column({ name: 'platform_id' })
   platformId: string;
 
-  @Column({ name: 'article_id' })
+  @Column({ name: 'product_id' })
   articleId: string;
 
   @Column({ name: 'platform_site_id', nullable: true })
@@ -40,9 +40,9 @@ export class StockPlatform extends BaseEntity {
   @JoinColumn({ name: 'platform_id' })
   platform: Platform;
 
-  @ManyToOne(() => Article)
-  @JoinColumn({ name: 'article_id' })
-  article: Article;
+  @ManyToOne(() => Product)
+  @JoinColumn({ name: 'product_id' })
+  product: Product;
 
   @ManyToOne(() => PlatformSite, (site) => site.stocks, { nullable: true })
   @JoinColumn({ name: 'platform_site_id' })

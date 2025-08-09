@@ -8,23 +8,23 @@ import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
 
 export interface CreateStationGroupDto {
-  nom: string;
+  name: string;
   description?: string;
-  contactPrincipal?: {
-    nom?: string;
-    poste?: string;
-    telephone?: string;
+  mainContact?: {
+    name?: string;
+    position?: string;
+    phone?: string;
     email?: string;
   };
 }
 
 export interface UpdateStationGroupDto {
-  nom?: string;
+  name?: string;
   description?: string;
-  contactPrincipal?: {
-    nom?: string;
-    poste?: string;
-    telephone?: string;
+  mainContact?: {
+    name?: string;
+    position?: string;
+    phone?: string;
     email?: string;
   };
 }
@@ -42,16 +42,16 @@ export class StationGroupsService {
   async create(createDto: CreateStationGroupDto): Promise<StationGroup> {
     // Check if name already exists
     const existingGroup = await this.stationGroupRepository.findOne({
-      where: { nom: createDto.nom },
+      where: { name: createDto.name },
     });
 
     if (existingGroup) {
-      throw new ConflictException('Un groupe de stations avec ce nom existe déjà');
+      throw new ConflictException('Un groupe de stations avec ce name existe déjà');
     }
 
     const stationGroup = this.stationGroupRepository.create({
       ...createDto,
-      contactPrincipal: createDto.contactPrincipal || {},
+      mainContact: createDto.mainContact || {},
     });
 
     return this.stationGroupRepository.save(stationGroup);
@@ -74,7 +74,7 @@ export class StationGroupsService {
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(groupe.nom ILIKE :search OR groupe.description ILIKE :search)',
+        '(groupe.name ILIKE :search OR groupe.description ILIKE :search)',
         { search: `%${paginationDto.search}%` },
       );
     }
@@ -118,21 +118,21 @@ export class StationGroupsService {
     const stationGroup = await this.findOne(id);
 
     // Check if name is being changed and if it already exists
-    if (updateDto.nom && updateDto.nom !== stationGroup.nom) {
+    if (updateDto.name && updateDto.name !== stationGroup.name) {
       const existingGroup = await this.stationGroupRepository.findOne({
-        where: { nom: updateDto.nom },
+        where: { name: updateDto.name },
       });
 
       if (existingGroup) {
-        throw new ConflictException('Un groupe de stations avec ce nom existe déjà');
+        throw new ConflictException('Un groupe de stations avec ce name existe déjà');
       }
     }
 
-    // Merge contact principal data
-    if (updateDto.contactPrincipal) {
-      updateDto.contactPrincipal = {
-        ...stationGroup.contactPrincipal,
-        ...updateDto.contactPrincipal,
+    // Merge main contact data
+    if (updateDto.mainContact) {
+      updateDto.mainContact = {
+        ...stationGroup.mainContact,
+        ...updateDto.mainContact,
       };
     }
 
@@ -168,11 +168,11 @@ export class StationGroupsService {
   async getIndependentStations(): Promise<Station[]> {
     return this.stationRepository.find({
       where: { 
-        groupeId: null, // Explicitly null - independent stations
+        groupId: null, // Explicitly null - independent stations
         isActive: true 
       },
       relations: ['contacts'],
-      order: { nom: 'ASC' },
+      order: { name: 'ASC' },
     });
   }
 
@@ -185,7 +185,7 @@ export class StationGroupsService {
   }> {
     const [totalStations, independentStations, totalGroups] = await Promise.all([
       this.stationRepository.count({ where: { isActive: true } }),
-      this.stationRepository.count({ where: { groupeId: null, isActive: true } }),
+      this.stationRepository.count({ where: { groupId: null, isActive: true } }),
       this.stationGroupRepository.count({ where: { isActive: true } }),
     ]);
 

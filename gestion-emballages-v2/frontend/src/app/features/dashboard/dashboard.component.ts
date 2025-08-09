@@ -92,15 +92,15 @@ import { UserRole } from '@core/models/user.model';
           
           <!-- Station specific actions -->
           <ng-container *ngIf="authService.isStation()">
-            <a href="/liste-achat" 
+            <a href="/shopping-cart" 
                class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200">
               <div class="flex items-center">
                 <svg class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L5 3H3m4 10a1 1 0 100 2 1 1 0 000-2zm10 0a1 1 0 100 2 1 1 0 000-2z" />
                 </svg>
                 <div class="ml-3">
-                  <h3 class="text-sm font-medium text-gray-900">Liste d'achat</h3>
-                  <p class="text-xs text-gray-500">Gérer vos achats</p>
+                  <h3 class="text-sm font-medium text-gray-900">Shopping Cart</h3>
+                  <p class="text-xs text-gray-500">Manage your purchases</p>
                 </div>
               </div>
             </a>
@@ -136,7 +136,7 @@ import { UserRole } from '@core/models/user.model';
           </ng-container>
 
           <!-- Common actions -->
-          <a href="/commandes" 
+          <a href="/orders" 
              class="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200">
             <div class="flex items-center">
               <svg class="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

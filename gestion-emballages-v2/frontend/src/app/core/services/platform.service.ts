@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
-import { Platform, PlatformSite, CreatePlatformDto, UpdatePlatformDto, CreatePlatformSiteDto } from '../models/platform.model';
+import { Platform, CreatePlatformDto, UpdatePlatformDto } from '../models/platform.model';
 import { PaginatedResponse } from '../models/pagination.model';
 
 @Injectable({
@@ -53,18 +53,5 @@ export class PlatformService {
 
   delete(id: string): Observable<{ statusCode: number; message: string }> {
     return this.http.delete<{ statusCode: number; message: string }>(`${this.apiUrl}/${id}`);
-  }
-
-  // Platform sites management
-  createSite(platformId: string, site: CreatePlatformSiteDto): Observable<{ statusCode: number; message: string; data: PlatformSite }> {
-    return this.http.post<{ statusCode: number; message: string; data: PlatformSite }>(`${this.apiUrl}/${platformId}/sites`, site);
-  }
-
-  updateSite(platformId: string, siteId: string, site: CreatePlatformSiteDto): Observable<{ statusCode: number; message: string; data: PlatformSite }> {
-    return this.http.patch<{ statusCode: number; message: string; data: PlatformSite }>(`${this.apiUrl}/${platformId}/sites/${siteId}`, site);
-  }
-
-  deleteSite(platformId: string, siteId: string): Observable<{ statusCode: number; message: string }> {
-    return this.http.delete<{ statusCode: number; message: string }>(`${this.apiUrl}/${platformId}/sites/${siteId}`);
   }
 }

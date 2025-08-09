@@ -57,7 +57,7 @@ export class UsersController {
       });
       
       // Return simplified user data for login selector
-      // The service already populates station and fournisseur data dynamically
+      // The service already populates station and Supplier data dynamically
       const simplifiedUsers = result.data.map(user => ({
         id: user.id,
         email: user.email,
@@ -65,11 +65,11 @@ export class UsersController {
         role: user.role,
         station: (user as any).station ? { 
           id: (user as any).station.id, 
-          name: (user as any).station.nom 
+          name: (user as any).station.name 
         } : null,
-        supplier: (user as any).fournisseur ? { 
-          id: (user as any).fournisseur.id, 
-          name: (user as any).fournisseur.nom 
+        supplier: (user as any).Supplier ? { 
+          id: (user as any).Supplier.id, 
+          name: (user as any).Supplier.name 
         } : null
       }));
       

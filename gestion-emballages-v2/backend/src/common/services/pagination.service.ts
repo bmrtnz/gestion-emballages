@@ -49,4 +49,19 @@ export class PaginationService {
       sortOrder: options.sortOrder || 'DESC',
     };
   }
+
+  async paginate<T>(
+    queryBuilder: any,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<PaginatedResponse<T>> {
+    const skip = this.getSkip(page, limit);
+    
+    const [data, total] = await queryBuilder
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+    
+    return this.createPaginatedResponse(data, total, { page, limit });
+  }
 }

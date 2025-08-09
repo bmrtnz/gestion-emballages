@@ -5,6 +5,6 @@ export const platformsRoutes: Routes = [
   {
     path: '',
     canActivate: [adminGuard],
-    loadComponent: () => import('./platform-list/platform-list.component').then(c => c.PlatformListComponent)
+    loadComponent: () => import('./platform-page.component').then(c => c.PlatformPageComponent)
   }
 ];

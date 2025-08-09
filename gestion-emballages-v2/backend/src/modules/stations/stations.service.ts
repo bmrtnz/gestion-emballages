@@ -31,7 +31,7 @@ export class StationsService {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
-      sortBy: paginationDto.sortBy || 'nom',
+      sortBy: paginationDto.sortBy || 'name',
       sortOrder: paginationDto.sortOrder || 'ASC'
     });
 
@@ -45,15 +45,15 @@ export class StationsService {
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(station.nom ILIKE :search OR station.identifiantInterne ILIKE :search OR groupe.nom ILIKE :search)',
+        '(station.name ILIKE :search OR station.internalId ILIKE :search OR groupe.name ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
 
     // Add station group filter
     if (paginationDto['groupeId']) {
-      queryBuilder.andWhere('station.groupeId = :groupeId', { 
-        groupeId: paginationDto['groupeId'] 
+      queryBuilder.andWhere('station.groupId = :groupId', { 
+        groupId: paginationDto['groupeId'] 
       });
     }
 
@@ -107,12 +107,12 @@ export class StationsService {
   }
 
   // Station Group methods
-  async assignToGroup(stationId: string, groupeId: string | null): Promise<Station> {
+  async assignToGroup(stationId: string, groupId: string | null): Promise<Station> {
     const station = await this.findOne(stationId);
     
-    if (groupeId) {
+    if (groupId) {
       const groupe = await this.stationGroupRepository.findOne({
-        where: { id: groupeId, isActive: true },
+        where: { id: groupId, isActive: true },
       });
       
       if (!groupe) {
@@ -120,7 +120,7 @@ export class StationsService {
       }
     }
     
-    station.groupeId = groupeId;
+    station.groupId = groupId;
     return this.stationRepository.save(station);
   }
 
@@ -128,7 +128,7 @@ export class StationsService {
     const stations = await this.stationRepository.find({
       where: { isActive: true },
       relations: ['groupe'],
-      order: { nom: 'ASC' },
+      order: { name: 'ASC' },
     });
 
     // Group stations by their groupe
@@ -150,7 +150,7 @@ export class StationsService {
       if (!a.groupe && b.groupe) return -1;
       if (a.groupe && !b.groupe) return 1;
       if (!a.groupe && !b.groupe) return 0;
-      return a.groupe.nom.localeCompare(b.groupe.nom);
+      return a.groupe.name.localeCompare(b.groupe.name);
     });
   }
 
@@ -159,16 +159,16 @@ export class StationsService {
     return this.stationRepository.find({
       where: { isActive: true },
       relations: ['groupe'],
-      order: { nom: 'ASC' },
-      select: ['id', 'nom', 'identifiantInterne', 'groupeId']
+      order: { name: 'ASC' },
+      select: ['id', 'name', 'internalId', 'groupId']
     });
   }
 
-  async findStationsInGroup(groupeId: string): Promise<Station[]> {
+  async findStationsInGroup(groupId: string): Promise<Station[]> {
     return this.stationRepository.find({
-      where: { groupeId, isActive: true },
+      where: { groupId, isActive: true },
       relations: ['contacts'],
-      order: { nom: 'ASC' },
+      order: { name: 'ASC' },
     });
   }
 }

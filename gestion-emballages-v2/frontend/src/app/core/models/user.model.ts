@@ -18,7 +18,7 @@ export interface User {
   phone?: string;
   role: UserRole;
   entityType?: EntityType;
-  entityId?: string;
+  entityId?: string | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -51,7 +51,7 @@ export interface CreateUserRequest {
   phone?: string;
   role: UserRole;
   entityType?: EntityType;
-  entityId?: string;
+  entityId?: string | null;
 }
 
 export interface UpdateUserRequest {
@@ -60,5 +60,5 @@ export interface UpdateUserRequest {
   phone?: string;
   role?: UserRole;
   entityType?: EntityType;
-  entityId?: string;
+  entityId?: string | null;
 }

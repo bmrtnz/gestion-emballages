@@ -49,8 +49,8 @@ export class AdminSidebarStrategy extends SidebarNavigationStrategy {
         title: 'GESTION',
         items: [
           {
-            name: 'Commandes',
-            href: '/commandes',
+            name: 'Orders',
+            href: '/orders',
             icon: 'clipboard-list'
           },
           {
@@ -149,8 +149,8 @@ export class ManagerSidebarStrategy extends SidebarNavigationStrategy {
         title: 'GESTION',
         items: [
           {
-            name: 'Commandes',
-            href: '/commandes',
+            name: 'Orders',
+            href: '/orders',
             icon: 'clipboard-list'
           },
           {
@@ -249,8 +249,8 @@ export class HandlerSidebarStrategy extends SidebarNavigationStrategy {
         title: 'GESTION',
         items: [
           {
-            name: 'Commandes',
-            href: '/commandes',
+            name: 'Orders',
+            href: '/orders',
             icon: 'clipboard-list'
           },
           {
@@ -344,14 +344,14 @@ export class StationSidebarStrategy extends SidebarNavigationStrategy {
         title: 'GESTION',
         items: [
           {
-            name: 'Ma liste d\'achat',
-            href: '/liste-achat',
+            name: 'My Shopping Cart',
+            href: '/shopping-cart',
             icon: 'shopping-cart',
             badge: 'cart'
           },
           {
-            name: 'Mes commandes',
-            href: '/commandes',
+            name: 'My Orders',
+            href: '/orders',
             icon: 'clipboard-list'
           },
           {
@@ -420,8 +420,8 @@ export class SupplierSidebarStrategy extends SidebarNavigationStrategy {
         title: 'GESTION',
         items: [
           {
-            name: 'Mes commandes',
-            href: '/commandes',
+            name: 'My Orders',
+            href: '/orders',
             icon: 'clipboard-list'
           },
           {

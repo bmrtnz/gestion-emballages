@@ -1,60 +1,60 @@
 [
     {
         "identifiant": "groupe-rhone-alpes-fruits",
-        "nom": "Rhône-Alpes Fruits",
+        "name": "Rhône-Alpes Fruits",
         "description": "Coopérative régionale spécialisée dans les fruits à noyau et les pommes de la région Rhône-Alpes",
-        "contactPrincipal": {
-            "nom": "Claude Berthier",
-            "poste": "Directeur Régional",
-            "telephone": "04 76 45 23 18",
+        "mainContact": {
+            "name": "Claude Berthier",
+            "position": "Directeur Régional",
+            "phone": "04 76 45 23 18",
             "email": "claude.berthier@rhone-alpes-fruits.fr"
         },
         "isActive": true
     },
     {
         "identifiant": "groupe-languedoc-coop",
-        "nom": "Languedoc Coopératif",
+        "name": "Languedoc Coopératif",
         "description": "Réseau des coopératives du Languedoc-Roussillon, spécialisé dans les fruits méditerranéens",
-        "contactPrincipal": {
-            "nom": "Marie-Paule Vidal",
-            "poste": "Présidente Fédération",
-            "telephone": "04 67 89 34 56",
+        "mainContact": {
+            "name": "Marie-Paule Vidal",
+            "position": "Présidente Fédération",
+            "phone": "04 67 89 34 56",
             "email": "mp.vidal@languedoc-coop.fr"
         },
         "isActive": true
     },
     {
         "identifiant": "groupe-pays-loire-primeurs",
-        "nom": "Pays de Loire Primeurs",
+        "name": "Pays de Loire Primeurs",
         "description": "Association des producteurs de primeurs et légumes des Pays de la Loire",
-        "contactPrincipal": {
-            "nom": "Jean-François Moreau",
-            "poste": "Coordinateur Logistique",
-            "telephone": "02 40 78 92 14",
+        "mainContact": {
+            "name": "Jean-François Moreau",
+            "position": "Coordinateur Logistique",
+            "phone": "02 40 78 92 14",
             "email": "jf.moreau@pdl-primeurs.fr"
         },
         "isActive": true
     },
     {
         "identifiant": "groupe-aquitaine-bio",
-        "nom": "Aquitaine Bio Coopérative",
+        "name": "Aquitaine Bio Coopérative",
         "description": "Coopérative spécialisée dans les produits biologiques du Sud-Ouest",
-        "contactPrincipal": {
-            "nom": "Sandrine Dupont",
-            "poste": "Responsable Qualité Bio",
-            "telephone": "05 56 23 78 45",
+        "mainContact": {
+            "name": "Sandrine Dupont",
+            "position": "Responsable Qualité Bio",
+            "phone": "05 56 23 78 45",
             "email": "s.dupont@aquitaine-bio.fr"
         },
         "isActive": true
     },
     {
         "identifiant": "groupe-nord-maraichage",
-        "nom": "Nord Maraîchage",
+        "name": "Nord Maraîchage",
         "description": "Coopérative des maraîchers du Nord-Pas-de-Calais et Picardie",
-        "contactPrincipal": {
-            "nom": "Patrick Lecomte",
-            "poste": "Directeur Commercial",
-            "telephone": "03 20 45 67 89",
+        "mainContact": {
+            "name": "Patrick Lecomte",
+            "position": "Directeur Commercial",
+            "phone": "03 20 45 67 89",
             "email": "p.lecomte@nord-maraichage.fr"
         },
         "isActive": true

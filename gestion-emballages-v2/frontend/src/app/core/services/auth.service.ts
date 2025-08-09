@@ -142,6 +142,11 @@ export class AuthService {
     return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
   }
 
+  canAccessProductManagement(): boolean {
+    const role = this.userRole();
+    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;
+  }
+
   canAccessUserManagement(): boolean {
     const role = this.userRole();
     return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.HANDLER;

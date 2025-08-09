@@ -86,45 +86,8 @@ export class PlatformsController {
   }
 
   // Platform sites management
-  @Post(':id/sites')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async createSite(
-    @Param('id') platformId: string,
-    @Body() createSiteDto: CreatePlatformSiteDto,
-  ) {
-    const site = await this.platformsService.createSite(platformId, createSiteDto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Site créé avec succès',
-      data: site,
-    };
-  }
-
-  @Patch(':id/sites/:siteId')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async updateSite(
-    @Param('id') platformId: string,
-    @Param('siteId') siteId: string,
-    @Body() updateSiteDto: CreatePlatformSiteDto,
-  ) {
-    const site = await this.platformsService.updateSite(platformId, siteId, updateSiteDto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Site mis à jour avec succès',
-      data: site,
-    };
-  }
-
-  @Delete(':id/sites/:siteId')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async removeSite(
-    @Param('id') platformId: string,
-    @Param('siteId') siteId: string,
-  ) {
-    await this.platformsService.removeSite(platformId, siteId);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Site désactivé avec succès',
-    };
-  }
+  // PlatformSite methods removed - use PlatformContacts instead
+  // @Post(':id/sites')
+  // @Patch(':id/sites/:siteId')
+  // @Delete(':id/sites/:siteId')
 }

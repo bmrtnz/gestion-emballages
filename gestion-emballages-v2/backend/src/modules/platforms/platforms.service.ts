@@ -2,10 +2,8 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike, Not } from 'typeorm';
 import { Platform } from './entities/platform.entity';
-import { PlatformSite } from './entities/platform-site.entity';
 import { CreatePlatformDto } from './dto/create-platform.dto';
 import { UpdatePlatformDto } from './dto/update-platform.dto';
-import { CreatePlatformSiteDto } from './dto/create-platform-site.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
 
@@ -14,21 +12,10 @@ export class PlatformsService {
   constructor(
     @InjectRepository(Platform)
     private platformRepository: Repository<Platform>,
-    @InjectRepository(PlatformSite)
-    private platformSiteRepository: Repository<PlatformSite>,
     private paginationService: PaginationService,
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto, userId: string): Promise<Platform> {
-    // Check if platform with same SIRET already exists
-    if (createPlatformDto.siret) {
-      const existingPlatform = await this.platformRepository.findOne({
-        where: { siret: createPlatformDto.siret },
-      });
-      if (existingPlatform) {
-        throw new ConflictException('Une plateforme avec ce SIRET existe déjà');
-      }
-    }
 
     const platform = this.platformRepository.create({
       ...createPlatformDto,
@@ -43,18 +30,17 @@ export class PlatformsService {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
-      sortBy: paginationDto.sortBy || 'nom',
+      sortBy: paginationDto.sortBy || 'name',
       sortOrder: paginationDto.sortOrder || 'ASC'
     });
 
     const queryBuilder = this.platformRepository
-      .createQueryBuilder('platform')
-      .leftJoinAndSelect('platform.sites', 'sites');
+      .createQueryBuilder('platform');
 
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(platform.nom ILIKE :search OR platform.siret ILIKE :search OR platform.type ILIKE :search)',
+        '(platform.name ILIKE :search OR platform.siret ILIKE :search OR platform.type ILIKE :search)',
         { search: `%${paginationDto.search}%` },
       );
     }
@@ -66,10 +52,10 @@ export class PlatformsService {
       queryBuilder.andWhere('platform.isActive = :isActive', { isActive: false });
     }
 
-    // Add specialite filter
-    if (paginationDto.specialite) {
-      queryBuilder.andWhere(':specialite = ANY(platform.specialites)', { 
-        specialite: paginationDto.specialite 
+    // Add specialties filter
+    if (paginationDto['specialties']) {
+      queryBuilder.andWhere(':specialties = ANY(platform.specialties)', { 
+        specialties: paginationDto['specialties'] 
       });
     }
 
@@ -87,7 +73,7 @@ export class PlatformsService {
   async findOne(id: string): Promise<Platform> {
     const platform = await this.platformRepository.findOne({
       where: { id },
-      relations: ['sites', 'createdBy', 'updatedBy'],
+      relations: ['createdBy', 'updatedBy'],
     });
 
     if (!platform) {
@@ -100,15 +86,7 @@ export class PlatformsService {
   async update(id: string, updatePlatformDto: UpdatePlatformDto, userId: string): Promise<Platform> {
     const platform = await this.findOne(id);
 
-    // Check SIRET uniqueness if it's being updated
-    if (updatePlatformDto.siret && updatePlatformDto.siret !== platform.siret) {
-      const existingPlatform = await this.platformRepository.findOne({
-        where: { siret: updatePlatformDto.siret },
-      });
-      if (existingPlatform) {
-        throw new ConflictException('Une plateforme avec ce SIRET existe déjà');
-      }
-    }
+    // Platform update logic
 
     Object.assign(platform, updatePlatformDto, { updatedById: userId });
     return await this.platformRepository.save(platform);
@@ -124,65 +102,13 @@ export class PlatformsService {
     await this.platformRepository.save(platform);
   }
 
-  async createSite(platformId: string, createSiteDto: CreatePlatformSiteDto): Promise<PlatformSite> {
-    const platform = await this.findOne(platformId);
-
-    // If this is set as principal, unset other principal sites
-    if (createSiteDto.isPrincipal) {
-      await this.platformSiteRepository.update(
-        { platformId },
-        { isPrincipal: false },
-      );
-    }
-
-    const site = this.platformSiteRepository.create({
-      ...createSiteDto,
-      platformId,
-    });
-
-    return await this.platformSiteRepository.save(site);
-  }
-
-  async updateSite(platformId: string, siteId: string, updateSiteDto: CreatePlatformSiteDto): Promise<PlatformSite> {
-    const site = await this.platformSiteRepository.findOne({
-      where: { id: siteId, platformId },
-    });
-
-    if (!site) {
-      throw new NotFoundException(`Site avec l'ID ${siteId} non trouvé`);
-    }
-
-    // If this is set as principal, unset other principal sites
-    if (updateSiteDto.isPrincipal && !site.isPrincipal) {
-      await this.platformSiteRepository.update(
-        { platformId, id: Not(siteId) },
-        { isPrincipal: false },
-      );
-    }
-
-    Object.assign(site, updateSiteDto);
-    return await this.platformSiteRepository.save(site);
-  }
-
-  async removeSite(platformId: string, siteId: string): Promise<void> {
-    const site = await this.platformSiteRepository.findOne({
-      where: { id: siteId, platformId },
-    });
-
-    if (!site) {
-      throw new NotFoundException(`Site avec l'ID ${siteId} non trouvé`);
-    }
-
-    // Soft delete
-    site.isActive = false;
-    await this.platformSiteRepository.save(site);
-  }
+  // PlatformSite methods removed - use PlatformContacts instead
 
   async findActivePlatforms(): Promise<Platform[]> {
     return await this.platformRepository.find({
       where: { isActive: true },
-      relations: ['sites'],
-      order: { nom: 'ASC' },
+      relations: ['contacts'],
+      order: { name: 'ASC' },
     });
   }
 }

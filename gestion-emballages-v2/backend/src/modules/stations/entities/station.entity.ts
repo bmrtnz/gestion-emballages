@@ -1,38 +1,38 @@
 import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { User } from '@modules/users/entities/user.entity';
-import { Commande } from '@modules/commandes/entities/commande.entity';
-import { CommandeGlobale } from '@modules/commandes/entities/commande-globale.entity';
+import { Order } from '@modules/orders/entities/order.entity';
+import { MasterOrder } from '@modules/orders/entities/master-order.entity';
 import { StockStation } from '@modules/stocks/entities/stock-station.entity';
-import { DemandeTransfert } from '@modules/transferts/entities/demande-transfert.entity';
-import { Prevision } from '@modules/previsions/entities/prevision.entity';
-import { ListeAchat } from '@modules/listes-achat/entities/liste-achat.entity';
+import { TransferRequest } from '@modules/transfers/entities/transfer-request.entity';
+import { Forecast } from '@modules/forecasts/entities/forecast.entity';
+import { ShoppingCart } from '@modules/shopping-carts/entities/shopping-cart.entity';
 import { StationGroup } from './station-group.entity';
 import { StationContact } from './station-contact.entity';
 
 @Entity('stations')
 export class Station extends BaseEntity {
   @Column()
-  nom: string;
+  name: string;
 
-  @Column({ name: 'identifiant_interne', nullable: true })
-  identifiantInterne?: string;
+  @Column({ name: 'internal_id', nullable: true })
+  internalId?: string;
 
   @Column({ type: 'jsonb', default: {} })
-  adresse: {
-    rue?: string;
-    codePostal?: string;
-    ville?: string;
-    pays?: string;
+  address: {
+    street?: string;
+    postalCode?: string;
+    city?: string;
+    country?: string;
   };
 
-  @Column({ name: 'groupe_id', nullable: true })
-  groupeId?: string; // NULL for independent stations that don't belong to any group
+  @Column({ name: 'group_id', nullable: true })
+  groupId?: string; // NULL for independent stations that don't belong to any group
 
-  @Column({ name: 'contact_principal', type: 'jsonb', default: {} })
-  contactPrincipal: {
-    nom?: string;
-    telephone?: string;
+  @Column({ name: 'main_contact', type: 'jsonb', default: {} })
+  mainContact: {
+    name?: string;
+    phone?: string;
     email?: string;
   };
 
@@ -47,7 +47,7 @@ export class Station extends BaseEntity {
 
   // Relations
   @ManyToOne(() => StationGroup, (groupe) => groupe.stations, { nullable: true })
-  @JoinColumn({ name: 'groupe_id' })
+  @JoinColumn({ name: 'group_id' })
   groupe?: StationGroup;
 
   @OneToMany(() => StationContact, (contact) => contact.station, { cascade: true })
@@ -64,52 +64,57 @@ export class Station extends BaseEntity {
   // Note: Users are linked via polymorphic relationship (entiteType/entiteId)
   // No direct OneToMany relationship to avoid foreign key conflicts
 
-  @OneToMany(() => Commande, (commande) => commande.station)
-  commandes: Commande[];
+  @OneToMany(() => Order, (order) => order.station)
+  orders: Order[];
 
-  @OneToMany(() => CommandeGlobale, (commandeGlobale) => commandeGlobale.station)
-  commandesGlobales: CommandeGlobale[];
+  @OneToMany(() => MasterOrder, (masterOrder) => masterOrder.station)
+  masterOrders: MasterOrder[];
+
+  // Alias for backward compatibility
+  get globalOrders(): MasterOrder[] {
+    return this.masterOrders;
+  }
 
   @OneToMany(() => StockStation, (stock) => stock.station)
   stocks: StockStation[];
 
-  @OneToMany(() => DemandeTransfert, (demande) => demande.stationDemandeuse)
-  demandesTransfertEmises: DemandeTransfert[];
+  @OneToMany(() => TransferRequest, (demande) => demande.requestingStationId)
+  outgoingTransferRequests: TransferRequest[];
 
-  @OneToMany(() => DemandeTransfert, (demande) => demande.stationSource)
-  demandesTransfertRecues: DemandeTransfert[];
+  @OneToMany(() => TransferRequest, (demande) => demande.sourceStationId)
+  incomingTransferRequests: TransferRequest[];
 
-  @OneToMany(() => Prevision, (prevision) => prevision.station)
-  previsions: Prevision[];
+  @OneToMany(() => Forecast, (forecast) => forecast.station)
+  forecasts: Forecast[];
 
-  @OneToMany(() => ListeAchat, (liste) => liste.station)
-  listesAchat: ListeAchat[];
+  @OneToMany(() => ShoppingCart, (liste) => liste.station)
+  shoppingCarts: ShoppingCart[];
 
   // Virtual properties
-  get contactPrincipalFromContacts(): StationContact | undefined {
-    return this.contacts?.find(contact => contact.estPrincipal && contact.isActive);
+  get principalContactFromContacts(): StationContact | undefined {
+    return this.contacts?.find(contact => contact.isPrincipal && contact.isActive);
   }
 
-  get contactsActifs(): StationContact[] {
+  get activeContacts(): StationContact[] {
     return this.contacts?.filter(contact => contact.isActive) || [];
   }
 
-  get hasGroupe(): boolean {
-    return !!this.groupeId && !!this.groupe;
+  get hasGroup(): boolean {
+    return !!this.groupId && !!this.groupe;
   }
 
   get isIndependent(): boolean {
-    return !this.groupeId;
+    return !this.groupId;
   }
 
-  get nomCompletAvecGroupe(): string {
-    if (this.hasGroupe && this.groupe) {
-      return `${this.nom} (${this.groupe.nom})`;
+  get fullNameWithGroup(): string {
+    if (this.hasGroup && this.groupe) {
+      return `${this.name} (${this.groupe.name})`;
     }
-    return this.nom;
+    return this.name;
   }
 
-  get typeStation(): 'grouped' | 'independent' {
-    return this.hasGroupe ? 'grouped' : 'independent';
+  get stationType(): 'grouped' | 'independent' {
+    return this.hasGroup ? 'grouped' : 'independent';
   }
 }

@@ -5,20 +5,20 @@ import { Station } from './station.entity';
 
 @Entity('station_contacts')
 export class StationContact extends BaseEntity {
-  @Column({ name: 'nom_complet' })
-  nomComplet: string;
+  @Column({ name: 'full_name' })
+  fullName: string;
 
   @Column({ nullable: true })
-  poste?: string;
+  position?: string;
 
   @Column({ nullable: true })
-  telephone?: string;
+  phone?: string;
 
   @Column({ nullable: true })
   email?: string;
 
-  @Column({ name: 'est_principal', default: false })
-  estPrincipal: boolean;
+  @Column({ name: 'is_principal', default: false })
+  isPrincipal: boolean;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
@@ -47,13 +47,13 @@ export class StationContact extends BaseEntity {
 
   // Virtual properties
   get displayName(): string {
-    if (this.poste) {
-      return `${this.nomComplet} - ${this.poste}`;
+    if (this.position) {
+      return `${this.fullName} - ${this.position}`;
     }
-    return this.nomComplet;
+    return this.fullName;
   }
 
   get hasContactInfo(): boolean {
-    return !!(this.telephone || this.email);
+    return !!(this.phone || this.email);
   }
 }

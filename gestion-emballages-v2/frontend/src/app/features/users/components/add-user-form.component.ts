@@ -6,11 +6,11 @@ import { UserService } from '@core/services/user.service';
 import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { StationService } from '@core/services/station.service';
-import { FournisseurService } from '@core/services/fournisseur.service';
+import { SupplierService } from '@core/services/supplier.service';
 import { ButtonComponent } from '@shared/components/ui/button.component';
 import { UserRole, EntityType, CreateUserRequest } from '@core/models/user.model';
 import { Station } from '@core/models/station.model';
-import { Fournisseur } from '@core/models/fournisseur.model';
+import { Supplier } from '@core/models/supplier.model';
 
 @Component({
   selector: 'app-add-user-form',
@@ -121,7 +121,7 @@ import { Fournisseur } from '@core/models/fournisseur.model';
               [class.border-red-300]="userForm.get('entityId')?.invalid && userForm.get('entityId')?.touched">
               <option value="">{{ getEntitySelectPlaceholder() }}</option>
               <option *ngFor="let entity of availableEntities()" [value]="entity.id">
-                {{ entity.nom }}
+                {{ entity.name }}
               </option>
             </select>
             <p *ngIf="userForm.get('entityId')?.invalid && userForm.get('entityId')?.touched" 
@@ -200,7 +200,7 @@ export class AddUserFormComponent {
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
   private stationService = inject(StationService);
-  private fournisseurService = inject(FournisseurService);
+  private supplierService = inject(SupplierService);
 
   @Output() cancel = new EventEmitter<void>();
   @Output() userCreated = new EventEmitter<void>();
@@ -208,7 +208,7 @@ export class AddUserFormComponent {
   public loading = signal(false);
   public availableRoles: UserRole[] = [];
   public stations = signal<Station[]>([]);
-  public fournisseurs = signal<Fournisseur[]>([]);
+  public suppliers = signal<Supplier[]>([]);
 
   public userForm: FormGroup = this.fb.group({
     fullName: ['', [Validators.required]],
@@ -235,18 +235,15 @@ export class AddUserFormComponent {
   private async loadEntities(): Promise<void> {
     try {
       // Load active stations
-      const stationsResponse = await this.stationService.getStations({
-        status: 'active',
-        limit: 1000 // Get all active stations
-      });
-      this.stations.set(stationsResponse.data);
+      const activeStations = await this.stationService.getActiveStations();
+      this.stations.set(activeStations);
       
       // Load active suppliers
-      const fournisseursResponse = await this.fournisseurService.getFournisseurs({
+      const suppliersResponse = await this.supplierService.getSuppliers({
         status: 'active',
         limit: 1000 // Get all active suppliers
       });
-      this.fournisseurs.set(fournisseursResponse.data);
+      this.suppliers.set(suppliersResponse.data);
       
     } catch (error) {
       console.error('Error loading entities:', error);
@@ -269,7 +266,7 @@ export class AddUserFormComponent {
     return selectedRole === UserRole.STATION ? 'Sélectionner une station' : 'Sélectionner un fournisseur';
   }
 
-  availableEntities = signal<(Station | Fournisseur)[]>([]);
+  availableEntities = signal<(Station | Supplier)[]>([]);
 
   onRoleChange(): void {
     const selectedRole = this.userForm.get('role')?.value;
@@ -286,7 +283,7 @@ export class AddUserFormComponent {
       if (selectedRole === UserRole.STATION) {
         this.availableEntities.set(this.stations());
       } else if (selectedRole === UserRole.SUPPLIER) {
-        this.availableEntities.set(this.fournisseurs());
+        this.availableEntities.set(this.suppliers());
       }
     } else {
       entityIdControl?.clearValidators();
@@ -323,7 +320,7 @@ export class AddUserFormComponent {
         email: formValue.email,
         phone: formValue.phone?.trim() || undefined,
         role: formValue.role,
-        entityId: formValue.entityId || undefined,
+        entityId: this.getEntityId(formValue.role, formValue.entityId),
         entityType: this.getEntityType(formValue.role) || undefined,
         password: formValue.password
       };
@@ -348,6 +345,15 @@ export class AddUserFormComponent {
       this.notificationService.showError('Erreur lors de la création de l\'utilisateur');
       this.loading.set(false);
     }
+  }
+
+  private getEntityId(role: UserRole, formEntityId: string): string | null {
+    // For roles that don't require entities, always return null
+    if ([UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER].includes(role)) {
+      return null;
+    }
+    // For roles that require entities, return the form value or null if empty
+    return formEntityId || null;
   }
 
   private getEntityType(role: UserRole): EntityType | null {

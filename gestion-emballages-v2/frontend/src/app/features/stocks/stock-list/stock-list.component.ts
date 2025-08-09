@@ -72,7 +72,7 @@ import {
             </div>
             <div class="ml-4">
               <p class="text-sm font-medium text-gray-500">Total Articles</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ analytics()?.totalArticles || 0 }}</p>
+              <p class="text-2xl font-semibold text-gray-900">{{ analytics()?.totalProducts || 0 }}</p>
             </div>
           </div>
         </div>
@@ -268,14 +268,14 @@ import {
                 <!-- Article Info -->
                 <td class="px-6 py-4">
                   <div>
-                    <div class="font-medium text-gray-900">{{ stock.article.designation }}</div>
-                    <div class="text-sm text-gray-500">{{ stock.article.codeArticle }}</div>
+                    <div class="font-medium text-gray-900">{{ stock.product.description }}</div>
+                    <div class="text-sm text-gray-500">{{ stock.product.productCode }}</div>
                   </div>
                 </td>
 
                 <!-- Station -->
                 <td class="px-6 py-4">
-                  <div class="text-sm text-gray-900">{{ stock.station.nom }}</div>
+                  <div class="text-sm text-gray-900">{{ stock.station.name }}</div>
                 </td>
 
                 <!-- Quantity -->
@@ -377,8 +377,8 @@ import {
             
             <div class="flex justify-between items-start">
               <div class="flex-1">
-                <h3 class="font-medium text-gray-900">{{ stock.article.designation }}</h3>
-                <p class="text-sm text-gray-500">{{ stock.station.nom }}</p>
+                <h3 class="font-medium text-gray-900">{{ stock.product.description }}</h3>
+                <p class="text-sm text-gray-500">{{ stock.station.name }}</p>
               </div>
               <span [class]="stockService.getStockStatusClass(stockService.getStockStatus(stock))">
                 {{ stockService.getStockStatusLabel(stockService.getStockStatus(stock)) }}
@@ -492,7 +492,7 @@ export class StockListComponent implements OnInit {
   }
 
   private loadAnalytics() {
-    const stationId = this.authService.userRole() === UserRole.STATION ? this.authService.user()?.entityId : undefined;
+    const stationId = this.authService.userRole() === UserRole.STATION ? this.authService.user()?.entityId || undefined : undefined;
     
     this.stockService.getStockAnalytics(stationId).subscribe({
       next: (analytics) => {
@@ -690,7 +690,7 @@ export class StockListComponent implements OnInit {
   }
 
   deleteStock(stock: StockStation) {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer le stock de ${stock.article.designation} ?`)) {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer le stock de ${stock.product.description} ?`)) {
       this.stockService.deleteStockStation(stock.id).subscribe({
         next: () => {
           this.notificationService.showSuccess('Stock supprimé avec succès');

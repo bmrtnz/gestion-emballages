@@ -108,8 +108,8 @@ export class HeaderComponent {
       '/users': 'Utilisateurs',
       '/stations': 'Stations',
       '/fournisseurs': 'Fournisseurs',
-      '/commandes': 'Commandes',
-      '/liste-achat': 'Liste d\'achat',
+      '/orders': 'Orders',
+      '/shopping-cart': 'Shopping Cart',
       '/stocks': 'Stocks',
       '/transferts': 'Transferts',
       '/previsions': 'Prévisions'

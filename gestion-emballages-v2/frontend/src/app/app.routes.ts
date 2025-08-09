@@ -52,15 +52,15 @@ export const routes: Routes = [
       {
         path: 'platforms',
         canActivate: [adminGuard],
-        loadComponent: () => import('./features/platforms/platform-list/platform-list.component').then(c => c.PlatformListComponent)
+        loadComponent: () => import('./features/platforms/platform-page.component').then(c => c.PlatformPageComponent)
       },
       {
-        path: 'commandes',
-        loadChildren: () => import('./features/commandes/commandes.routes').then(m => m.commandesRoutes)
+        path: 'orders',
+        loadChildren: () => import('./features/orders/orders.routes').then(m => m.ordersRoutes)
       },
       {
-        path: 'liste-achat',
-        loadComponent: () => import('./features/liste-achat/liste-achat.component').then(c => c.ListeAchatComponent)
+        path: 'shopping-cart',
+        loadComponent: () => import('./features/shopping-cart/shopping-cart.component').then(c => c.ShoppingCartComponent)
       },
       {
         path: 'stocks',

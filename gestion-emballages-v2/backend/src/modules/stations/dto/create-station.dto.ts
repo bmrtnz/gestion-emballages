@@ -4,29 +4,29 @@ import { Type } from 'class-transformer';
 class AdresseDto {
   @IsOptional()
   @IsString()
-  rue?: string;
+  street?: string;
 
   @IsOptional()
   @IsString()
-  codePostal?: string;
+  postalCode?: string;
 
   @IsOptional()
   @IsString()
-  ville?: string;
+  city?: string;
 
   @IsOptional()
   @IsString()
-  pays?: string;
+  country?: string;
 }
 
 class ContactPrincipalDto {
   @IsOptional()
   @IsString()
-  nom?: string;
+  name?: string;
 
   @IsOptional()
   @IsString()
-  telephone?: string;
+  phone?: string;
 
   @IsOptional()
   @IsString()
@@ -35,19 +35,19 @@ class ContactPrincipalDto {
 
 export class CreateStationDto {
   @IsString()
-  nom: string;
+  name: string;
 
   @IsOptional()
   @IsString()
-  identifiantInterne?: string;
+  internalId?: string;
 
   @IsOptional()
   @ValidateNested()
   @Type(() => AdresseDto)
-  adresse?: AdresseDto;
+  address?: AdresseDto;
 
   @IsOptional()
   @ValidateNested()
   @Type(() => ContactPrincipalDto)
-  contactPrincipal?: ContactPrincipalDto;
+  mainContact?: ContactPrincipalDto;
 }

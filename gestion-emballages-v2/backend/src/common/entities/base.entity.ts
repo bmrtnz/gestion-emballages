@@ -2,6 +2,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Column,
   BaseEntity as TypeOrmBaseEntity,
 } from 'typeorm';
 
@@ -14,4 +15,7 @@ export abstract class BaseEntity extends TypeOrmBaseEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
 }

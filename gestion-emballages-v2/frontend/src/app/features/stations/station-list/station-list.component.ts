@@ -145,16 +145,16 @@ import { UserRole } from '../../../core/models/user.model';
           <tbody class="bg-white divide-y divide-gray-200">
             <tr *ngFor="let station of stations()" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ station.nom }}</div>
+                <div class="text-sm font-medium text-gray-900">{{ station.name }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ station.adresse }}</div>
-                <div class="text-sm text-gray-500">{{ station.codePostal }} {{ station.ville }}</div>
+                <div class="text-sm text-gray-900">{{ station.address?.street }}</div>
+                <div class="text-sm text-gray-500">{{ station.address?.postalCode }} {{ station.address?.city }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ station.contact }}</div>
-                <div class="text-sm text-gray-500">{{ station.email }}</div>
-                <div class="text-sm text-gray-500">{{ station.telephone }}</div>
+                <div class="text-sm text-gray-900">{{ station.mainContact?.name }}</div>
+                <div class="text-sm text-gray-500">{{ station.mainContact?.email }}</div>
+                <div class="text-sm text-gray-500">{{ station.mainContact?.phone }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span [class]="getStatusBadgeClass(station.isActive)">
@@ -193,8 +193,8 @@ import { UserRole } from '../../../core/models/user.model';
              class="bg-white p-4 rounded-lg shadow border border-gray-200">
           <div class="flex items-start justify-between mb-3">
             <div>
-              <h3 class="font-medium text-gray-900">{{ station.nom }}</h3>
-              <p class="text-sm text-gray-500">{{ station.ville }}</p>
+              <h3 class="font-medium text-gray-900">{{ station.name }}</h3>
+              <p class="text-sm text-gray-500">{{ station.address?.city }}</p>
             </div>
             <span [class]="getStatusBadgeClass(station.isActive)">
               {{ station.isActive ? 'Actif' : 'Inactif' }}
@@ -202,11 +202,11 @@ import { UserRole } from '../../../core/models/user.model';
           </div>
           
           <div class="space-y-2 text-sm">
-            <div><span class="font-medium">Adresse:</span> {{ station.adresse }}</div>
-            <div><span class="font-medium">Code postal:</span> {{ station.codePostal }}</div>
-            <div *ngIf="station.contact"><span class="font-medium">Contact:</span> {{ station.contact }}</div>
-            <div *ngIf="station.email"><span class="font-medium">Email:</span> {{ station.email }}</div>
-            <div *ngIf="station.telephone"><span class="font-medium">Téléphone:</span> {{ station.telephone }}</div>
+            <div><span class="font-medium">Adresse:</span> {{ station.address?.street }}</div>
+            <div><span class="font-medium">Code postal:</span> {{ station.address?.postalCode }}</div>
+            <div *ngIf="station.mainContact?.name"><span class="font-medium">Contact:</span> {{ station.mainContact?.name }}</div>
+            <div *ngIf="station.mainContact?.email"><span class="font-medium">Email:</span> {{ station.mainContact?.email }}</div>
+            <div *ngIf="station.mainContact?.phone"><span class="font-medium">Téléphone:</span> {{ station.mainContact?.phone }}</div>
           </div>
           
           <div class="flex items-center justify-end space-x-3 mt-4 pt-3 border-t border-gray-200">

@@ -9,16 +9,16 @@ export class StationGroup extends BaseEntity {
   identifiant: string;
 
   @Column()
-  nom: string;
+  name: string;
 
   @Column({ name: 'description', nullable: true })
   description?: string;
 
-  @Column({ name: 'contact_principal', type: 'jsonb', default: {} })
-  contactPrincipal: {
-    nom?: string;
-    poste?: string;
-    telephone?: string;
+  @Column({ name: 'main_contact', type: 'jsonb', default: {} })
+  mainContact: {
+    name?: string;
+    position?: string;
+    phone?: string;
     email?: string;
   };
 

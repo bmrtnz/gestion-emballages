@@ -3,7 +3,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity } from '@common/entities/base.entity';
 import { UserRole, EntityType } from '@common/enums/user-role.enum';
 import { Station } from '@modules/stations/entities/station.entity';
-import { Fournisseur } from '@modules/fournisseurs/entities/fournisseur.entity';
+import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 
 @Entity('users')
 export class User extends BaseEntity {

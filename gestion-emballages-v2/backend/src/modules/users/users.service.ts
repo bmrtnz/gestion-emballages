@@ -12,7 +12,7 @@ import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
 import { EmailService } from '@common/services/email.service';
 import { Station } from '@modules/stations/entities/station.entity';
-import { Fournisseur } from '@modules/fournisseurs/entities/fournisseur.entity';
+import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 
 @Injectable()
 export class UsersService {
@@ -21,8 +21,8 @@ export class UsersService {
     public userRepository: Repository<User>,
     @InjectRepository(Station)
     private stationRepository: Repository<Station>,
-    @InjectRepository(Fournisseur)
-    private fournisseurRepository: Repository<Fournisseur>,
+    @InjectRepository(Supplier)
+    private supplierRepository: Repository<Supplier>,
     private paginationService: PaginationService,
     private emailService: EmailService,
   ) {}
@@ -97,27 +97,27 @@ export class UsersService {
       if (user.entityType === EntityType.STATION && user.entityId) {
         const station = await this.stationRepository.findOne({
           where: { id: user.entityId },
-          select: ['id', 'nom', 'identifiantInterne']
+          select: ['id', 'name', 'internalId']
         });
         if (station) {
           (user as any).station = {
             id: station.id,
-            name: station.nom,
-            internalIdentifier: station.identifiantInterne
+            name: station.name,
+            internalIdentifier: station.internalId
           };
           console.log('Added station to user:', user.email, (user as any).station);
         }
       } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
-        const fournisseur = await this.fournisseurRepository.findOne({
+        const supplier = await this.supplierRepository.findOne({
           where: { id: user.entityId },
-          select: ['id', 'nom', 'siret', 'type']
+          select: ['id', 'name', 'siret', 'type']
         });
-        if (fournisseur) {
+        if (supplier) {
           (user as any).supplier = {
-            id: fournisseur.id,
-            name: fournisseur.nom,
-            siret: fournisseur.siret,
-            type: fournisseur.type
+            id: supplier.id,
+            name: supplier.name,
+            siret: supplier.siret,
+            type: supplier.type
           };
           console.log('Added supplier to user:', user.email, (user as any).supplier);
         }
@@ -141,26 +141,26 @@ export class UsersService {
     if (user.entityType === EntityType.STATION && user.entityId) {
       const station = await this.stationRepository.findOne({
         where: { id: user.entityId },
-        select: ['id', 'nom', 'identifiantInterne']
+        select: ['id', 'name', 'internalId']
       });
       if (station) {
         (user as any).station = {
           id: station.id,
-          name: station.nom,
-          internalIdentifier: station.identifiantInterne
+          name: station.name,
+          internalIdentifier: station.internalId
         };
       }
     } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
-      const fournisseur = await this.fournisseurRepository.findOne({
+      const supplier = await this.supplierRepository.findOne({
         where: { id: user.entityId },
-        select: ['id', 'nom', 'siret', 'type']
+        select: ['id', 'name', 'siret', 'type']
       });
-      if (fournisseur) {
+      if (supplier) {
         (user as any).supplier = {
-          id: fournisseur.id,
-          name: fournisseur.nom,
-          siret: fournisseur.siret,
-          type: fournisseur.type
+          id: supplier.id,
+          name: supplier.name,
+          siret: supplier.siret,
+          type: supplier.type
         };
       }
     }
@@ -168,14 +168,14 @@ export class UsersService {
     return user;
   }
 
-  async findOneWithEntity(id: string): Promise<{ user: User; entity?: Station | Fournisseur }> {
+  async findOneWithEntity(id: string): Promise<{ user: User; entity?: Station | Supplier }> {
     const user = await this.findOne(id);
     
-    let entity: Station | Fournisseur | null = null;
+    let entity: Station | Supplier | null = null;
     if (user.entityType === EntityType.STATION && user.entityId) {
       entity = await this.stationRepository.findOne({ where: { id: user.entityId } });
     } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
-      entity = await this.fournisseurRepository.findOne({ where: { id: user.entityId } });
+      entity = await this.supplierRepository.findOne({ where: { id: user.entityId } });
     }
 
     return { user, entity };
@@ -192,6 +192,23 @@ export class UsersService {
 
       if (existingUser) {
         throw new ConflictException('Un utilisateur avec cette adresse email existe déjà');
+      }
+    }
+
+    // Handle role change logic
+    if (updateUserDto.role && updateUserDto.role !== user.role) {
+      // If changing to a role that doesn't require an entity (ADMIN, MANAGER, HANDLER)
+      if ([UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER].includes(updateUserDto.role)) {
+        updateUserDto.entityId = null;
+        updateUserDto.entityType = null;
+      }
+      // If changing to STATION role, ensure entityType is STATION
+      else if (updateUserDto.role === UserRole.STATION) {
+        updateUserDto.entityType = EntityType.STATION;
+      }
+      // If changing to SUPPLIER role, ensure entityType is SUPPLIER
+      else if (updateUserDto.role === UserRole.SUPPLIER) {
+        updateUserDto.entityType = EntityType.SUPPLIER;
       }
     }
 
