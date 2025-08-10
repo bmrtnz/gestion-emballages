@@ -19,13 +19,9 @@ export interface PaginatedResponse<T> {
 
 @Injectable()
 export class PaginationService {
-  createPaginatedResponse<T>(
-    data: T[],
-    total: number,
-    options: PaginationOptions,
-  ): PaginatedResponse<T> {
+  createPaginatedResponse<T>(data: T[], total: number, options: PaginationOptions): PaginatedResponse<T> {
     const totalPages = Math.ceil(total / options.limit);
-    
+
     return {
       data,
       total,
@@ -50,18 +46,11 @@ export class PaginationService {
     };
   }
 
-  async paginate<T>(
-    queryBuilder: any,
-    page: number = 1,
-    limit: number = 10,
-  ): Promise<PaginatedResponse<T>> {
+  async paginate<T>(queryBuilder: any, page: number = 1, limit: number = 10): Promise<PaginatedResponse<T>> {
     const skip = this.getSkip(page, limit);
-    
-    const [data, total] = await queryBuilder
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
-    
+
+    const [data, total] = await queryBuilder.skip(skip).take(limit).getManyAndCount();
+
     return this.createPaginatedResponse(data, total, { page, limit });
   }
 }

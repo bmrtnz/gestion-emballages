@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany, Check } from 'typeorm';
+import { Check, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { TransferStatus } from '@common/enums/transfer-status.enum';
 import { Station } from '@modules/stations/entities/station.entity';
@@ -37,11 +37,11 @@ export class TransferRequest extends BaseEntity {
   createdById?: string;
 
   // Relations
-  @ManyToOne(() => Station, (station) => station.outgoingTransferRequests)
+  @ManyToOne(() => Station, station => station.outgoingTransferRequests)
   @JoinColumn({ name: 'requesting_station_id' })
   requestingStation: Station;
 
-  @ManyToOne(() => Station, (station) => station.incomingTransferRequests)
+  @ManyToOne(() => Station, station => station.incomingTransferRequests)
   @JoinColumn({ name: 'source_station_id' })
   sourceStation: Station;
 
@@ -49,6 +49,6 @@ export class TransferRequest extends BaseEntity {
   @JoinColumn({ name: 'created_by' })
   createdBy?: User;
 
-  @OneToMany(() => TransferRequestProduct, (product) => product.transferRequest)
+  @OneToMany(() => TransferRequestProduct, product => product.transferRequest)
   products: TransferRequestProduct[];
 }

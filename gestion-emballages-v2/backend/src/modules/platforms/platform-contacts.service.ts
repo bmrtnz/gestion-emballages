@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PlatformContact } from './entities/platform-contact.entity';
@@ -12,14 +12,10 @@ export class PlatformContactsService {
     @InjectRepository(PlatformContact)
     private contactRepository: Repository<PlatformContact>,
     @InjectRepository(Platform)
-    private platformRepository: Repository<Platform>,
+    private platformRepository: Repository<Platform>
   ) {}
 
-  async create(
-    platformId: string,
-    createDto: CreatePlatformContactDto,
-    userId?: string,
-  ): Promise<PlatformContact> {
+  async create(platformId: string, createDto: CreatePlatformContactDto, userId?: string): Promise<PlatformContact> {
     // Verify platform exists
     const platform = await this.platformRepository.findOne({
       where: { id: platformId, isActive: true },
@@ -80,7 +76,7 @@ export class PlatformContactsService {
     platformId: string,
     contactId: string,
     updateDto: UpdatePlatformContactDto,
-    userId?: string,
+    userId?: string
   ): Promise<PlatformContact> {
     const contact = await this.findOne(platformId, contactId);
 
@@ -97,35 +93,27 @@ export class PlatformContactsService {
     return await this.contactRepository.save(contact);
   }
 
-  async setPrincipal(
-    platformId: string,
-    contactId: string,
-    userId?: string,
-  ): Promise<PlatformContact> {
+  async setPrincipal(platformId: string, contactId: string, userId?: string): Promise<PlatformContact> {
     const contact = await this.findOne(platformId, contactId);
-    
+
     if (!contact.isActive) {
       throw new BadRequestException('Cannot set inactive contact as principal');
     }
 
     await this.ensureSinglePrincipal(platformId, contactId);
-    
+
     contact.isPrincipal = true;
     contact.updatedById = userId;
 
     return await this.contactRepository.save(contact);
   }
 
-  async deactivate(
-    platformId: string,
-    contactId: string,
-    userId?: string,
-  ): Promise<PlatformContact> {
+  async deactivate(platformId: string, contactId: string, userId?: string): Promise<PlatformContact> {
     const contact = await this.findOne(platformId, contactId);
-    
+
     if (contact.isPrincipal) {
       throw new BadRequestException(
-        'Cannot deactivate principal contact. Please designate another contact as principal first.',
+        'Cannot deactivate principal contact. Please designate another contact as principal first.'
       );
     }
 
@@ -135,13 +123,9 @@ export class PlatformContactsService {
     return await this.contactRepository.save(contact);
   }
 
-  async reactivate(
-    platformId: string,
-    contactId: string,
-    userId?: string,
-  ): Promise<PlatformContact> {
+  async reactivate(platformId: string, contactId: string, userId?: string): Promise<PlatformContact> {
     const contact = await this.findOne(platformId, contactId);
-    
+
     contact.isActive = true;
     contact.updatedById = userId;
 
@@ -150,20 +134,17 @@ export class PlatformContactsService {
 
   async remove(platformId: string, contactId: string): Promise<void> {
     const contact = await this.findOne(platformId, contactId);
-    
+
     if (contact.isPrincipal) {
       throw new BadRequestException(
-        'Cannot delete principal contact. Please designate another contact as principal first.',
+        'Cannot delete principal contact. Please designate another contact as principal first.'
       );
     }
 
     await this.contactRepository.remove(contact);
   }
 
-  private async ensureSinglePrincipal(
-    platformId: string,
-    excludeContactId?: string,
-  ): Promise<void> {
+  private async ensureSinglePrincipal(platformId: string, excludeContactId?: string): Promise<void> {
     // Remove principal status from all other contacts
     const query = this.contactRepository
       .createQueryBuilder()
@@ -194,7 +175,7 @@ export class PlatformContactsService {
 
       // Note: PlatformSite migration code removed as sites are no longer used
       // Contacts are now managed directly through PlatformContact entities
-      
+
       // If no contacts exist, create a default one
       const existingContactsAfterCheck = await this.findAll(platform.id);
       if (existingContactsAfterCheck.length === 0) {

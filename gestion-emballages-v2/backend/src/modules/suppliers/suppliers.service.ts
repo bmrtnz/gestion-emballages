@@ -7,7 +7,7 @@ import { SupplierSite } from './entities/supplier-site.entity';
 import { CreateSupplierDto } from './dto/create-Supplier.dto';
 import { UpdateSupplierDto } from './dto/update-Supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
+import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
 
 @Injectable()
 export class SuppliersService {
@@ -16,7 +16,7 @@ export class SuppliersService {
     private fournisseurRepository: Repository<Supplier>,
     @InjectRepository(SupplierSite)
     private fournisseurSiteRepository: Repository<SupplierSite>,
-    private paginationService: PaginationService,
+    private paginationService: PaginationService
   ) {}
 
   async create(CreateSupplierDto: CreateSupplierDto): Promise<Supplier> {
@@ -29,7 +29,7 @@ export class SuppliersService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'name',
-      sortOrder: paginationDto.sortOrder || 'ASC'
+      sortOrder: paginationDto.sortOrder || 'ASC',
     });
 
     const queryBuilder = this.fournisseurRepository
@@ -65,7 +65,7 @@ export class SuppliersService {
   async findOne(id: string): Promise<Supplier> {
     const Supplier = await this.fournisseurRepository.findOne({
       where: { id },
-      relations: ['sites', 'users', 'createdBy', 'updatedBy']
+      relations: ['sites', 'users', 'createdBy', 'updatedBy'],
     });
 
     if (!Supplier) {
@@ -98,7 +98,7 @@ export class SuppliersService {
     return this.fournisseurRepository.find({
       where: { isActive: true },
       order: { name: 'ASC' },
-      select: ['id', 'name', 'siret', 'type']
+      select: ['id', 'name', 'siret', 'specialties'],
     });
   }
 }

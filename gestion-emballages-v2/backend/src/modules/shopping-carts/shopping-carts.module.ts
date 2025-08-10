@@ -11,8 +11,8 @@ import { PaginationService } from '@common/services/pagination.service';
 import { Product } from '@modules/products/entities/product.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 import { Station } from '@modules/stations/entities/station.entity';
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderProduct } from '@modules/orders/entities/order-product.entity';
+import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
+import { PurchaseOrderProduct } from '@modules/orders/entities/purchase-order-product.entity';
 
 @Module({
   imports: [
@@ -22,12 +22,12 @@ import { OrderProduct } from '@modules/orders/entities/order-product.entity';
       Product,
       Supplier,
       Station,
-      Order,
-      OrderProduct
-    ])
+      PurchaseOrder,
+      PurchaseOrderProduct,
+    ]),
   ],
   controllers: [ShoppingCartsController],
   providers: [ShoppingCartsService, PaginationService],
-  exports: [ShoppingCartsService]
+  exports: [ShoppingCartsService],
 })
 export class ShoppingCartsModule {}

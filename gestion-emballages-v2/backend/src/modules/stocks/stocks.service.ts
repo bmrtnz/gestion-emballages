@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { StockStation } from './entities/stock-station.entity';
 import { StockSupplier } from './entities/stock-supplier.entity';
 import { CreateStockStationDto } from './dto/create-stock-station.dto';
-import { UpdateStockStationDto, AdjustStockDto } from './dto/update-stock-station.dto';
+import { AdjustStockDto, UpdateStockStationDto } from './dto/update-stock-station.dto';
 import { CreateStockSupplierDto } from './dto/create-stock-supplier.dto';
 import { UpdateStockSupplierDto } from './dto/update-stock-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
@@ -19,7 +19,7 @@ export class StocksService {
     @InjectRepository(StockSupplier)
     private stockFournisseurRepository: Repository<StockSupplier>,
     private dataSource: DataSource,
-    private paginationService: PaginationService,
+    private paginationService: PaginationService
   ) {}
 
   // Station Stock Management
@@ -28,8 +28,8 @@ export class StocksService {
     const existingStock = await this.stockStationRepository.findOne({
       where: {
         stationId: createStockStationDto.stationId,
-        articleId: createStockStationDto.articleId
-      }
+        articleId: createStockStationDto.articleId,
+      },
     });
 
     if (existingStock) {
@@ -39,7 +39,7 @@ export class StocksService {
     const stockStation = this.stockStationRepository.create({
       ...createStockStationDto,
       updatedById,
-      derniereMiseAJour: new Date()
+      derniereMiseAJour: new Date(),
     });
 
     return this.stockStationRepository.save(stockStation);
@@ -50,7 +50,7 @@ export class StocksService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'derniereMiseAJour',
-      sortOrder: paginationDto.sortOrder || 'DESC'
+      sortOrder: paginationDto.sortOrder || 'DESC',
     });
 
     const queryBuilder = this.stockStationRepository
@@ -69,15 +69,15 @@ export class StocksService {
 
     // Add station filter for role-based access
     if (paginationDto['stationId']) {
-      queryBuilder.andWhere('stock.stationId = :stationId', { 
-        stationId: paginationDto['stationId'] 
+      queryBuilder.andWhere('stock.stationId = :stationId', {
+        stationId: paginationDto['stationId'],
       });
     }
 
     // Add Product filter
     if (paginationDto['articleId']) {
-      queryBuilder.andWhere('stock.articleId = :articleId', { 
-        articleId: paginationDto['articleId'] 
+      queryBuilder.andWhere('stock.articleId = :articleId', {
+        articleId: paginationDto['articleId'],
       });
     }
 
@@ -85,15 +85,13 @@ export class StocksService {
     if (paginationDto['lowStock'] === 'true') {
       queryBuilder.andWhere(
         '(stock.seuilAlerte IS NOT NULL AND stock.quantiteActuelle <= stock.seuilAlerte) OR ' +
-        '(stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique)'
+          '(stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique)'
       );
     }
 
     // Add critical stock filter
     if (paginationDto['criticalStock'] === 'true') {
-      queryBuilder.andWhere(
-        'stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique'
-      );
+      queryBuilder.andWhere('stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique');
     }
 
     // Add sorting and pagination
@@ -110,7 +108,7 @@ export class StocksService {
   async findOneStockStation(id: string): Promise<StockStation> {
     const stockStation = await this.stockStationRepository.findOne({
       where: { id },
-      relations: ['station', 'Product', 'updatedBy']
+      relations: ['station', 'Product', 'updatedBy'],
     });
 
     if (!stockStation) {
@@ -123,17 +121,21 @@ export class StocksService {
   async findStockByStationAndArticle(stationId: string, articleId: string): Promise<StockStation | null> {
     return this.stockStationRepository.findOne({
       where: { stationId, articleId },
-      relations: ['station', 'Product', 'updatedBy']
+      relations: ['station', 'Product', 'updatedBy'],
     });
   }
 
-  async updateStockStation(id: string, updateStockStationDto: UpdateStockStationDto, updatedById?: string): Promise<StockStation> {
+  async updateStockStation(
+    id: string,
+    updateStockStationDto: UpdateStockStationDto,
+    updatedById?: string
+  ): Promise<StockStation> {
     const stockStation = await this.findOneStockStation(id);
 
     Object.assign(stockStation, {
       ...updateStockStationDto,
       updatedById,
-      derniereMiseAJour: new Date()
+      derniereMiseAJour: new Date(),
     });
 
     return this.stockStationRepository.save(stockStation);
@@ -143,7 +145,7 @@ export class StocksService {
     const stockStation = await this.findOneStockStation(id);
 
     const newQuantity = stockStation.quantiteActuelle + adjustStockDto.ajustement;
-    
+
     if (newQuantity < 0) {
       throw new BadRequestException('La quantité ne peut pas être négative');
     }
@@ -166,8 +168,8 @@ export class StocksService {
     const existingStock = await this.stockFournisseurRepository.findOne({
       where: {
         fournisseurSiteId: CreateStockSupplierDto.fournisseurSiteId,
-        articleId: CreateStockSupplierDto.articleId
-      }
+        articleId: CreateStockSupplierDto.articleId,
+      },
     });
 
     if (existingStock) {
@@ -176,7 +178,7 @@ export class StocksService {
 
     const StockSupplier = this.stockFournisseurRepository.create({
       ...CreateStockSupplierDto,
-      derniereMiseAJour: new Date()
+      derniereMiseAJour: new Date(),
     });
 
     return this.stockFournisseurRepository.save(StockSupplier);
@@ -187,7 +189,7 @@ export class StocksService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'derniereMiseAJour',
-      sortOrder: paginationDto.sortOrder || 'DESC'
+      sortOrder: paginationDto.sortOrder || 'DESC',
     });
 
     const queryBuilder = this.stockFournisseurRepository
@@ -206,15 +208,15 @@ export class StocksService {
 
     // Add Supplier filter for role-based access
     if (paginationDto['fournisseurId']) {
-      queryBuilder.andWhere('Supplier.id = :fournisseurId', { 
-        supplierId: paginationDto['fournisseurId'] 
+      queryBuilder.andWhere('Supplier.id = :fournisseurId', {
+        supplierId: paginationDto['fournisseurId'],
       });
     }
 
     // Add Product filter
     if (paginationDto['articleId']) {
-      queryBuilder.andWhere('stock.articleId = :articleId', { 
-        articleId: paginationDto['articleId'] 
+      queryBuilder.andWhere('stock.articleId = :articleId', {
+        articleId: paginationDto['articleId'],
       });
     }
 
@@ -237,7 +239,7 @@ export class StocksService {
   async findOneStockFournisseur(id: string): Promise<StockSupplier> {
     const StockSupplier = await this.stockFournisseurRepository.findOne({
       where: { id },
-      relations: ['SupplierSite', 'SupplierSite.Supplier', 'Product']
+      relations: ['SupplierSite', 'SupplierSite.Supplier', 'Product'],
     });
 
     if (!StockSupplier) {
@@ -247,10 +249,13 @@ export class StocksService {
     return StockSupplier;
   }
 
-  async findStockByFournisseurSiteAndArticle(fournisseurSiteId: string, articleId: string): Promise<StockSupplier | null> {
+  async findStockByFournisseurSiteAndArticle(
+    fournisseurSiteId: string,
+    articleId: string
+  ): Promise<StockSupplier | null> {
     return this.stockFournisseurRepository.findOne({
       where: { fournisseurSiteId, articleId },
-      relations: ['SupplierSite', 'SupplierSite.Supplier', 'Product']
+      relations: ['SupplierSite', 'SupplierSite.Supplier', 'Product'],
     });
   }
 
@@ -259,7 +264,7 @@ export class StocksService {
 
     Object.assign(StockSupplier, {
       ...UpdateStockSupplierDto,
-      derniereMiseAJour: new Date()
+      derniereMiseAJour: new Date(),
     });
 
     return this.stockFournisseurRepository.save(StockSupplier);
@@ -284,11 +289,11 @@ export class StocksService {
     const stocks = await queryBuilder.getMany();
 
     const totalArticles = stocks.length;
-    const lowStockItems = stocks.filter(stock => 
-      stock.seuilAlerte && stock.quantiteActuelle <= stock.seuilAlerte
+    const lowStockItems = stocks.filter(
+      stock => stock.seuilAlerte && stock.quantiteActuelle <= stock.seuilAlerte
     ).length;
-    const criticalStockItems = stocks.filter(stock => 
-      stock.seuilCritique && stock.quantiteActuelle <= stock.seuilCritique
+    const criticalStockItems = stocks.filter(
+      stock => stock.seuilCritique && stock.quantiteActuelle <= stock.seuilCritique
     ).length;
     const outOfStockItems = stocks.filter(stock => stock.quantiteActuelle === 0).length;
 
@@ -304,8 +309,8 @@ export class StocksService {
         normal: totalArticles - lowStockItems,
         lowStock: lowStockItems - criticalStockItems,
         critical: criticalStockItems,
-        outOfStock: outOfStockItems
-      }
+        outOfStock: outOfStockItems,
+      },
     };
   }
 
@@ -316,16 +321,14 @@ export class StocksService {
       .leftJoinAndSelect('stock.Product', 'Product')
       .where(
         '(stock.seuilAlerte IS NOT NULL AND stock.quantiteActuelle <= stock.seuilAlerte) OR ' +
-        '(stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique)'
+          '(stock.seuilCritique IS NOT NULL AND stock.quantiteActuelle <= stock.seuilCritique)'
       );
 
     if (stationId) {
       queryBuilder.andWhere('stock.stationId = :stationId', { stationId });
     }
 
-    return queryBuilder
-      .orderBy('stock.quantiteActuelle', 'ASC')
-      .getMany();
+    return queryBuilder.orderBy('stock.quantiteActuelle', 'ASC').getMany();
   }
 
   async getStockMovements(articleId: string, stationId?: string, days: number = 30) {
@@ -338,7 +341,7 @@ export class StocksService {
       period: `${days} days`,
       totalIn: 0,
       totalOut: 0,
-      netChange: 0
+      netChange: 0,
     };
   }
 }

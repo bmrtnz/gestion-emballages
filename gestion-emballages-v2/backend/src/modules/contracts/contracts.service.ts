@@ -1,11 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, MoreThan, LessThan, In } from 'typeorm';
-import { MasterContract, ContractStatus, ContractType } from './entities/master-contract.entity';
+import { Between, In, LessThan, MoreThan, Repository } from 'typeorm';
+import { ContractStatus, ContractType, MasterContract } from './entities/master-contract.entity';
 import { ContractProductSLA } from './entities/contract-product-sla.entity';
 import { ContractPerformanceMetric } from './entities/contract-performance-metric.entity';
-import { CreateContractDto, UpdateContractDto, ContractFiltersDto, ContractSummaryDto, ContractValidationDto } from './dto/contract.dto';
-import { CreateProductSLADto, UpdateProductSLADto, ProductSLAResponseDto } from './dto/product-sla.dto';
+import {
+  ContractFiltersDto,
+  ContractSummaryDto,
+  ContractValidationDto,
+  CreateContractDto,
+  UpdateContractDto,
+} from './dto/contract.dto';
+import { CreateProductSLADto, ProductSLAResponseDto, UpdateProductSLADto } from './dto/product-sla.dto';
 import { PaginationService } from '@common/services/pagination.service';
 import { Product } from '@modules/products/entities/product.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
@@ -15,26 +21,26 @@ export class ContractsService {
   constructor(
     @InjectRepository(MasterContract)
     private contractRepository: Repository<MasterContract>,
-    
+
     @InjectRepository(ContractProductSLA)
     private productSLARepository: Repository<ContractProductSLA>,
-    
+
     @InjectRepository(ContractPerformanceMetric)
     private performanceMetricRepository: Repository<ContractPerformanceMetric>,
-    
+
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
-    
+
     @InjectRepository(Supplier)
     private supplierRepository: Repository<Supplier>,
-    
-    private paginationService: PaginationService,
+
+    private paginationService: PaginationService
   ) {}
 
   async create(createContractDto: CreateContractDto, createdById: string): Promise<MasterContract> {
     // Validate supplier exists
     const supplier = await this.supplierRepository.findOne({
-      where: { id: createContractDto.supplierId, isActive: true }
+      where: { id: createContractDto.supplierId },
     });
 
     if (!supplier) {
@@ -43,7 +49,7 @@ export class ContractsService {
 
     // Check for duplicate contract numbers
     const existingContract = await this.contractRepository.findOne({
-      where: { contractNumber: createContractDto.contractNumber }
+      where: { contractNumber: createContractDto.contractNumber },
     });
 
     if (existingContract) {
@@ -63,7 +69,7 @@ export class ContractsService {
       validFrom,
       validUntil,
       createdById,
-      status: ContractStatus.DRAFT
+      status: ContractStatus.DRAFT,
     });
 
     return this.contractRepository.save(contract);
@@ -86,69 +92,69 @@ export class ContractsService {
 
     if (filters.contractNumber) {
       queryBuilder.andWhere('contract.contractNumber ILIKE :contractNumber', {
-        contractNumber: `%${filters.contractNumber}%`
+        contractNumber: `%${filters.contractNumber}%`,
       });
     }
 
     if (filters.contractName) {
       queryBuilder.andWhere('contract.contractName ILIKE :contractName', {
-        contractName: `%${filters.contractName}%`
+        contractName: `%${filters.contractName}%`,
       });
     }
 
     if (filters.supplierId) {
       queryBuilder.andWhere('contract.supplierId = :supplierId', {
-        supplierId: filters.supplierId
+        supplierId: filters.supplierId,
       });
     }
 
     if (filters.contractType) {
       queryBuilder.andWhere('contract.contractType = :contractType', {
-        contractType: filters.contractType
+        contractType: filters.contractType,
       });
     }
 
     if (filters.status) {
       queryBuilder.andWhere('contract.status = :status', {
-        status: filters.status
+        status: filters.status,
       });
     }
 
     if (filters.currency) {
       queryBuilder.andWhere('contract.currency = :currency', {
-        currency: filters.currency
+        currency: filters.currency,
       });
     }
 
     // Date filters
     if (filters.validFromStart) {
       queryBuilder.andWhere('contract.validFrom >= :validFromStart', {
-        validFromStart: new Date(filters.validFromStart)
+        validFromStart: new Date(filters.validFromStart),
       });
     }
 
     if (filters.validFromEnd) {
       queryBuilder.andWhere('contract.validFrom <= :validFromEnd', {
-        validFromEnd: new Date(filters.validFromEnd)
+        validFromEnd: new Date(filters.validFromEnd),
       });
     }
 
     if (filters.validUntilStart) {
       queryBuilder.andWhere('contract.validUntil >= :validUntilStart', {
-        validUntilStart: new Date(filters.validUntilStart)
+        validUntilStart: new Date(filters.validUntilStart),
       });
     }
 
     if (filters.validUntilEnd) {
       queryBuilder.andWhere('contract.validUntil <= :validUntilEnd', {
-        validUntilEnd: new Date(filters.validUntilEnd)
+        validUntilEnd: new Date(filters.validUntilEnd),
       });
     }
 
     // Special filters
     if (filters.activeOnly) {
-      queryBuilder.andWhere('contract.status = :activeStatus AND contract.isActive = true', {
-        activeStatus: ContractStatus.ACTIVE
+      queryBuilder.andWhere('contract.status = :activeStatus', {
+        activeStatus: ContractStatus.ACTIVE,
       });
     }
 
@@ -156,22 +162,21 @@ export class ContractsService {
       const days = filters.expiringDays || 30;
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + days);
-      
+
       queryBuilder.andWhere(
         'contract.status = :activeStatus AND contract.validUntil <= :expiryDate AND contract.validUntil > :now',
         {
           activeStatus: ContractStatus.ACTIVE,
           expiryDate,
-          now: new Date()
+          now: new Date(),
         }
       );
     }
 
     if (filters.requiresReview) {
-      queryBuilder.andWhere(
-        'contract.nextReviewDate IS NOT NULL AND contract.nextReviewDate <= :now',
-        { now: new Date() }
-      );
+      queryBuilder.andWhere('contract.nextReviewDate IS NOT NULL AND contract.nextReviewDate <= :now', {
+        now: new Date(),
+      });
     }
 
     // Apply sorting
@@ -183,13 +188,7 @@ export class ContractsService {
   async findOne(id: string): Promise<MasterContract> {
     const contract = await this.contractRepository.findOne({
       where: { id },
-      relations: [
-        'supplier',
-        'createdBy', 
-        'approvedBy',
-        'productSLAs',
-        'productSLAs.product'
-      ]
+      relations: ['supplier', 'createdBy', 'approvedBy', 'productSLAs', 'productSLAs.product'],
     });
 
     if (!contract) {
@@ -226,46 +225,38 @@ export class ContractsService {
 
   async deactivate(id: string): Promise<void> {
     const contract = await this.findOne(id);
-    
-    contract.status = ContractStatus.TERMINATED;
-    contract.isActive = false;
-    
-    await this.contractRepository.save(contract);
 
-    // Also deactivate all product SLAs
-    await this.productSLARepository.update(
-      { masterContractId: id },
-      { isActive: false }
-    );
+    contract.status = ContractStatus.TERMINATED;
+
+    await this.contractRepository.save(contract);
   }
 
   async activate(id: string): Promise<MasterContract> {
     const contract = await this.findOne(id);
-    
+
     if (contract.status !== ContractStatus.DRAFT && contract.status !== ContractStatus.SUSPENDED) {
       throw new BadRequestException('Contract can only be activated from DRAFT or SUSPENDED status');
     }
 
     contract.status = ContractStatus.ACTIVE;
-    contract.isActive = true;
-    
+
     return this.contractRepository.save(contract);
   }
 
   async suspend(id: string, reason?: string): Promise<MasterContract> {
     const contract = await this.findOne(id);
-    
+
     if (contract.status !== ContractStatus.ACTIVE) {
       throw new BadRequestException('Only active contracts can be suspended');
     }
 
     contract.status = ContractStatus.SUSPENDED;
-    
+
     if (reason && contract.metadata) {
       contract.metadata.suspensionReason = reason;
       contract.metadata.suspendedAt = new Date().toISOString();
     }
-    
+
     return this.contractRepository.save(contract);
   }
 
@@ -279,7 +270,7 @@ export class ContractsService {
     renewedById: string
   ): Promise<MasterContract> {
     const contract = await this.findOne(id);
-    
+
     const newValidUntil = new Date(renewalData.validUntil);
     if (newValidUntil <= contract.validUntil) {
       throw new BadRequestException('New expiry date must be after current expiry date');
@@ -303,7 +294,7 @@ export class ContractsService {
       renewedBy: renewedById,
       previousValidUntil: contract.validUntil.toISOString(),
       newValidUntil: newValidUntil.toISOString(),
-      adjustments: renewalData.adjustments
+      adjustments: renewalData.adjustments,
     });
 
     return this.contractRepository.save(contract);
@@ -311,19 +302,19 @@ export class ContractsService {
 
   async submitForReview(id: string, reviewNotes?: string): Promise<MasterContract> {
     const contract = await this.findOne(id);
-    
+
     contract.nextReviewDate = new Date();
     if (reviewNotes) {
       contract.metadata = contract.metadata || {};
       contract.metadata.reviewNotes = reviewNotes;
     }
-    
+
     return this.contractRepository.save(contract);
   }
 
   async approve(id: string, approvedById: string, approvalNotes?: string): Promise<MasterContract> {
     const contract = await this.findOne(id);
-    
+
     if (contract.status !== ContractStatus.DRAFT) {
       throw new BadRequestException('Only draft contracts can be approved');
     }
@@ -331,28 +322,28 @@ export class ContractsService {
     contract.status = ContractStatus.ACTIVE;
     contract.approvedById = approvedById;
     contract.approvedAt = new Date();
-    
+
     if (approvalNotes) {
       contract.metadata = contract.metadata || {};
       contract.metadata.approvalNotes = approvalNotes;
     }
-    
+
     return this.contractRepository.save(contract);
   }
 
   async reject(id: string, rejectedById: string, rejectionReason: string): Promise<MasterContract> {
     const contract = await this.findOne(id);
-    
+
     contract.status = ContractStatus.DRAFT; // Back to draft for corrections
-    
+
     contract.metadata = contract.metadata || {};
     contract.metadata.rejectionHistory = contract.metadata.rejectionHistory || [];
     contract.metadata.rejectionHistory.push({
       rejectedAt: new Date().toISOString(),
       rejectedBy: rejectedById,
-      reason: rejectionReason
+      reason: rejectionReason,
     });
-    
+
     return this.contractRepository.save(contract);
   }
 
@@ -364,10 +355,10 @@ export class ContractsService {
     createdById: string
   ): Promise<ContractProductSLA> {
     const contract = await this.findOne(contractId);
-    
+
     // Validate product exists
     const product = await this.productRepository.findOne({
-      where: { id: createProductSLADto.productId, isActive: true }
+      where: { id: createProductSLADto.productId },
     });
 
     if (!product) {
@@ -382,9 +373,8 @@ export class ContractsService {
       .createQueryBuilder('sla')
       .where('sla.masterContractId = :contractId', { contractId })
       .andWhere('sla.productId = :productId', { productId: createProductSLADto.productId })
-      .andWhere('sla.isActive = true')
       .andWhere('sla.effectiveFrom < :effectiveUntil', {
-        effectiveUntil: effectiveUntil || new Date('2100-01-01')
+        effectiveUntil: effectiveUntil || new Date('2100-01-01'),
       })
       .andWhere(
         effectiveUntil
@@ -403,7 +393,7 @@ export class ContractsService {
       masterContractId: contractId,
       effectiveFrom,
       effectiveUntil,
-      createdById
+      createdById,
     });
 
     return this.productSLARepository.save(productSLA);
@@ -431,12 +421,11 @@ export class ContractsService {
         id: sla.product.id,
         name: sla.product.name,
         category: sla.product.category,
-        isActive: sla.product.isActive
       },
       effectiveSLA: {
         deliverySLADays: sla.getEffectiveDeliverySLA(),
         qualityTolerancePercent: sla.getEffectiveQualityTolerance(),
-        deliveryTolerancePercent: sla.deliveryTolerancePercent || sla.masterContract.defaultDeliveryTolerancePercent
+        deliveryTolerancePercent: sla.deliveryTolerancePercent || sla.masterContract.defaultDeliveryTolerancePercent,
       },
       overrides: {
         deliverySLADays: sla.deliverySLADays,
@@ -444,8 +433,8 @@ export class ContractsService {
         deliveryTolerancePercent: sla.deliveryTolerancePercent,
         lateDeliveryPenaltyPercent: sla.lateDeliveryPenaltyPercent,
         qualityIssuePenaltyPercent: sla.qualityIssuePenaltyPercent,
-        earlyDeliveryBonusPercent: sla.earlyDeliveryBonusPercent,
-        qualityExcellenceBonusPercent: sla.qualityExcellenceBonusPercent
+        deliveryExcellenceBonusPercent: sla.deliveryExcellenceBonusPercent,
+        qualityExcellenceBonusPercent: sla.qualityExcellenceBonusPercent,
       },
       status: {
         isCurrentlyEffective: sla.isCurrentlyEffective,
@@ -453,14 +442,16 @@ export class ContractsService {
         suspensionReason: sla.suspensionReason,
         effectiveFrom: sla.effectiveFrom,
         effectiveUntil: sla.effectiveUntil,
-        daysUntilExpiry: sla.effectiveUntil ? Math.max(0, Math.ceil((sla.effectiveUntil.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))) : undefined
+        daysUntilExpiry: sla.effectiveUntil
+          ? Math.max(0, Math.ceil((sla.effectiveUntil.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+          : undefined,
       },
       configuration: {
         hasSeasonalAdjustments: sla.hasSeasonalAdjustments,
         hasSpecialRequirements: sla.hasSpecialRequirements,
         hasEscalationRules: sla.hasEscalationRules,
         measurementPeriodDays: sla.measurementPeriodDays,
-        gracePeriodDays: sla.gracePeriodDays
+        gracePeriodDays: sla.gracePeriodDays,
       },
       audit: {
         createdAt: sla.createdAt,
@@ -468,8 +459,8 @@ export class ContractsService {
         createdBy: sla.createdById,
         lastReviewedAt: sla.lastReviewedAt,
         lastReviewedBy: sla.lastReviewedBy,
-        reviewNotes: sla.reviewNotes
-      }
+        reviewNotes: sla.reviewNotes,
+      },
     }));
   }
 
@@ -480,7 +471,7 @@ export class ContractsService {
     updatedById: string
   ): Promise<ContractProductSLA> {
     const productSLA = await this.productSLARepository.findOne({
-      where: { id: slaId, masterContractId: contractId }
+      where: { id: slaId, masterContractId: contractId },
     });
 
     if (!productSLA) {
@@ -496,20 +487,19 @@ export class ContractsService {
 
   async removeProductSLA(contractId: string, slaId: string): Promise<void> {
     const productSLA = await this.productSLARepository.findOne({
-      where: { id: slaId, masterContractId: contractId }
+      where: { id: slaId, masterContractId: contractId },
     });
 
     if (!productSLA) {
       throw new NotFoundException('Product SLA not found');
     }
 
-    productSLA.isActive = false;
-    await this.productSLARepository.save(productSLA);
+    await this.productSLARepository.remove(productSLA);
   }
 
   async suspendProductSLA(contractId: string, slaId: string, reason: string): Promise<ContractProductSLA> {
     const productSLA = await this.productSLARepository.findOne({
-      where: { id: slaId, masterContractId: contractId }
+      where: { id: slaId, masterContractId: contractId },
     });
 
     if (!productSLA) {
@@ -524,7 +514,7 @@ export class ContractsService {
 
   async resumeProductSLA(contractId: string, slaId: string): Promise<ContractProductSLA> {
     const productSLA = await this.productSLARepository.findOne({
-      where: { id: slaId, masterContractId: contractId }
+      where: { id: slaId, masterContractId: contractId },
     });
 
     if (!productSLA) {
@@ -541,25 +531,26 @@ export class ContractsService {
 
   async getContractSummary(id: string): Promise<ContractSummaryDto> {
     const contract = await this.findOne(id);
-    
+
     // Get performance metrics summary (simplified for now)
     const recentMetrics = await this.performanceMetricRepository.find({
-      where: { 
+      where: {
         masterContractId: id,
-        periodEnd: MoreThan(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)) // Last 30 days
+        periodEnd: MoreThan(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)), // Last 30 days
       },
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
     });
 
     const totalPenalties = recentMetrics.reduce((sum, m) => sum + m.penaltiesApplied, 0);
     const totalBonuses = recentMetrics.reduce((sum, m) => sum + m.bonusesEarned, 0);
-    const avgScore = recentMetrics.length > 0 
-      ? recentMetrics.reduce((sum, m) => sum + m.performanceScore, 0) / recentMetrics.length
-      : 0;
+    const avgScore =
+      recentMetrics.length > 0
+        ? recentMetrics.reduce((sum, m) => sum + m.performanceScore, 0) / recentMetrics.length
+        : 0;
 
     // Get product SLA counts
     const productSLAs = await this.productSLARepository.find({
-      where: { masterContractId: id }
+      where: { masterContractId: id },
     });
 
     return {
@@ -571,38 +562,36 @@ export class ContractsService {
         contractType: contract.contractType,
         validFrom: contract.validFrom,
         validUntil: contract.validUntil,
-        isActive: contract.isActive,
         isExpiringSoon: contract.isExpiringSoon,
-        remainingDays: contract.remainingDays
+        remainingDays: contract.remainingDays,
       },
       supplier: {
         id: contract.supplier.id,
         name: contract.supplier.name,
         siret: contract.supplier.siret,
-        isActive: contract.supplier.isActive
       },
       performance: {
         overallScore: avgScore,
         deliveryPerformance: 0, // Would be calculated from specific metrics
-        qualityPerformance: 0,  // Would be calculated from specific metrics
+        qualityPerformance: 0, // Would be calculated from specific metrics
         lastCalculatedAt: recentMetrics[0]?.calculationTimestamp,
         totalPenalties,
         totalBonuses,
-        netFinancialImpact: totalBonuses - totalPenalties
+        netFinancialImpact: totalBonuses - totalPenalties,
       },
       productSLAs: {
         totalCount: productSLAs.length,
-        activeCount: productSLAs.filter(sla => sla.isActive).length,
+        activeCount: productSLAs.filter(sla => sla.isCurrentlyEffective).length,
         suspendedCount: productSLAs.filter(sla => sla.isSuspended).length,
-        productsWithCustomSLAs: productSLAs.filter(sla => 
-          sla.deliverySLADays || sla.qualityTolerancePercent || sla.deliveryTolerancePercent
-        ).length
+        productsWithCustomSLAs: productSLAs.filter(
+          sla => sla.deliverySLADays || sla.qualityTolerancePercent || sla.deliveryTolerancePercent
+        ).length,
       },
       alerts: {
         pendingEscalations: recentMetrics.filter(m => m.escalationTriggered && m.requiresAction).length,
         criticalMetrics: recentMetrics.filter(m => m.status === 'CRITICAL').length,
         lastEscalationDate: recentMetrics.find(m => m.escalationDate)?.escalationDate,
-        requiresAction: recentMetrics.some(m => m.requiresAction)
+        requiresAction: recentMetrics.some(m => m.requiresAction),
       },
       financials: {
         currency: contract.currency,
@@ -610,20 +599,20 @@ export class ContractsService {
         minimumOrderValue: contract.minimumOrderValue,
         defaultPenaltyRates: {
           lateDelivery: contract.lateDeliveryPenaltyPercent,
-          qualityIssue: contract.qualityIssuePenaltyPercent
+          qualityIssue: contract.qualityIssuePenaltyPercent,
         },
         defaultBonusRates: {
-          earlyDelivery: contract.earlyDeliveryBonusPercent,
-          qualityExcellence: contract.qualityExcellenceBonusPercent
-        }
-      }
+          deliveryExcellence: contract.deliveryExcellenceBonusPercent,
+          qualityExcellence: contract.qualityExcellenceBonusPercent,
+        },
+      },
     };
   }
 
   async getContractProducts(id: string) {
     const productSLAs = await this.productSLARepository.find({
-      where: { masterContractId: id, isActive: true },
-      relations: ['product']
+      where: { masterContractId: id },
+      relations: ['product'],
     });
 
     return {
@@ -635,9 +624,9 @@ export class ContractsService {
         hasCustomSLA: !!(sla.deliverySLADays || sla.qualityTolerancePercent),
         effectiveDeliverySLA: sla.getEffectiveDeliverySLA(),
         effectiveQualityTolerance: sla.getEffectiveQualityTolerance(),
-        isActive: sla.isCurrentlyEffective,
-        isSuspended: sla.isSuspended
-      }))
+        isCurrentlyEffective: sla.isCurrentlyEffective,
+        isSuspended: sla.isSuspended,
+      })),
     };
   }
 
@@ -654,24 +643,27 @@ export class ContractsService {
         code: 'INVALID_DATE_RANGE',
         message: 'Contract valid from date must be before valid until date',
         field: 'validFrom',
-        suggestion: 'Adjust the contract validity dates'
+        suggestion: 'Adjust the contract validity dates',
       });
     }
 
     // Get all product SLAs for analysis
     const productSLAs = await this.productSLARepository.find({
-      where: { masterContractId: id, isActive: true },
-      relations: ['product']
+      where: { masterContractId: id },
+      relations: ['product'],
     });
 
     // Check for overlapping SLAs
-    const productGroups = productSLAs.reduce((groups, sla) => {
-      if (!groups[sla.productId]) {
-        groups[sla.productId] = [];
-      }
-      groups[sla.productId].push(sla);
-      return groups;
-    }, {} as Record<string, ContractProductSLA[]>);
+    const productGroups = productSLAs.reduce(
+      (groups, sla) => {
+        if (!groups[sla.productId]) {
+          groups[sla.productId] = [];
+        }
+        groups[sla.productId].push(sla);
+        return groups;
+      },
+      {} as Record<string, ContractProductSLA[]>
+    );
 
     Object.entries(productGroups).forEach(([productId, slas]) => {
       if (slas.length > 1) {
@@ -680,7 +672,7 @@ export class ContractsService {
           for (let j = i + 1; j < slas.length; j++) {
             const sla1 = slas[i];
             const sla2 = slas[j];
-            
+
             const overlap = this.checkSLAOverlap(sla1, sla2);
             if (overlap) {
               slaConflicts.push({
@@ -689,7 +681,7 @@ export class ContractsService {
                 conflictType: 'OVERLAPPING_PERIODS',
                 description: `Overlapping SLA periods detected`,
                 affectedSLAs: [sla1.id, sla2.id],
-                resolution: 'Adjust effective dates to eliminate overlap'
+                resolution: 'Adjust effective dates to eliminate overlap',
               });
             }
           }
@@ -705,24 +697,31 @@ export class ContractsService {
       deliverySLA: {
         min: Math.min(...deliverySLAs, contract.defaultDeliverySLADays),
         max: Math.max(...deliverySLAs, contract.defaultDeliverySLADays),
-        average: deliverySLAs.length > 0 ? deliverySLAs.reduce((a, b) => a + b, 0) / deliverySLAs.length : contract.defaultDeliverySLADays,
-        outliers: [] // Would identify products with significantly different SLAs
+        average:
+          deliverySLAs.length > 0
+            ? deliverySLAs.reduce((a, b) => a + b, 0) / deliverySLAs.length
+            : contract.defaultDeliverySLADays,
+        outliers: [], // Would identify products with significantly different SLAs
       },
       qualityTolerance: {
         min: Math.min(...qualityTolerances, contract.defaultQualityTolerancePercent),
         max: Math.max(...qualityTolerances, contract.defaultQualityTolerancePercent),
-        average: qualityTolerances.length > 0 ? qualityTolerances.reduce((a, b) => a + b, 0) / qualityTolerances.length : contract.defaultQualityTolerancePercent,
-        outliers: []
+        average:
+          qualityTolerances.length > 0
+            ? qualityTolerances.reduce((a, b) => a + b, 0) / qualityTolerances.length
+            : contract.defaultQualityTolerancePercent,
+        outliers: [],
       },
       penalties: {
         totalPenaltyRate: contract.lateDeliveryPenaltyPercent + contract.qualityIssuePenaltyPercent,
         highRiskProducts: productSLAs
-          .filter(sla => 
-            (sla.lateDeliveryPenaltyPercent || contract.lateDeliveryPenaltyPercent) > 2.0 ||
-            (sla.qualityIssuePenaltyPercent || contract.qualityIssuePenaltyPercent) > 3.0
+          .filter(
+            sla =>
+              (sla.lateDeliveryPenaltyPercent || contract.lateDeliveryPenaltyPercent) > 2.0 ||
+              (sla.qualityIssuePenaltyPercent || contract.qualityIssuePenaltyPercent) > 3.0
           )
-          .map(sla => sla.productId)
-      }
+          .map(sla => sla.productId),
+      },
     };
 
     // Generate recommendations
@@ -745,7 +744,7 @@ export class ContractsService {
       issues,
       slaConflicts,
       thresholdAnalysis,
-      recommendations
+      recommendations,
     };
   }
 
@@ -771,7 +770,9 @@ export class ContractsService {
       .where('contract.supplierId = :supplierId', { supplierId });
 
     if (!includeInactive) {
-      queryBuilder.andWhere('contract.isActive = true');
+      queryBuilder.andWhere('contract.status != :terminatedStatus', {
+        terminatedStatus: ContractStatus.TERMINATED,
+      });
     }
 
     queryBuilder.orderBy('contract.createdAt', 'DESC');
@@ -793,8 +794,8 @@ export class ContractsService {
             defaultDeliveryTolerancePercent: 5.0,
             lateDeliveryPenaltyPercent: 0.5,
             qualityIssuePenaltyPercent: 1.0,
-            currency: 'EUR'
-          }
+            currency: 'EUR',
+          },
         },
         {
           name: 'Seasonal Contract',
@@ -806,10 +807,10 @@ export class ContractsService {
             defaultDeliveryTolerancePercent: 3.0,
             lateDeliveryPenaltyPercent: 0.8,
             qualityIssuePenaltyPercent: 1.5,
-            currency: 'EUR'
-          }
-        }
-      ]
+            currency: 'EUR',
+          },
+        },
+      ],
     };
   }
 
@@ -845,9 +846,9 @@ export class ContractsService {
       currency: originalContract.currency,
       lateDeliveryPenaltyPercent: originalContract.lateDeliveryPenaltyPercent,
       qualityIssuePenaltyPercent: originalContract.qualityIssuePenaltyPercent,
-      earlyDeliveryBonusPercent: originalContract.earlyDeliveryBonusPercent,
+      deliveryExcellenceBonusPercent: originalContract.deliveryExcellenceBonusPercent,
       qualityExcellenceBonusPercent: originalContract.qualityExcellenceBonusPercent,
-      metadata: { ...originalContract.metadata }
+      metadata: { ...originalContract.metadata },
     };
 
     // Apply adjustments
@@ -860,7 +861,7 @@ export class ContractsService {
     // Copy product SLAs if requested
     if (options.includeSLAs) {
       const originalSLAs = await this.productSLARepository.find({
-        where: { masterContractId: id, isActive: true }
+        where: { masterContractId: id },
       });
 
       for (const originalSLA of originalSLAs) {
@@ -877,7 +878,7 @@ export class ContractsService {
           lateDeliveryPenaltyPercent: originalSLA.lateDeliveryPenaltyPercent,
           qualityIssuePenaltyPercent: originalSLA.qualityIssuePenaltyPercent,
           quantityShortagePenaltyPercent: originalSLA.quantityShortagePenaltyPercent,
-          earlyDeliveryBonusPercent: originalSLA.earlyDeliveryBonusPercent,
+          deliveryExcellenceBonusPercent: originalSLA.deliveryExcellenceBonusPercent,
           qualityExcellenceBonusPercent: originalSLA.qualityExcellenceBonusPercent,
           minimumOrderFulfillmentRate: originalSLA.minimumOrderFulfillmentRate,
           maximumResponseTimeHours: originalSLA.maximumResponseTimeHours,
@@ -887,7 +888,7 @@ export class ContractsService {
           escalationRules: originalSLA.escalationRules,
           measurementPeriodDays: originalSLA.measurementPeriodDays,
           gracePeriodDays: originalSLA.gracePeriodDays,
-          effectiveFrom: options.validFrom
+          effectiveFrom: options.validFrom,
         };
 
         await this.addProductSLA(newContract.id, newSLAData, duplicatedById);
@@ -905,13 +906,11 @@ export class ContractsService {
       [ContractStatus.ACTIVE]: [ContractStatus.SUSPENDED, ContractStatus.EXPIRED, ContractStatus.TERMINATED],
       [ContractStatus.SUSPENDED]: [ContractStatus.ACTIVE, ContractStatus.TERMINATED],
       [ContractStatus.EXPIRED]: [ContractStatus.TERMINATED],
-      [ContractStatus.TERMINATED]: []
+      [ContractStatus.TERMINATED]: [],
     };
 
     if (!validTransitions[currentStatus].includes(newStatus)) {
-      throw new BadRequestException(
-        `Invalid status transition from ${currentStatus} to ${newStatus}`
-      );
+      throw new BadRequestException(`Invalid status transition from ${currentStatus} to ${newStatus}`);
     }
   }
 

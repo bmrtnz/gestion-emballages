@@ -1,11 +1,11 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { PurchaseOrder } from './purchase-order.entity';
 import { Product } from '@modules/products/entities/product.entity';
 import { ProductSupplier } from '@modules/products/entities/product-supplier.entity';
 
 @Entity('purchase_order_products')
-export class OrderProduct extends BaseEntity {
+export class PurchaseOrderProduct extends BaseEntity {
   @Column({ name: 'purchase_order_id' })
   purchaseOrderId: string;
 
@@ -34,17 +34,17 @@ export class OrderProduct extends BaseEntity {
   desiredDeliveryDate?: Date;
 
   // Relations
-  @ManyToOne(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.orderProducts, {
+  @ManyToOne(() => PurchaseOrder, purchaseOrder => purchaseOrder.orderProducts, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'purchase_order_id' })
   purchaseOrder: PurchaseOrder;
 
-  @ManyToOne(() => Product, (product) => product.orderProducts)
+  @ManyToOne(() => Product, product => product.orderProducts)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => ProductSupplier, (productSupplier) => productSupplier.orderProducts)
+  @ManyToOne(() => ProductSupplier, productSupplier => productSupplier.orderProducts)
   @JoinColumn({ name: 'product_supplier_id' })
   productSupplier: ProductSupplier;
 

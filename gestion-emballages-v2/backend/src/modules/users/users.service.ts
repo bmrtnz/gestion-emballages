@@ -1,15 +1,15 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
 import { User } from './entities/user.entity';
-import { UserRole, EntityType } from '@common/enums/user-role.enum';
+import { EntityType, UserRole } from '@common/enums/user-role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
+import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
 import { EmailService } from '@common/services/email.service';
 import { Station } from '@modules/stations/entities/station.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
@@ -24,13 +24,13 @@ export class UsersService {
     @InjectRepository(Supplier)
     private supplierRepository: Repository<Supplier>,
     private paginationService: PaginationService,
-    private emailService: EmailService,
+    private emailService: EmailService
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     // Check if email already exists
     const existingUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email }
+      where: { email: createUserDto.email },
     });
 
     if (existingUser) {
@@ -39,11 +39,16 @@ export class UsersService {
 
     // Hash password
     const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(createUserDto.password, saltRounds);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, saltRounds);
 
     const user = this.userRepository.create({
-      ...createUserDto,
-      passwordHash,
+      email: createUserDto.email,
+      fullName: createUserDto.fullName,
+      phone: createUserDto.phone,
+      role: createUserDto.role,
+      entityType: createUserDto.entityType,
+      entityId: createUserDto.entityId,
+      hashedPassword,
     });
 
     return this.userRepository.save(user);
@@ -54,17 +59,16 @@ export class UsersService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
-      sortOrder: paginationDto.sortOrder || 'DESC'
+      sortOrder: paginationDto.sortOrder || 'DESC',
     });
 
     const queryBuilder = this.userRepository.createQueryBuilder('user');
 
     // Add search functionality
     if (paginationDto.search) {
-      queryBuilder.where(
-        '(user.full_name ILIKE :search OR user.email ILIKE :search)',
-        { search: `%${paginationDto.search}%` }
-      );
+      queryBuilder.where('(user.full_name ILIKE :search OR user.email ILIKE :search)', {
+        search: `%${paginationDto.search}%`,
+      });
     }
 
     // Add status filter
@@ -91,46 +95,48 @@ export class UsersService {
       .take(paginationOptions.limit);
 
     const [users, total] = await queryBuilder.getManyAndCount();
-    
+
     // Populate entity details for each user
-    const data = await Promise.all(users.map(async (user) => {
-      if (user.entityType === EntityType.STATION && user.entityId) {
-        const station = await this.stationRepository.findOne({
-          where: { id: user.entityId },
-          select: ['id', 'name', 'internalId']
-        });
-        if (station) {
-          (user as any).station = {
-            id: station.id,
-            name: station.name,
-            internalIdentifier: station.internalId
-          };
-          console.log('Added station to user:', user.email, (user as any).station);
+    const data = await Promise.all(
+      users.map(async user => {
+        if (user.entityType === EntityType.STATION && user.entityId) {
+          const station = await this.stationRepository.findOne({
+            where: { id: user.entityId },
+            select: ['id', 'name', 'internalId'],
+          });
+          if (station) {
+            (user as any).station = {
+              id: station.id,
+              name: station.name,
+              internalIdentifier: station.internalId,
+            };
+            console.log('Added station to user:', user.email, (user as any).station);
+          }
+        } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
+          const supplier = await this.supplierRepository.findOne({
+            where: { id: user.entityId },
+            select: ['id', 'name', 'siret', 'specialties'],
+          });
+          if (supplier) {
+            (user as any).supplier = {
+              id: supplier.id,
+              name: supplier.name,
+              siret: supplier.siret,
+              specialties: supplier.specialties,
+            };
+            console.log('Added supplier to user:', user.email, (user as any).supplier);
+          }
         }
-      } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
-        const supplier = await this.supplierRepository.findOne({
-          where: { id: user.entityId },
-          select: ['id', 'name', 'siret', 'type']
-        });
-        if (supplier) {
-          (user as any).supplier = {
-            id: supplier.id,
-            name: supplier.name,
-            siret: supplier.siret,
-            type: supplier.type
-          };
-          console.log('Added supplier to user:', user.email, (user as any).supplier);
-        }
-      }
-      return user;
-    }));
+        return user;
+      })
+    );
 
     return this.paginationService.createPaginatedResponse(data, total, paginationOptions);
   }
 
   async findOne(id: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { id }
+      where: { id },
     });
 
     if (!user) {
@@ -141,26 +147,26 @@ export class UsersService {
     if (user.entityType === EntityType.STATION && user.entityId) {
       const station = await this.stationRepository.findOne({
         where: { id: user.entityId },
-        select: ['id', 'name', 'internalId']
+        select: ['id', 'name', 'internalId'],
       });
       if (station) {
         (user as any).station = {
           id: station.id,
           name: station.name,
-          internalIdentifier: station.internalId
+          internalIdentifier: station.internalId,
         };
       }
     } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
       const supplier = await this.supplierRepository.findOne({
         where: { id: user.entityId },
-        select: ['id', 'name', 'siret', 'type']
+        select: ['id', 'name', 'siret', 'specialties'],
       });
       if (supplier) {
         (user as any).supplier = {
           id: supplier.id,
           name: supplier.name,
           siret: supplier.siret,
-          type: supplier.type
+          specialties: supplier.specialties,
         };
       }
     }
@@ -170,7 +176,7 @@ export class UsersService {
 
   async findOneWithEntity(id: string): Promise<{ user: User; entity?: Station | Supplier }> {
     const user = await this.findOne(id);
-    
+
     let entity: Station | Supplier | null = null;
     if (user.entityType === EntityType.STATION && user.entityId) {
       entity = await this.stationRepository.findOne({ where: { id: user.entityId } });
@@ -187,7 +193,7 @@ export class UsersService {
     // Check if email is being changed and if it already exists
     if (updateUserDto.email && updateUserDto.email !== user.email) {
       const existingUser = await this.userRepository.findOne({
-        where: { email: updateUserDto.email }
+        where: { email: updateUserDto.email },
       });
 
       if (existingUser) {
@@ -232,12 +238,12 @@ export class UsersService {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      throw new BadRequestException('Format d\'email invalide');
+      throw new BadRequestException("Format d'email invalide");
     }
 
     // Find user (only active users can reset passwords)
     const user = await this.userRepository.findOne({
-      where: { email, isActive: true }
+      where: { email, isActive: true },
     });
 
     // For security reasons, always return success message
@@ -281,20 +287,20 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: {
         resetToken: token,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
 
-    if (!user || !user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+    if (!user?.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
       throw new BadRequestException('Token invalide ou expiré');
     }
 
     // Hash new password
     const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(newPassword, saltRounds);
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
     // Update user password and clear reset token
-    user.passwordHash = passwordHash;
+    user.hashedPassword = hashedPassword;
     user.resetToken = null;
     user.resetTokenExpiry = null;
     await this.userRepository.save(user);

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SupplierContact } from './entities/supplier-contact.entity';
@@ -12,14 +12,10 @@ export class SupplierContactsService {
     @InjectRepository(SupplierContact)
     private contactRepository: Repository<SupplierContact>,
     @InjectRepository(Supplier)
-    private supplierRepository: Repository<Supplier>,
+    private supplierRepository: Repository<Supplier>
   ) {}
 
-  async create(
-    supplierId: string,
-    createDto: CreateSupplierContactDto,
-    userId?: string,
-  ): Promise<SupplierContact> {
+  async create(supplierId: string, createDto: CreateSupplierContactDto, userId?: string): Promise<SupplierContact> {
     // Verify Supplier exists
     const supplier = await this.supplierRepository.findOne({
       where: { id: supplierId, isActive: true },
@@ -80,7 +76,7 @@ export class SupplierContactsService {
     supplierId: string,
     contactId: string,
     updateDto: UpdateSupplierContactDto,
-    userId?: string,
+    userId?: string
   ): Promise<SupplierContact> {
     const contact = await this.findOne(supplierId, contactId);
 
@@ -97,35 +93,27 @@ export class SupplierContactsService {
     return await this.contactRepository.save(contact);
   }
 
-  async setPrincipal(
-    supplierId: string,
-    contactId: string,
-    userId?: string,
-  ): Promise<SupplierContact> {
+  async setPrincipal(supplierId: string, contactId: string, userId?: string): Promise<SupplierContact> {
     const contact = await this.findOne(supplierId, contactId);
-    
+
     if (!contact.isActive) {
       throw new BadRequestException('Cannot set inactive contact as principal');
     }
 
     await this.ensureSinglePrincipal(supplierId, contactId);
-    
+
     contact.isPrincipal = true;
     contact.updatedById = userId;
 
     return await this.contactRepository.save(contact);
   }
 
-  async deactivate(
-    supplierId: string,
-    contactId: string,
-    userId?: string,
-  ): Promise<SupplierContact> {
+  async deactivate(supplierId: string, contactId: string, userId?: string): Promise<SupplierContact> {
     const contact = await this.findOne(supplierId, contactId);
-    
+
     if (contact.isPrincipal) {
       throw new BadRequestException(
-        'Cannot deactivate principal contact. Please designate another contact as principal first.',
+        'Cannot deactivate principal contact. Please designate another contact as principal first.'
       );
     }
 
@@ -135,13 +123,9 @@ export class SupplierContactsService {
     return await this.contactRepository.save(contact);
   }
 
-  async reactivate(
-    supplierId: string,
-    contactId: string,
-    userId?: string,
-  ): Promise<SupplierContact> {
+  async reactivate(supplierId: string, contactId: string, userId?: string): Promise<SupplierContact> {
     const contact = await this.findOne(supplierId, contactId);
-    
+
     contact.isActive = true;
     contact.updatedById = userId;
 
@@ -150,20 +134,17 @@ export class SupplierContactsService {
 
   async remove(supplierId: string, contactId: string): Promise<void> {
     const contact = await this.findOne(supplierId, contactId);
-    
+
     if (contact.isPrincipal) {
       throw new BadRequestException(
-        'Cannot delete principal contact. Please designate another contact as principal first.',
+        'Cannot delete principal contact. Please designate another contact as principal first.'
       );
     }
 
     await this.contactRepository.remove(contact);
   }
 
-  private async ensureSinglePrincipal(
-    supplierId: string,
-    excludeContactId?: string,
-  ): Promise<void> {
+  private async ensureSinglePrincipal(supplierId: string, excludeContactId?: string): Promise<void> {
     // Remove principal status from all other contacts
     const query = this.contactRepository
       .createQueryBuilder()
@@ -197,7 +178,7 @@ export class SupplierContactsService {
       // This is a placeholder - actual migration logic would depend on data structure
       if (supplier.sites && supplier.sites.length > 0) {
         const principalSite = supplier.sites.find(s => s.isPrincipal) || supplier.sites[0];
-        
+
         // Create a default contact based on available data
         await this.create(supplier.id, {
           fullName: `Contact ${supplier.name}`,

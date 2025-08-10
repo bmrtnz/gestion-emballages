@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { Station } from '@modules/stations/entities/station.entity';
 import { User } from '@modules/users/entities/user.entity';
@@ -16,7 +16,7 @@ export class ShoppingCart extends BaseEntity {
   createdById?: string;
 
   // Relations
-  @ManyToOne(() => Station, (station) => station.shoppingCarts)
+  @ManyToOne(() => Station, station => station.shoppingCarts)
   @JoinColumn({ name: 'station_id' })
   station: Station;
 
@@ -24,6 +24,6 @@ export class ShoppingCart extends BaseEntity {
   @JoinColumn({ name: 'created_by' })
   createdBy?: User;
 
-  @OneToMany(() => ShoppingCartItem, (item) => item.shoppingCart)
+  @OneToMany(() => ShoppingCartItem, item => item.shoppingCart)
   items: ShoppingCartItem[];
 }

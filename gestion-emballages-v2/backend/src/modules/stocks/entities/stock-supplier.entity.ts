@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { SupplierSite } from '@modules/suppliers/entities/supplier-site.entity';
 import { Product } from '@modules/products/entities/product.entity';
@@ -19,11 +19,11 @@ export class StockSupplier extends BaseEntity {
   derniereMiseAJour: Date;
 
   // Relations
-  @ManyToOne(() => SupplierSite, (site) => site.stocks)
+  @ManyToOne(() => SupplierSite, site => site.stocks)
   @JoinColumn({ name: 'fournisseur_site_id' })
   supplierSite: SupplierSite;
 
-  @ManyToOne(() => Product, (product) => product.stocksFournisseur)
+  @ManyToOne(() => Product, product => product.stocksFournisseur)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }

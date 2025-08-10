@@ -1,20 +1,20 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { BaseEntity } from '@common/entities/base.entity';
-import { UserRole, EntityType } from '@common/enums/user-role.enum';
+import { SoftDeletableEntity } from '@common/entities/base.entity';
+import { EntityType, UserRole } from '@common/enums/user-role.enum';
 import { Station } from '@modules/stations/entities/station.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 
 @Entity('users')
-export class User extends BaseEntity {
+export class User extends SoftDeletableEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ name: 'password_hash' })
+  @Column({ name: 'hashed_password' })
   @Exclude()
-  passwordHash: string;
+  hashedPassword: string;
 
-  @Column({ name: 'full_name', nullable: true })
+  @Column({ name: 'full_name' })
   fullName: string;
 
   @Column({ nullable: true })
@@ -36,9 +36,6 @@ export class User extends BaseEntity {
 
   @Column({ name: 'entity_id', nullable: true })
   entityId?: string;
-
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
 
   @Column({ name: 'reset_token', nullable: true })
   @Exclude()

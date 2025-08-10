@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { ShoppingCart } from './shopping-cart.entity';
 import { Product } from '@modules/products/entities/product.entity';
@@ -23,13 +23,13 @@ export class ShoppingCartItem extends BaseEntity {
   dateSouhaitee_livraison?: Date;
 
   // Relations
-  @ManyToOne(() => ShoppingCart, (liste) => liste.items, {
+  @ManyToOne(() => ShoppingCart, liste => liste.items, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'shopping_cart_id' })
   shoppingCart: ShoppingCart;
 
-  @ManyToOne(() => Product, (product) => product.listeAchatItems)
+  @ManyToOne(() => Product, product => product.listeAchatItems)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 

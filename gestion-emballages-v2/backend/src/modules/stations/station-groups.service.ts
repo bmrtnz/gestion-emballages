@@ -1,33 +1,13 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { StationGroup } from './entities/station-group.entity';
 import { Station } from './entities/station.entity';
+import { CreateStationGroupDto } from './dto/create-station-group.dto';
+import { UpdateStationGroupDto } from './dto/update-station-group.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
-
-export interface CreateStationGroupDto {
-  name: string;
-  description?: string;
-  mainContact?: {
-    name?: string;
-    position?: string;
-    phone?: string;
-    email?: string;
-  };
-}
-
-export interface UpdateStationGroupDto {
-  name?: string;
-  description?: string;
-  mainContact?: {
-    name?: string;
-    position?: string;
-    phone?: string;
-    email?: string;
-  };
-}
+import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
 
 @Injectable()
 export class StationGroupsService {
@@ -36,7 +16,7 @@ export class StationGroupsService {
     private stationGroupRepository: Repository<StationGroup>,
     @InjectRepository(Station)
     private stationRepository: Repository<Station>,
-    private paginationService: PaginationService,
+    private paginationService: PaginationService
   ) {}
 
   async create(createDto: CreateStationGroupDto): Promise<StationGroup> {
@@ -46,12 +26,11 @@ export class StationGroupsService {
     });
 
     if (existingGroup) {
-      throw new ConflictException('Un groupe de stations avec ce name existe déjà');
+      throw new ConflictException('A station group with this name already exists');
     }
 
     const stationGroup = this.stationGroupRepository.create({
       ...createDto,
-      mainContact: createDto.mainContact || {},
     });
 
     return this.stationGroupRepository.save(stationGroup);
@@ -61,44 +40,39 @@ export class StationGroupsService {
     const paginationOptions = this.paginationService.validatePaginationOptions({
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
-      sortBy: paginationDto.sortBy || 'nom',
+      sortBy: paginationDto.sortBy || 'name',
       sortOrder: paginationDto.sortOrder || 'ASC',
     });
 
     const queryBuilder = this.stationGroupRepository
-      .createQueryBuilder('groupe')
-      .leftJoinAndSelect('groupe.stations', 'stations', 'stations.isActive = :isActive', {
+      .createQueryBuilder('stationGroup')
+      .leftJoinAndSelect('stationGroup.stations', 'stations', 'stations.isActive = :isActive', {
         isActive: true,
       });
 
     // Add search functionality
     if (paginationDto.search) {
-      queryBuilder.where(
-        '(groupe.name ILIKE :search OR groupe.description ILIKE :search)',
-        { search: `%${paginationDto.search}%` },
-      );
+      queryBuilder.where('(stationGroup.name ILIKE :search OR stationGroup.description ILIKE :search)', {
+        search: `%${paginationDto.search}%`,
+      });
     }
 
     // Add status filter
     if (paginationDto.status === 'active') {
-      queryBuilder.andWhere('groupe.isActive = :isActive', { isActive: true });
+      queryBuilder.andWhere('stationGroup.isActive = :isActive', { isActive: true });
     } else if (paginationDto.status === 'inactive') {
-      queryBuilder.andWhere('groupe.isActive = :isActive', { isActive: false });
+      queryBuilder.andWhere('stationGroup.isActive = :isActive', { isActive: false });
     }
 
     // Add sorting and pagination
     queryBuilder
-      .orderBy(`groupe.${paginationOptions.sortBy}`, paginationOptions.sortOrder)
+      .orderBy(`stationGroup.${paginationOptions.sortBy}`, paginationOptions.sortOrder)
       .skip(this.paginationService.getSkip(paginationOptions.page, paginationOptions.limit))
       .take(paginationOptions.limit);
 
     const [stationGroups, total] = await queryBuilder.getManyAndCount();
 
-    return this.paginationService.createPaginatedResponse(
-      stationGroups,
-      total,
-      paginationOptions,
-    );
+    return this.paginationService.createPaginatedResponse(stationGroups, total, paginationOptions);
   }
 
   async findOne(id: string): Promise<StationGroup> {
@@ -108,7 +82,7 @@ export class StationGroupsService {
     });
 
     if (!stationGroup) {
-      throw new NotFoundException('Groupe de stations non trouvé');
+      throw new NotFoundException('Station group not found');
     }
 
     return stationGroup;
@@ -124,16 +98,8 @@ export class StationGroupsService {
       });
 
       if (existingGroup) {
-        throw new ConflictException('Un groupe de stations avec ce name existe déjà');
+        throw new ConflictException('A station group with this name already exists');
       }
-    }
-
-    // Merge main contact data
-    if (updateDto.mainContact) {
-      updateDto.mainContact = {
-        ...stationGroup.mainContact,
-        ...updateDto.mainContact,
-      };
     }
 
     Object.assign(stationGroup, updateDto);
@@ -142,13 +108,23 @@ export class StationGroupsService {
 
   async remove(id: string): Promise<void> {
     const stationGroup = await this.findOne(id);
+
+    // Deactivate the station group
     stationGroup.isActive = false;
     await this.stationGroupRepository.save(stationGroup);
+
+    // Cascade deactivation to all related stations
+    await this.stationRepository.update({ stationGroupId: id, isActive: true }, { isActive: false });
   }
 
   async reactivate(id: string): Promise<StationGroup> {
     const stationGroup = await this.findOne(id);
     stationGroup.isActive = true;
+
+    // Note: We don't automatically reactivate stations when reactivating a group
+    // This allows for selective reactivation of stations
+    // Stations must be reactivated individually if needed
+
     return this.stationGroupRepository.save(stationGroup);
   }
 
@@ -159,17 +135,17 @@ export class StationGroupsService {
     });
 
     if (!stationGroup) {
-      throw new NotFoundException('Groupe de stations non trouvé');
+      throw new NotFoundException('Station group not found');
     }
 
-    return stationGroup.stations.filter((station) => station.isActive);
+    return stationGroup.stations.filter(station => station.isActive);
   }
 
   async getIndependentStations(): Promise<Station[]> {
     return this.stationRepository.find({
-      where: { 
-        groupId: null, // Explicitly null - independent stations
-        isActive: true 
+      where: {
+        stationGroupId: null, // Explicitly null - independent stations
+        isActive: true,
       },
       relations: ['contacts'],
       order: { name: 'ASC' },
@@ -185,7 +161,7 @@ export class StationGroupsService {
   }> {
     const [totalStations, independentStations, totalGroups] = await Promise.all([
       this.stationRepository.count({ where: { isActive: true } }),
-      this.stationRepository.count({ where: { groupId: null, isActive: true } }),
+      this.stationRepository.count({ where: { stationGroupId: null, isActive: true } }),
       this.stationGroupRepository.count({ where: { isActive: true } }),
     ]);
 

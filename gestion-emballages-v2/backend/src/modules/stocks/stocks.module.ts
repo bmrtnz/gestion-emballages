@@ -8,14 +8,9 @@ import { StockSupplier } from './entities/stock-supplier.entity';
 import { PaginationService } from '@common/services/pagination.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      StockStation,
-      StockSupplier
-    ])
-  ],
+  imports: [TypeOrmModule.forFeature([StockStation, StockSupplier])],
   controllers: [StocksController],
   providers: [StocksService, PaginationService],
-  exports: [StocksService]
+  exports: [StocksService],
 })
 export class StocksModule {}

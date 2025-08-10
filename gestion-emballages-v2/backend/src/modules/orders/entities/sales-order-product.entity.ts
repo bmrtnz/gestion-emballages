@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { SalesOrder } from './sales-order.entity';
 import { Product } from '@modules/products/entities/product.entity';
@@ -62,7 +62,7 @@ export class SalesOrderProduct extends BaseEntity {
   notes?: string;
 
   // Relations
-  @ManyToOne(() => SalesOrder, (salesOrder) => salesOrder.salesOrderProducts)
+  @ManyToOne(() => SalesOrder, salesOrder => salesOrder.salesOrderProducts)
   @JoinColumn({ name: 'sales_order_id' })
   salesOrder: SalesOrder;
 

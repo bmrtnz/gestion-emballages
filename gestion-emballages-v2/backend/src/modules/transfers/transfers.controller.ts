@@ -1,22 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
   UseInterceptors,
-  Request
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { TransfersService } from './transfers.service';
 import { CreateTransferRequestDto } from './dto/create-transfer-request.dto';
-import { UpdateTransferRequestDto, ApproveTransferDto } from './dto/update-transfer-request.dto';
+import { ApproveTransferDto, UpdateTransferRequestDto } from './dto/update-transfer-request.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
@@ -85,10 +85,7 @@ export class TransfersController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update transfer request' })
   @ApiResponse({ status: 200, description: 'Transfer request updated successfully' })
-  async update(
-    @Param('id') id: string,
-    @Body() updateTransferRequestDto: UpdateTransferRequestDto
-  ) {
+  async update(@Param('id') id: string, @Body() updateTransferRequestDto: UpdateTransferRequestDto) {
     return this.transfersService.update(id, updateTransferRequestDto);
   }
 
@@ -96,10 +93,7 @@ export class TransfersController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update transfer request status' })
   @ApiResponse({ status: 200, description: 'Transfer request status updated successfully' })
-  async updateStatus(
-    @Param('id') id: string,
-    @Body() body: { status: TransferStatus }
-  ) {
+  async updateStatus(@Param('id') id: string, @Body() body: { status: TransferStatus }) {
     return this.transfersService.updateStatus(id, body.status);
   }
 
@@ -107,10 +101,7 @@ export class TransfersController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Approve transfer request with quantities' })
   @ApiResponse({ status: 200, description: 'Transfer request approved successfully' })
-  async approve(
-    @Param('id') id: string,
-    @Body() approveTransferDto: ApproveTransferDto
-  ) {
+  async approve(@Param('id') id: string, @Body() approveTransferDto: ApproveTransferDto) {
     return this.transfersService.approveTransfer(id, approveTransferDto);
   }
 
@@ -118,10 +109,7 @@ export class TransfersController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Reject transfer request' })
   @ApiResponse({ status: 200, description: 'Transfer request rejected successfully' })
-  async reject(
-    @Param('id') id: string,
-    @Body() body: { reason?: string }
-  ) {
+  async reject(@Param('id') id: string, @Body() body: { reason?: string }) {
     return this.transfersService.rejectTransfer(id, body.reason);
   }
 
@@ -141,8 +129,8 @@ export class TransfersController {
     return {
       statuses: Object.values(TransferStatus).map(status => ({
         value: status,
-        label: status
-      }))
+        label: status,
+      })),
     };
   }
 }

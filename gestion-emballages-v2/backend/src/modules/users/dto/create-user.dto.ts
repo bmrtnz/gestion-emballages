@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
-import { UserRole, EntityType } from '@common/enums/user-role.enum';
+import { EntityType, UserRole } from '@common/enums/user-role.enum';
 
 export class CreateUserDto {
   @IsEmail()

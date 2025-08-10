@@ -1,26 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { StationContact } from './entities/station-contact.entity';
 import { Station } from './entities/station.entity';
-
-export interface CreateStationContactDto {
-  fullName: string;
-  position?: string;
-  phone?: string;
-  email?: string;
-  isPrincipal?: boolean;
-  stationId: string;
-}
-
-export interface UpdateStationContactDto {
-  fullName?: string;
-  position?: string;
-  phone?: string;
-  email?: string;
-  isPrincipal?: boolean;
-}
+import { CreateStationContactDto } from './dto/create-station-contact.dto';
+import { UpdateStationContactDto } from './dto/update-station-contact.dto';
 
 @Injectable()
 export class StationContactsService {
@@ -28,7 +13,7 @@ export class StationContactsService {
     @InjectRepository(StationContact)
     private stationContactRepository: Repository<StationContact>,
     @InjectRepository(Station)
-    private stationRepository: Repository<Station>,
+    private stationRepository: Repository<Station>
   ) {}
 
   async create(createDto: CreateStationContactDto): Promise<StationContact> {
@@ -38,12 +23,12 @@ export class StationContactsService {
     });
 
     if (!station) {
-      throw new NotFoundException('Station non trouvée');
+      throw new NotFoundException('Station not found');
     }
 
-    // If this is to be the principal contact, ensure no other principal contact exists
-    if (createDto.isPrincipal) {
-      await this.ensureNoPrincipalContact(createDto.stationId);
+    // If this is to be the primary contact, ensure no other primary contact exists
+    if (createDto.isPrimary) {
+      await this.ensurePrimaryContact(createDto.stationId);
     }
 
     const contact = this.stationContactRepository.create(createDto);
@@ -52,8 +37,8 @@ export class StationContactsService {
 
   async findByStation(stationId: string): Promise<StationContact[]> {
     return this.stationContactRepository.find({
-      where: { stationId, isActive: true },
-      order: { isPrincipal: 'DESC', fullName: 'ASC' },
+      where: { stationId },
+      order: { isPrimary: 'DESC', name: 'ASC' },
     });
   }
 
@@ -64,7 +49,7 @@ export class StationContactsService {
     });
 
     if (!contact) {
-      throw new NotFoundException('Contact non trouvé');
+      throw new NotFoundException('Contact not found');
     }
 
     return contact;
@@ -73,9 +58,9 @@ export class StationContactsService {
   async update(id: string, updateDto: UpdateStationContactDto): Promise<StationContact> {
     const contact = await this.findOne(id);
 
-    // If setting as principal contact, ensure no other principal contact exists
-    if (updateDto.isPrincipal && !contact.isPrincipal) {
-      await this.ensureNoPrincipalContact(contact.stationId, id);
+    // If setting as primary contact, ensure no other primary contact exists
+    if (updateDto.isPrimary && !contact.isPrimary) {
+      await this.ensurePrimaryContact(contact.stationId, id);
     }
 
     Object.assign(contact, updateDto);
@@ -83,53 +68,41 @@ export class StationContactsService {
   }
 
   async remove(id: string): Promise<void> {
-    const contact = await this.findOne(id);
-    contact.isActive = false;
-    await this.stationContactRepository.save(contact);
-  }
-
-  async reactivate(id: string): Promise<StationContact> {
-    const contact = await this.findOne(id);
-    contact.isActive = true;
-    return this.stationContactRepository.save(contact);
+    await this.stationContactRepository.delete(id);
   }
 
   async setPrincipal(id: string): Promise<StationContact> {
     const contact = await this.findOne(id);
 
-    // Remove principal status from other contacts in the same station
-    await this.stationContactRepository.update(
-      { stationId: contact.stationId, isPrincipal: true },
-      { isPrincipal: false },
-    );
+    // Remove primary status from other contacts in the same station
+    await this.stationContactRepository.update({ stationId: contact.stationId, isPrimary: true }, { isPrimary: false });
 
-    // Set this contact as principal
-    contact.isPrincipal = true;
+    // Set this contact as primary
+    contact.isPrimary = true;
     return this.stationContactRepository.save(contact);
   }
 
-  async getPrincipalContact(stationId: string): Promise<StationContact | null> {
+  async getPrimaryContact(stationId: string): Promise<StationContact | null> {
     return this.stationContactRepository.findOne({
-      where: { stationId, isPrincipal: true, isActive: true },
+      where: { stationId, isPrimary: true },
     });
   }
 
-  private async ensureNoPrincipalContact(stationId: string, excludeId?: string): Promise<void> {
+  private async ensurePrimaryContact(stationId: string, excludeId?: string): Promise<void> {
     const queryBuilder = this.stationContactRepository
       .createQueryBuilder('contact')
       .where('contact.stationId = :stationId', { stationId })
-      .andWhere('contact.isPrincipal = :estPrincipal', { isPrincipal: true })
-      .andWhere('contact.isActive = :isActive', { isActive: true });
+      .andWhere('contact.isPrimary = :isPrimary', { isPrimary: true });
 
     if (excludeId) {
       queryBuilder.andWhere('contact.id != :excludeId', { excludeId });
     }
 
-    const existingPrincipal = await queryBuilder.getOne();
+    const existingPrimary = await queryBuilder.getOne();
 
-    if (existingPrincipal) {
+    if (existingPrimary) {
       throw new BadRequestException(
-        'Cette station a déjà un contact principal. Veuillez d\'abord retirer le statut principal de l\'autre contact.',
+        'This station already has a primary contact. Please remove the primary status from the other contact first.'
       );
     }
   }

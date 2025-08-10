@@ -1,4 +1,4 @@
-import { IsUUID, IsNumber, Min, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateStockStationDto {
@@ -15,7 +15,7 @@ export class CreateStockStationDto {
   @Min(0)
   quantiteActuelle: number;
 
-  @ApiPropertyOptional({ description: 'Seuil d\'alerte', minimum: 0 })
+  @ApiPropertyOptional({ description: "Seuil d'alerte", minimum: 0 })
   @IsOptional()
   @IsNumber()
   @Min(0)

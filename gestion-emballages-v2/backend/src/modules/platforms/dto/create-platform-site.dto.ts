@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsBoolean, IsEmail } from 'class-validator';
+import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreatePlatformSiteDto {
@@ -7,7 +7,7 @@ export class CreatePlatformSiteDto {
   name: string;
 
   @IsOptional()
-  @IsString({ message: 'L\'adresse doit être une chaîne de caractères' })
+  @IsString({ message: "L'adresse doit être une chaîne de caractères" })
   @Transform(({ value }) => value?.trim())
   address?: string;
 
@@ -27,7 +27,7 @@ export class CreatePlatformSiteDto {
   phone?: string;
 
   @IsOptional()
-  @IsEmail({}, { message: 'L\'email doit être valide' })
+  @IsEmail({}, { message: "L'email doit être valide" })
   @Transform(({ value }) => value?.toLowerCase().trim())
   email?: string;
 

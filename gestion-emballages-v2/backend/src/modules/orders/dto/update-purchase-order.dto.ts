@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePurchaseOrderDto } from './create-purchase-order.dto';
-import { IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { OrderStatus } from '@common/enums/order-status.enum';
 
 export class UpdatePurchaseOrderDto extends PartialType(CreatePurchaseOrderDto) {

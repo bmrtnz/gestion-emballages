@@ -1,33 +1,34 @@
-import { IsString, IsNumber, IsOptional, IsUUID, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { ConditioningUnit } from '@common/enums/conditioning-unit.enum';
 
 export class CreateProductSupplierDto {
   @IsUUID()
-  articleId: string;
+  productId: string;
 
   @IsUUID()
   supplierId: string;
 
   @IsOptional()
   @IsString()
-  referenceFournisseur?: string;
+  supplierProductCode?: string;
 
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
-  unitPrice: number;
+  conditioningPrice: number;
 
   @IsOptional()
-  @IsString()
-  uniteConditionnement?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(1)
-  quantiteParConditionnement?: number;
+  @IsEnum(ConditioningUnit)
+  conditioningUnit?: ConditioningUnit;
 
   @IsOptional()
   @IsNumber()
   @Min(1)
-  delaiIndicatifApprovisionnement?: number; // in working days
+  quantityPerConditioning?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  indicativeSupplyDelay?: number; // in working days
 
   @IsOptional()
   @IsString()

@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { ShoppingCart } from './entities/shopping-cart.entity';
 import { ShoppingCartItem } from './entities/shopping-cart-item.entity';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { UpdateShoppingCartDto, AddItemToShoppingCartDto, ValidateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import {
+  AddItemToShoppingCartDto,
+  UpdateShoppingCartDto,
+  ValidateShoppingCartDto,
+} from './dto/update-shopping-cart.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService } from '@common/services/pagination.service';
 
@@ -13,8 +17,8 @@ import { PaginationService } from '@common/services/pagination.service';
 import { Product } from '@modules/products/entities/product.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 import { Station } from '@modules/stations/entities/station.entity';
-import { Order } from '@modules/orders/entities/order.entity';
-import { OrderProduct } from '@modules/orders/entities/order-product.entity';
+import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
+import { PurchaseOrderProduct } from '@modules/orders/entities/purchase-order-product.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 
 @Injectable()
@@ -30,18 +34,18 @@ export class ShoppingCartsService {
     private fournisseurRepository: Repository<Supplier>,
     @InjectRepository(Station)
     private stationRepository: Repository<Station>,
-    @InjectRepository(Order)
-    private commandeRepository: Repository<Order>,
-    @InjectRepository(OrderProduct)
-    private commandeArticleRepository: Repository<OrderProduct>,
+    @InjectRepository(PurchaseOrder)
+    private purchaseOrderRepository: Repository<PurchaseOrder>,
+    @InjectRepository(PurchaseOrderProduct)
+    private purchaseOrderProductRepository: Repository<PurchaseOrderProduct>,
     private dataSource: DataSource,
-    private paginationService: PaginationService,
+    private paginationService: PaginationService
   ) {}
 
   async create(CreateShoppingCartDto: CreateShoppingCartDto, createdById?: string): Promise<ShoppingCart> {
     // Verify station exists
     const station = await this.stationRepository.findOne({
-      where: { id: CreateShoppingCartDto.stationId }
+      where: { id: CreateShoppingCartDto.stationId },
     });
 
     if (!station) {
@@ -50,14 +54,14 @@ export class ShoppingCartsService {
 
     // Check if station already has an active shopping list
     const existingListe = await this.listeAchatRepository.findOne({
-      where: { 
+      where: {
         stationId: CreateShoppingCartDto.stationId,
-        status: 'active'
-      }
+        status: 'active',
+      },
     });
 
     if (existingListe) {
-      throw new BadRequestException('La station a déjà une liste d\'achat active');
+      throw new BadRequestException("La station a déjà une liste d'achat active");
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -77,11 +81,11 @@ export class ShoppingCartsService {
       if (CreateShoppingCartDto.items && CreateShoppingCartDto.items.length > 0) {
         await this.validateItems(CreateShoppingCartDto.items);
 
-        const items = CreateShoppingCartDto.items.map(itemDto => 
+        const items = CreateShoppingCartDto.items.map(itemDto =>
           queryRunner.manager.create(ShoppingCartItem, {
             ...itemDto,
             shoppingCartId: savedListeAchat.id,
-            desiredDeliveryDate: itemDto.desiredDeliveryDate ? new Date(itemDto.desiredDeliveryDate) : undefined
+            desiredDeliveryDate: itemDto.desiredDeliveryDate ? new Date(itemDto.desiredDeliveryDate) : undefined,
           })
         );
 
@@ -104,7 +108,7 @@ export class ShoppingCartsService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
-      sortOrder: paginationDto.sortOrder || 'DESC'
+      sortOrder: paginationDto.sortOrder || 'DESC',
     });
 
     const queryBuilder = this.listeAchatRepository
@@ -117,10 +121,9 @@ export class ShoppingCartsService {
 
     // Add search functionality
     if (paginationDto.search) {
-      queryBuilder.where(
-        '(station.name ILIKE :search OR station.ville ILIKE :search)',
-        { search: `%${paginationDto.search}%` }
-      );
+      queryBuilder.where('(station.name ILIKE :search OR station.ville ILIKE :search)', {
+        search: `%${paginationDto.search}%`,
+      });
     }
 
     // Add status filter
@@ -132,8 +135,8 @@ export class ShoppingCartsService {
 
     // Add station filter for role-based access
     if (paginationDto['stationId']) {
-      queryBuilder.andWhere('liste.stationId = :stationId', { 
-        stationId: paginationDto['stationId'] 
+      queryBuilder.andWhere('liste.stationId = :stationId', {
+        stationId: paginationDto['stationId'],
       });
     }
 
@@ -151,17 +154,11 @@ export class ShoppingCartsService {
   async findOne(id: string): Promise<ShoppingCart> {
     const ShoppingCart = await this.listeAchatRepository.findOne({
       where: { id },
-      relations: [
-        'station',
-        'createdBy',
-        'items',
-        'items.Product',
-        'items.Supplier'
-      ]
+      relations: ['station', 'createdBy', 'items', 'items.Product', 'items.Supplier'],
     });
 
     if (!ShoppingCart) {
-      throw new NotFoundException('Liste d\'achat non trouvée');
+      throw new NotFoundException("Liste d'achat non trouvée");
     }
 
     return ShoppingCart;
@@ -169,17 +166,11 @@ export class ShoppingCartsService {
 
   async findActiveByStation(stationId: string): Promise<ShoppingCart | null> {
     return this.listeAchatRepository.findOne({
-      where: { 
+      where: {
         stationId,
-        status: 'active'
+        status: 'active',
       },
-      relations: [
-        'station',
-        'createdBy',
-        'items',
-        'items.Product',
-        'items.Supplier'
-      ]
+      relations: ['station', 'createdBy', 'items', 'items.Product', 'items.Supplier'],
     });
   }
 
@@ -205,16 +196,16 @@ export class ShoppingCartsService {
         await this.validateItems(UpdateShoppingCartDto.items);
 
         // Delete existing items
-        await queryRunner.manager.delete(ShoppingCartItem, { 
-          listeAchatId: id 
+        await queryRunner.manager.delete(ShoppingCartItem, {
+          listeAchatId: id,
         });
 
         // Create new items
-        const items = UpdateShoppingCartDto.items.map(itemDto => 
+        const items = UpdateShoppingCartDto.items.map(itemDto =>
           queryRunner.manager.create(ShoppingCartItem, {
             ...itemDto,
             listeAchatId: id,
-            desiredDeliveryDate: itemDto.desiredDeliveryDate ? new Date(itemDto.desiredDeliveryDate) : undefined
+            desiredDeliveryDate: itemDto.desiredDeliveryDate ? new Date(itemDto.desiredDeliveryDate) : undefined,
           })
         );
 
@@ -247,8 +238,8 @@ export class ShoppingCartsService {
       where: {
         listeAchatId: id,
         articleId: addItemDto.productId,
-        supplierId: addItemDto.supplierId
-      }
+        supplierId: addItemDto.supplierId,
+      },
     });
 
     if (existingItem) {
@@ -265,7 +256,7 @@ export class ShoppingCartsService {
         articleId: addItemDto.productId,
         supplierId: addItemDto.supplierId,
         quantite: addItemDto.quantity || 1,
-        dateSouhaitee_livraison: addItemDto.desiredDeliveryDate ? new Date(addItemDto.desiredDeliveryDate) : undefined
+        dateSouhaitee_livraison: addItemDto.desiredDeliveryDate ? new Date(addItemDto.desiredDeliveryDate) : undefined,
       });
       await this.listeAchatItemRepository.save(newItem);
     }
@@ -281,7 +272,7 @@ export class ShoppingCartsService {
     }
 
     const item = await this.listeAchatItemRepository.findOne({
-      where: { id: itemId, listeAchatId: id }
+      where: { id: itemId, listeAchatId: id },
     });
 
     if (!item) {
@@ -293,7 +284,7 @@ export class ShoppingCartsService {
     return this.findOne(id);
   }
 
-  async validateAndConvertToOrders(id: string, validateDto: ValidateShoppingCartDto): Promise<Order[]> {
+  async validateAndConvertToOrders(id: string, validateDto: ValidateShoppingCartDto): Promise<PurchaseOrder[]> {
     const ShoppingCart = await this.findOne(id);
 
     if (ShoppingCart.status !== 'active') {
@@ -301,7 +292,7 @@ export class ShoppingCartsService {
     }
 
     if (!ShoppingCart.items || ShoppingCart.items.length === 0) {
-      throw new BadRequestException('La liste d\'achat est vide');
+      throw new BadRequestException("La liste d'achat est vide");
     }
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -311,7 +302,7 @@ export class ShoppingCartsService {
     try {
       // Group items by supplier
       const itemsBySupplier = new Map<string, typeof ShoppingCart.items>();
-      
+
       ShoppingCart.items.forEach(item => {
         const supplierId = item.supplierId;
         if (!itemsBySupplier.has(supplierId)) {
@@ -320,14 +311,14 @@ export class ShoppingCartsService {
         itemsBySupplier.get(supplierId)!.push(item);
       });
 
-      const createdorders: Order[] = [];
+      const createdPurchaseOrders: PurchaseOrder[] = [];
 
       // Create one order per supplier
       for (const [supplierId, items] of itemsBySupplier) {
         const numeroCommande = await this.generateNumeroCommande();
-        
-        // Create order
-        const order = queryRunner.manager.create(Order, {
+
+        // Create purchase order
+        const purchaseOrder = queryRunner.manager.create(PurchaseOrder, {
           orderNumber: numeroCommande,
           stationId: ShoppingCart.stationId,
           supplierId,
@@ -336,20 +327,20 @@ export class ShoppingCartsService {
           createdById: ShoppingCart.createdById,
         });
 
-        const savedCommande = await queryRunner.manager.save(order);
+        const savedPurchaseOrder = await queryRunner.manager.save(purchaseOrder);
 
-        // Create order articles
-        const commandeArticles = items.map(item => 
-          queryRunner.manager.create(OrderProduct, {
-            orderId: savedCommande.id,
+        // Create purchase order products
+        const purchaseOrderProducts = items.map(item =>
+          queryRunner.manager.create(PurchaseOrderProduct, {
+            purchaseOrderId: savedPurchaseOrder.id,
             productId: item.articleId,
             orderedQuantity: item.quantite,
-            // Note: OrderProduct may need additional fields like productSupplierId
+            // Note: PurchaseOrderProduct may need additional fields like productSupplierId
           })
         );
 
-        await queryRunner.manager.save(OrderProduct, commandeArticles);
-        createdorders.push(savedCommande);
+        await queryRunner.manager.save(PurchaseOrderProduct, purchaseOrderProducts);
+        createdPurchaseOrders.push(savedPurchaseOrder);
       }
 
       // Archive the shopping list
@@ -358,7 +349,7 @@ export class ShoppingCartsService {
 
       await queryRunner.commitTransaction();
 
-      return createdorders;
+      return createdPurchaseOrders;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
@@ -382,7 +373,7 @@ export class ShoppingCartsService {
     for (const item of items) {
       // Validate Product exists
       const Product = await this.articleRepository.findOne({
-        where: { id: item.articleId }
+        where: { id: item.articleId },
       });
       if (!Product) {
         throw new BadRequestException(`Product ${item.articleId} non trouvé`);
@@ -390,7 +381,7 @@ export class ShoppingCartsService {
 
       // Validate supplier exists
       const Supplier = await this.fournisseurRepository.findOne({
-        where: { id: item.supplierId }
+        where: { id: item.supplierId },
       });
       if (!Supplier) {
         throw new BadRequestException(`Supplier ${item.fournisseurId} non trouvé`);
@@ -405,12 +396,13 @@ export class ShoppingCartsService {
 
   private async generateNumeroCommande(): Promise<string> {
     const year = new Date().getFullYear();
-    const count = await this.commandeRepository.count({
+    const count = await this.purchaseOrderRepository.count({
       where: {
-        orderNumber: Repository.prototype.createQueryBuilder()
+        orderNumber: Repository.prototype
+          .createQueryBuilder()
           .select()
-          .where('numeroCommande LIKE :pattern', { pattern: `CMD-${year}-%` })
-      } as any
+          .where('numeroCommande LIKE :pattern', { pattern: `CMD-${year}-%` }),
+      } as any,
     });
     return `CMD-${year}-${(count + 1).toString().padStart(6, '0')}`;
   }

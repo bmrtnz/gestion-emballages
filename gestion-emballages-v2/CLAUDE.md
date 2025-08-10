@@ -706,6 +706,230 @@ interface OrderContractIntegration {
 - **Compliance Assurance**: Systematic approach to supplier performance management
 - **Competitive Advantage**: Superior supplier relationships through structured management
 
+## Audit Trail and History System
+
+### Asynchronous Event-Driven History Pattern
+
+The application implements a **zero-performance-impact** audit trail system using the Asynchronous Event-Driven History Pattern. This pattern provides comprehensive change tracking without affecting main application performance.
+
+#### Architecture Components
+
+##### 1. **BaseEntity Structure**
+```typescript
+// Core base entity - minimal fields for all entities
+export abstract class BaseEntity extends TypeOrmBaseEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+}
+
+// Extended base for entities that need soft delete
+export abstract class SoftDeletableEntity extends BaseEntity {
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
+}
+```
+
+**Key Design Decisions:**
+- **BaseEntity**: Contains only essential fields (id, timestamps)
+- **SoftDeletableEntity**: Separate class for entities requiring soft delete functionality
+- **Clean Separation**: Entities only inherit fields they actually need
+- **Performance Optimized**: No unused columns in entities that don't need soft delete
+
+##### 2. **EntityHistory Entity**
+```typescript
+@Entity('entity_history')
+@Index(['entityType', 'entityId', 'timestamp'])
+export class EntityHistory {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ name: 'entity_type' })
+  entityType: string;
+
+  @Column({ name: 'entity_id' })
+  entityId: string;
+
+  @Column('json')
+  changes: Record<string, { old: any; new: any }>;
+
+  @Column({ name: 'changed_by' })
+  changedBy: string;
+
+  @CreateDateColumn()
+  timestamp: Date;
+
+  @Column({ nullable: true })
+  reason?: string;
+
+  @Column({ name: 'ip_address', nullable: true })
+  ipAddress?: string;
+
+  @Column({ name: 'user_agent', nullable: true })
+  userAgent?: string;
+}
+```
+
+**Features:**
+- **Indexed for Performance**: Composite index on (entityType, entityId, timestamp)
+- **Rich Context**: Captures user, IP, user agent, and reason for changes
+- **Change Diff**: JSON field storing old vs new values
+- **Universal**: Works with any entity type
+
+##### 3. **Event-Driven Processing**
+```typescript
+// Service emits async events - zero blocking
+async updateUser(id: string, updateData: any, userId: string) {
+  const oldUser = await this.userRepository.findOne({ where: { id } });
+  const updatedUser = await this.userRepository.save({ ...oldUser, ...updateData });
+  
+  // Async event - zero blocking
+  this.entityEventService.emitEntityChange(
+    'User',
+    id,
+    oldUser,
+    updatedUser,
+    userId,
+    { reason: 'User profile update' }
+  );
+  
+  return updatedUser;
+}
+
+// Background history processor
+@OnEvent('entity.changed', { async: true })
+async handleEntityChange(payload: EntityChangeEvent) {
+  // Process in background - no impact on main flow
+  await this.historyRepository.save({
+    entityType: payload.entityType,
+    entityId: payload.entityId,
+    changes: this.calculateDiff(payload.oldValues, payload.newValues),
+    changedBy: payload.changedBy,
+    timestamp: new Date()
+  });
+}
+```
+
+#### Usage in Services
+
+##### Basic Usage
+```typescript
+@Injectable()
+export class UserService {
+  constructor(
+    private userRepository: Repository<User>,
+    private entityEventService: EntityEventService,
+  ) {}
+
+  async updateUser(id: string, updateData: UpdateUserDto, currentUser: User) {
+    const oldUser = await this.userRepository.findOne({ where: { id } });
+    const updatedUser = await this.userRepository.save({ ...oldUser, ...updateData });
+    
+    // Emit change event for audit trail
+    this.entityEventService.emitEntityChange(
+      'User',
+      id,
+      oldUser,
+      updatedUser,
+      currentUser.id,
+      { reason: 'Profile update by user' }
+    );
+    
+    return updatedUser;
+  }
+}
+```
+
+##### Advanced Usage with Context
+```typescript
+async approveOrder(orderId: string, currentUser: User, request: Request) {
+  const oldOrder = await this.orderRepository.findOne({ where: { id: orderId } });
+  const updatedOrder = await this.orderRepository.save({
+    ...oldOrder,
+    status: OrderStatus.APPROVED,
+    approvedBy: currentUser.id,
+    approvedAt: new Date()
+  });
+  
+  // Emit with rich context
+  this.entityEventService.emitEntityChange(
+    'PurchaseOrder',
+    orderId,
+    oldOrder,
+    updatedOrder,
+    currentUser.id,
+    {
+      reason: 'Order approval',
+      ipAddress: request.ip,
+      userAgent: request.headers['user-agent']
+    }
+  );
+  
+  return updatedOrder;
+}
+```
+
+#### History Querying
+
+##### Get Entity History
+```typescript
+// Get complete history for an entity
+const userHistory = await this.historyService.getEntityHistory('User', userId);
+
+// Get paginated history
+const recentChanges = await this.historyService.getEntityHistory(
+  'User', 
+  userId, 
+  20,  // limit
+  0    // offset
+);
+```
+
+##### Get User Activity
+```typescript
+// Get all changes made by a user
+const userActivity = await this.historyService.getHistoryByUser(userId);
+```
+
+#### Benefits
+
+##### Performance Benefits
+- **Zero Main Flow Impact**: History processing happens asynchronously
+- **Non-Blocking Events**: Main operations complete immediately
+- **Background Processing**: History saving doesn't slow down user interactions
+- **Optimized Queries**: Indexed history table for fast retrieval
+- **Lean Base Entities**: Only essential fields in main entities
+
+##### Audit Benefits
+- **Complete Audit Trail**: Every change tracked with full context
+- **User Attribution**: Who made each change
+- **Temporal Tracking**: When changes occurred
+- **Change Details**: What exactly changed (old vs new values)
+- **Contextual Information**: Why changes were made, from where
+
+##### Operational Benefits
+- **Compliance Ready**: Meets audit requirements for regulated industries
+- **Debugging Support**: Complete history for troubleshooting
+- **User Accountability**: Clear attribution of all changes
+- **Data Recovery**: Can reconstruct entity state at any point in time
+- **Analytics Ready**: Change patterns and user behavior analysis
+
+#### System Integration
+
+The history system integrates seamlessly with:
+- **All Entity Services**: Any service can emit change events
+- **Authentication System**: Automatic user context capture
+- **Request Context**: IP address and user agent tracking
+- **Database Transactions**: History events are fire-and-forget
+- **Error Handling**: History failures don't affect main operations
+
+This pattern ensures comprehensive audit capabilities while maintaining optimal application performance.
+
 ## Future Enhancements
 
 #### Contract Management Advanced Features
@@ -1218,9 +1442,143 @@ Frontend:
 
 ### Code Style
 - **TypeScript** strict mode enabled
-- **ESLint** for linting
-- **Prettier** for formatting
+- **ESLint** for linting with comprehensive rules
+- **Prettier** for consistent code formatting
 - **Conventional Commits** for git messages
+
+## Code Quality and Linting
+
+### ESLint Configuration
+
+The project uses ESLint with comprehensive configurations for both backend (NestJS) and frontend (Angular) to ensure code quality, consistency, and adherence to best practices.
+
+#### Backend ESLint Setup (NestJS)
+**Configuration File**: `backend/.eslintrc.js`
+
+**Features:**
+- **TypeScript Integration**: @typescript-eslint parser and plugin for TypeScript-specific rules
+- **Prettier Integration**: eslint-config-prettier and eslint-plugin-prettier for formatting consistency
+- **NestJS Optimization**: Rules tailored for NestJS patterns and decorators
+- **Performance Rules**: Optional chaining, nullish coalescing for modern JavaScript
+- **Import Organization**: Automatic import sorting and member organization
+
+**Key Rules:**
+- `@typescript-eslint/no-explicit-any`: Warns against using `any` type
+- `@typescript-eslint/no-unused-vars`: Catches unused variables with ignore patterns
+- `@typescript-eslint/prefer-optional-chain`: Enforces modern optional chaining syntax
+- `@typescript-eslint/prefer-nullish-coalescing`: Promotes nullish coalescing operator
+- `sort-imports`: Automatically organizes imports for better readability
+- `prettier/prettier`: Enforces Prettier formatting rules within ESLint
+
+**Usage:**
+```bash
+cd backend
+npm run lint        # Fix issues automatically
+npm run lint:check  # Check without fixing
+npm run format      # Format code with Prettier
+npm run format:check # Check formatting without fixing
+```
+
+#### Frontend ESLint Setup (Angular)
+**Configuration File**: `frontend/.eslintrc.json`
+
+**Features:**
+- **Angular ESLint**: @angular-eslint plugin for Angular-specific rules
+- **Template Linting**: HTML template linting with @angular-eslint/template
+- **TypeScript Rules**: Consistent with backend TypeScript configuration
+- **Component Standards**: Enforces Angular component and directive naming conventions
+- **Performance Optimization**: Rules promoting OnPush change detection and track-by functions
+
+**Key Rules:**
+- `@angular-eslint/component-selector`: Enforces 'app' prefix and kebab-case for components
+- `@angular-eslint/directive-selector`: Enforces 'app' prefix and camelCase for directives
+- `@angular-eslint/prefer-on-push-component-change-detection`: Promotes OnPush for performance
+- `@angular-eslint/template/eqeqeq`: Enforces strict equality in templates
+- `@angular-eslint/template/use-track-by-function`: Warns about missing trackBy functions
+
+**Usage:**
+```bash
+cd frontend
+npm run lint        # Fix issues automatically
+npm run lint:check  # Check without fixing
+npm run format      # Format code with Prettier
+npm run format:check # Check formatting without fixing
+```
+
+#### Prettier Configuration
+Both backend and frontend share consistent Prettier settings:
+
+**Settings:**
+- **Single Quotes**: `true` - Uses single quotes for strings
+- **Trailing Commas**: `es5` - Adds trailing commas where valid in ES5
+- **Tab Width**: `2` - 2-space indentation
+- **Semicolons**: `true` - Always add semicolons
+- **Print Width**: `120` - 120 character line length
+- **End of Line**: `auto` - Automatic line ending detection
+- **Arrow Parens**: `avoid` - Omit parentheses for single-parameter arrow functions
+
+#### Benefits of Linting Setup
+
+**Code Quality Benefits:**
+- **Error Prevention**: Catches common TypeScript and JavaScript errors before runtime
+- **Type Safety**: Enforces proper TypeScript usage and discourages `any` types
+- **Modern Syntax**: Promotes modern JavaScript/TypeScript features and best practices
+- **Performance Awareness**: Rules that encourage performance-optimized code patterns
+- **Security**: Prevents common security anti-patterns and vulnerabilities
+
+**Team Collaboration Benefits:**
+- **Consistent Style**: Eliminates style debates and ensures uniform code formatting
+- **Reduced Code Review Time**: Automated style checking removes formatting discussions
+- **Onboarding**: New team members follow established patterns automatically
+- **Knowledge Transfer**: Consistent patterns make code easier to understand
+- **Maintainability**: Consistent structure and naming improve long-term maintenance
+
+**Development Experience Benefits:**
+- **IDE Integration**: Real-time error highlighting and auto-fix suggestions
+- **Auto-formatting**: Code automatically formats on save with proper configuration
+- **Import Organization**: Automatic import sorting and cleanup
+- **Quick Fixes**: Many issues can be auto-fixed with a single command
+- **CI/CD Integration**: Can be integrated into build pipelines for quality gates
+
+**Framework-Specific Benefits:**
+
+**NestJS Backend:**
+- **Decorator Patterns**: Proper handling of NestJS decorators and metadata
+- **Service Injection**: Correct dependency injection patterns
+- **Guard and Interceptor**: Proper implementation of NestJS architectural patterns
+- **Error Handling**: Consistent error handling and HTTP response patterns
+
+**Angular Frontend:**
+- **Component Architecture**: Enforces Angular component best practices
+- **Template Optimization**: Rules for efficient Angular templates
+- **Change Detection**: Promotes OnPush strategy for better performance
+- **Accessibility**: Template rules that improve accessibility compliance
+- **Reactive Patterns**: Encourages proper RxJS and reactive programming patterns
+
+#### Integration with Development Workflow
+
+**Pre-commit Hooks (Recommended):**
+```bash
+# Install husky for git hooks
+npm install --save-dev husky lint-staged
+
+# Configure pre-commit linting
+npx husky add .husky/pre-commit "lint-staged"
+```
+
+**CI/CD Integration:**
+- Add `npm run lint:check` to build pipelines
+- Add `npm run format:check` to ensure consistent formatting
+- Fail builds on linting errors to maintain code quality
+- Generate linting reports for code quality metrics
+
+**IDE Configuration:**
+- **VS Code**: Install ESLint and Prettier extensions for real-time feedback
+- **WebStorm/IntelliJ**: Enable ESLint and Prettier plugins
+- **Format on Save**: Configure IDE to auto-format and fix on file save
+- **Error Highlighting**: Real-time display of linting errors and warnings
+
+This comprehensive linting setup ensures code quality, consistency, and maintainability across the entire development team while promoting TypeScript and framework-specific best practices.
 
 ### Backend Best Practices
 - Use DTOs for all endpoints

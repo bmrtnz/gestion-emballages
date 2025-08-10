@@ -8,14 +8,9 @@ import { TransferRequestProduct } from './entities/transfer-request-product.enti
 import { PaginationService } from '@common/services/pagination.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      TransferRequest,
-      TransferRequestProduct
-    ])
-  ],
+  imports: [TypeOrmModule.forFeature([TransferRequest, TransferRequestProduct])],
   controllers: [TransfersController],
   providers: [TransfersService, PaginationService],
-  exports: [TransfersService]
+  exports: [TransfersService],
 })
 export class TransfersModule {}

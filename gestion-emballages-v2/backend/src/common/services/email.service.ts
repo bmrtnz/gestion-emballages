@@ -12,7 +12,7 @@ export class EmailService {
 
   private createTransporter(): void {
     const nodeEnv = this.configService.get('NODE_ENV');
-    
+
     if (nodeEnv === 'development') {
       // MailCatcher configuration for development
       this.transporter = nodemailer.createTransport({
@@ -21,8 +21,8 @@ export class EmailService {
         secure: false, // No TLS/SSL
         ignoreTLS: true,
         tls: {
-          rejectUnauthorized: false
-        }
+          rejectUnauthorized: false,
+        },
       } as any); // Type assertion to bypass TypeScript strict checking
     } else {
       // Production email service configuration
@@ -30,21 +30,21 @@ export class EmailService {
         service: this.configService.get('EMAIL_SERVICE', 'gmail'),
         auth: {
           user: this.configService.get('EMAIL_USER'),
-          pass: this.configService.get('EMAIL_PASSWORD')
-        }
+          pass: this.configService.get('EMAIL_PASSWORD'),
+        },
       });
     }
   }
 
   async sendPasswordResetEmail(email: string, resetToken: string, userName: string = 'Utilisateur'): Promise<void> {
     const resetUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:4200')}/reset-password?token=${resetToken}`;
-    
+
     const mailOptions = {
       from: this.configService.get('EMAIL_FROM', 'Gestion Emballages <noreply@localhost>'),
       to: email,
       subject: 'Réinitialisation de mot de passe - Gestion Emballages',
       html: this.getPasswordResetTemplate(resetUrl, userName),
-      text: this.getPasswordResetTextTemplate(resetUrl, userName)
+      text: this.getPasswordResetTextTemplate(resetUrl, userName),
     };
 
     try {
@@ -58,13 +58,13 @@ export class EmailService {
 
   async sendWelcomeEmail(email: string, userName: string, temporaryPassword?: string): Promise<void> {
     const loginUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:4200')}/login`;
-    
+
     const mailOptions = {
       from: this.configService.get('EMAIL_FROM', 'Gestion Emballages <noreply@localhost>'),
       to: email,
       subject: 'Bienvenue sur Gestion Emballages',
       html: this.getWelcomeTemplate(userName, loginUrl, temporaryPassword),
-      text: this.getWelcomeTextTemplate(userName, loginUrl, temporaryPassword)
+      text: this.getWelcomeTextTemplate(userName, loginUrl, temporaryPassword),
     };
 
     try {
@@ -199,13 +199,17 @@ Cet email a été envoyé automatiquement, merci de ne pas y répondre.
         
         <p>Votre compte a été créé avec succès sur la plateforme Gestion Emballages.</p>
         
-        ${temporaryPassword ? `
+        ${
+          temporaryPassword
+            ? `
         <div class="credentials">
           <h3>Vos informations de connexion :</h3>
           <p><strong>Mot de passe temporaire :</strong> ${temporaryPassword}</p>
           <p><strong>Important :</strong> Veuillez changer votre mot de passe temporaire lors de votre première connexion.</p>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
         
         <div style="text-align: center;">
           <a href="${loginUrl}" class="button">Se connecter</a>

@@ -1,10 +1,10 @@
-import { PartialType, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsArray, ValidateNested, IsUUID, IsInt, Min, IsDateString } from 'class-validator';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { IsArray, IsDateString, IsInt, IsOptional, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateShoppingCartDto, CreateShoppingCartItemDto } from './create-shopping-cart.dto';
 
 export class UpdateShoppingCartItemDto {
-  @ApiPropertyOptional({ description: 'ID de l\'item (pour les mises à jour)' })
+  @ApiPropertyOptional({ description: "ID de l'item (pour les mises à jour)" })
   @IsOptional()
   @IsUUID()
   id?: string;

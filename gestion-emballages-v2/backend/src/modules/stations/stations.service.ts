@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,7 +8,7 @@ import { StationContact } from './entities/station-contact.entity';
 import { CreateStationDto } from './dto/create-station.dto';
 import { UpdateStationDto } from './dto/update-station.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
+import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
 
 @Injectable()
 export class StationsService {
@@ -19,7 +19,7 @@ export class StationsService {
     private stationGroupRepository: Repository<StationGroup>,
     @InjectRepository(StationContact)
     private stationContactRepository: Repository<StationContact>,
-    private paginationService: PaginationService,
+    private paginationService: PaginationService
   ) {}
 
   async create(createStationDto: CreateStationDto): Promise<Station> {
@@ -32,12 +32,12 @@ export class StationsService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'name',
-      sortOrder: paginationDto.sortOrder || 'ASC'
+      sortOrder: paginationDto.sortOrder || 'ASC',
     });
 
     const queryBuilder = this.stationRepository
       .createQueryBuilder('station')
-      .leftJoinAndSelect('station.groupe', 'groupe')
+      .leftJoinAndSelect('station.stationGroup', 'stationGroup')
       .leftJoinAndSelect('station.contacts', 'contacts', 'contacts.isActive = :contactsActive', {
         contactsActive: true,
       });
@@ -45,15 +45,15 @@ export class StationsService {
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(station.name ILIKE :search OR station.internalId ILIKE :search OR groupe.name ILIKE :search)',
+        '(station.name ILIKE :search OR station.code ILIKE :search OR stationGroup.name ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
 
     // Add station group filter
-    if (paginationDto['groupeId']) {
-      queryBuilder.andWhere('station.groupId = :groupId', { 
-        groupId: paginationDto['groupeId'] 
+    if (paginationDto['stationGroupId']) {
+      queryBuilder.andWhere('station.stationGroupId = :stationGroupId', {
+        stationGroupId: paginationDto['stationGroupId'],
       });
     }
 
@@ -78,11 +78,11 @@ export class StationsService {
   async findOne(id: string): Promise<Station> {
     const station = await this.stationRepository.findOne({
       where: { id },
-      relations: ['groupe', 'contacts', 'createdBy', 'updatedBy']
+      relations: ['stationGroup', 'contacts'],
     });
 
     if (!station) {
-      throw new NotFoundException('Station non trouvée');
+      throw new NotFoundException('Station not found');
     }
 
     return station;
@@ -109,40 +109,40 @@ export class StationsService {
   // Station Group methods
   async assignToGroup(stationId: string, groupId: string | null): Promise<Station> {
     const station = await this.findOne(stationId);
-    
+
     if (groupId) {
-      const groupe = await this.stationGroupRepository.findOne({
+      const stationGroup = await this.stationGroupRepository.findOne({
         where: { id: groupId, isActive: true },
       });
-      
-      if (!groupe) {
-        throw new NotFoundException('Groupe de stations non trouvé');
+
+      if (!stationGroup) {
+        throw new NotFoundException('Station group not found');
       }
     }
-    
-    station.groupId = groupId;
+
+    station.stationGroupId = groupId;
     return this.stationRepository.save(station);
   }
 
   async getStationsByGroup(): Promise<{ groupe: StationGroup | null; stations: Station[] }[]> {
     const stations = await this.stationRepository.find({
       where: { isActive: true },
-      relations: ['groupe'],
+      relations: ['stationGroup'],
       order: { name: 'ASC' },
     });
 
-    // Group stations by their groupe
+    // Group stations by their station group
     const grouped = new Map();
-    
+
     for (const station of stations) {
-      const groupeKey = station.groupe?.id || 'ungrouped';
-      if (!grouped.has(groupeKey)) {
-        grouped.set(groupeKey, {
-          groupe: station.groupe || null,
+      const groupKey = station.stationGroup?.id || 'ungrouped';
+      if (!grouped.has(groupKey)) {
+        grouped.set(groupKey, {
+          groupe: station.stationGroup || null,
           stations: [],
         });
       }
-      grouped.get(groupeKey).stations.push(station);
+      grouped.get(groupKey).stations.push(station);
     }
 
     return Array.from(grouped.values()).sort((a, b) => {
@@ -158,15 +158,15 @@ export class StationsService {
   async findActiveStations(): Promise<Station[]> {
     return this.stationRepository.find({
       where: { isActive: true },
-      relations: ['groupe'],
+      relations: ['stationGroup'],
       order: { name: 'ASC' },
-      select: ['id', 'name', 'internalId', 'groupId']
+      select: ['id', 'name', 'code', 'stationGroupId'],
     });
   }
 
   async findStationsInGroup(groupId: string): Promise<Station[]> {
     return this.stationRepository.find({
-      where: { groupId, isActive: true },
+      where: { stationGroupId: groupId, isActive: true },
       relations: ['contacts'],
       order: { name: 'ASC' },
     });

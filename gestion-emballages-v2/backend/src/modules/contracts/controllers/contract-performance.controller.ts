@@ -1,23 +1,27 @@
 import {
+  Body,
   Controller,
+  DefaultValuePipe,
   Get,
+  Param,
+  ParseEnumPipe,
+  ParseIntPipe,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
-  Param,
-  Body,
   UseGuards,
-  ParseUUIDPipe,
-  ParseIntPipe,
-  DefaultValuePipe,
-  ParseEnumPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery, ApiProperty } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from '@modules/auth/decorators/roles.decorator';
-import { ContractAdherenceService, DashboardMetrics, ContractPerformanceReport } from '../services/contract-adherence.service';
-import { MeasurementPeriod, PerformanceStatus, MetricType } from '../entities/contract-performance-metric.entity';
+import {
+  ContractAdherenceService,
+  ContractPerformanceReport,
+  DashboardMetrics,
+} from '../services/contract-adherence.service';
+import { MeasurementPeriod, MetricType, PerformanceStatus } from '../entities/contract-performance-metric.entity';
 import { ContractsService } from '../contracts.service';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { UserRole } from '@common/enums/user-role.enum';
@@ -89,7 +93,7 @@ class UpdateMetricDto {
 export class ContractPerformanceController {
   constructor(
     private readonly contractAdherenceService: ContractAdherenceService,
-    private readonly contractsService: ContractsService,
+    private readonly contractsService: ContractsService
   ) {}
 
   @Get('dashboard')
@@ -107,25 +111,19 @@ export class ContractPerformanceController {
   async getContractPerformanceReport(
     @Param('id', ParseUUIDPipe) contractId: string,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
+    @Query('endDate') endDate?: string
   ): Promise<ContractPerformanceReport> {
     const start = startDate ? new Date(startDate) : undefined;
     const end = endDate ? new Date(endDate) : undefined;
-    
-    return this.contractAdherenceService.generateContractPerformanceReport(
-      contractId, 
-      start, 
-      end
-    );
+
+    return this.contractAdherenceService.generateContractPerformanceReport(contractId, start, end);
   }
 
   @Post('calculate')
   @ApiOperation({ summary: 'Calculate performance metrics for specified period' })
   @ApiResponse({ status: 200, description: 'Performance calculation initiated' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async calculatePerformanceMetrics(
-    @Body() calculateDto: CalculatePerformanceDto,
-  ) {
+  async calculatePerformanceMetrics(@Body() calculateDto: CalculatePerformanceDto) {
     const startDate = new Date(calculateDto.startDate);
     const endDate = new Date(calculateDto.endDate);
     const measurementPeriod = calculateDto.measurementPeriod || MeasurementPeriod.MONTHLY;
@@ -141,7 +139,7 @@ export class ContractPerformanceController {
       period: {
         start: startDate,
         end: endDate,
-        measurementPeriod
+        measurementPeriod,
       },
       results: {
         totalMetricsCalculated: results.length,
@@ -157,8 +155,8 @@ export class ContractPerformanceController {
           totalPenalties: results.reduce((sum, r) => sum + (r.financialImpact?.penalties || 0), 0),
           totalBonuses: results.reduce((sum, r) => sum + (r.financialImpact?.bonuses || 0), 0),
           netImpact: results.reduce((sum, r) => sum + (r.financialImpact?.netImpact || 0), 0),
-        }
-      }
+        },
+      },
     };
   }
 
@@ -166,15 +164,13 @@ export class ContractPerformanceController {
   @ApiOperation({ summary: 'Get performance metrics with filters' })
   @ApiResponse({ status: 200, description: 'Performance metrics retrieved' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async getPerformanceMetrics(
-    @Query() filters: PerformanceFiltersDto,
-  ) {
+  async getPerformanceMetrics(@Query() filters: PerformanceFiltersDto) {
     // This would use the ContractPerformanceMetric repository with filters
     // Implementation would be similar to other listing endpoints
     return {
       message: 'Performance metrics endpoint - implementation would query ContractPerformanceMetric repository',
       filters,
-      note: 'This would return paginated performance metrics with applied filters'
+      note: 'This would return paginated performance metrics with applied filters',
     };
   }
 
@@ -185,13 +181,13 @@ export class ContractPerformanceController {
   async getContractsAtRisk(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
-    @Query('severity') severity?: 'HIGH' | 'CRITICAL',
+    @Query('severity') severity?: 'HIGH' | 'CRITICAL'
   ) {
     // This would query contracts with recent BREACH or CRITICAL performance metrics
     return {
       message: 'Contracts at risk endpoint',
       filters: { page, limit, severity },
-      note: 'This would return contracts with poor performance metrics and escalations'
+      note: 'This would return contracts with poor performance metrics and escalations',
     };
   }
 
@@ -203,13 +199,13 @@ export class ContractPerformanceController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number = 20,
     @Query('level', ParseIntPipe) escalationLevel?: number,
-    @Query('overdue') overdue?: boolean,
+    @Query('overdue') overdue?: boolean
   ) {
     // This would query ContractPerformanceMetric with escalationTriggered = true
     return {
       message: 'Pending escalations endpoint',
       filters: { page, limit, escalationLevel, overdue },
-      note: 'This would return metrics requiring management attention'
+      note: 'This would return metrics requiring management attention',
     };
   }
 
@@ -217,16 +213,13 @@ export class ContractPerformanceController {
   @ApiOperation({ summary: 'Update performance metric (add review notes, action plans)' })
   @ApiResponse({ status: 200, description: 'Metric updated successfully' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async updatePerformanceMetric(
-    @Param('id', ParseUUIDPipe) metricId: string,
-    @Body() updateDto: UpdateMetricDto,
-  ) {
+  async updatePerformanceMetric(@Param('id', ParseUUIDPipe) metricId: string, @Body() updateDto: UpdateMetricDto) {
     // This would update a ContractPerformanceMetric record
     return {
       message: 'Metric update endpoint',
       metricId,
       updates: updateDto,
-      note: 'This would update metric with review notes and action plans'
+      note: 'This would update metric with review notes and action plans',
     };
   }
 
@@ -237,7 +230,7 @@ export class ContractPerformanceController {
   async escalateMetric(
     @Param('id', ParseUUIDPipe) metricId: string,
     @Body('notes') notes?: string,
-    @Body('level', ParseIntPipe) level?: number,
+    @Body('level', ParseIntPipe) level?: number
   ) {
     // This would trigger escalation on a ContractPerformanceMetric
     return {
@@ -245,7 +238,7 @@ export class ContractPerformanceController {
       metricId,
       escalationLevel: level || 3,
       notes,
-      note: 'This would trigger escalation workflow for the metric'
+      note: 'This would trigger escalation workflow for the metric',
     };
   }
 
@@ -257,7 +250,7 @@ export class ContractPerformanceController {
     @Query('contractId') contractId?: string,
     @Query('productId') productId?: string,
     @Query('metricType', new ParseEnumPipe(MetricType, { optional: true })) metricType?: MetricType,
-    @Query('months', new DefaultValuePipe(12), ParseIntPipe) months: number = 12,
+    @Query('months', new DefaultValuePipe(12), ParseIntPipe) months: number = 12
   ) {
     // This would calculate trends over specified period
     const endDate = new Date();
@@ -268,7 +261,7 @@ export class ContractPerformanceController {
       message: 'Performance trends endpoint',
       period: { startDate, endDate },
       filters: { contractId, productId, metricType },
-      note: 'This would return trend analysis showing performance over time'
+      note: 'This would return trend analysis showing performance over time',
     };
   }
 
@@ -278,7 +271,7 @@ export class ContractPerformanceController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async getSupplierRankings(
     @Query('period', new DefaultValuePipe(90), ParseIntPipe) periodDays: number = 90,
-    @Query('metricType', new ParseEnumPipe(MetricType, { optional: true })) metricType?: MetricType,
+    @Query('metricType', new ParseEnumPipe(MetricType, { optional: true })) metricType?: MetricType
   ) {
     // This would rank suppliers by performance metrics
     const endDate = new Date();
@@ -289,7 +282,7 @@ export class ContractPerformanceController {
       message: 'Supplier rankings endpoint',
       period: { startDate, endDate, days: periodDays },
       metricType,
-      note: 'This would return suppliers ranked by performance scores'
+      note: 'This would return suppliers ranked by performance scores',
     };
   }
 
@@ -301,7 +294,7 @@ export class ContractPerformanceController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Query('contractId') contractId?: string,
-    @Query('supplierId') supplierId?: string,
+    @Query('supplierId') supplierId?: string
   ) {
     // This would calculate total penalties, bonuses, and net impact
     const start = startDate ? new Date(startDate) : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
@@ -311,7 +304,7 @@ export class ContractPerformanceController {
       message: 'Financial impact summary endpoint',
       period: { start, end },
       filters: { contractId, supplierId },
-      note: 'This would return aggregated financial impact of contract performance'
+      note: 'This would return aggregated financial impact of contract performance',
     };
   }
 
@@ -320,19 +313,20 @@ export class ContractPerformanceController {
   @ApiResponse({ status: 200, description: 'Bulk report generation initiated' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async generateBulkReports(
-    @Body() reportRequest: {
+    @Body()
+    reportRequest: {
       contractIds: string[];
       startDate?: string;
       endDate?: string;
       includeProductDetails?: boolean;
       emailTo?: string[];
-    },
+    }
   ) {
     // This would generate reports for multiple contracts
     return {
       message: 'Bulk report generation endpoint',
       request: reportRequest,
-      note: 'This would generate and optionally email performance reports for multiple contracts'
+      note: 'This would generate and optionally email performance reports for multiple contracts',
     };
   }
 
@@ -343,13 +337,13 @@ export class ContractPerformanceController {
   async getPerformanceAlerts(
     @Query('severity') severity?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
     @Query('unreadOnly', new DefaultValuePipe(false)) unreadOnly: boolean = false,
-    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number = 50,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number = 50
   ) {
     // This would return recent performance alerts
     return {
       message: 'Performance alerts endpoint',
       filters: { severity, unreadOnly, limit },
-      note: 'This would return recent alerts about contract performance issues'
+      note: 'This would return recent alerts about contract performance issues',
     };
   }
 
@@ -357,17 +351,14 @@ export class ContractPerformanceController {
   @ApiOperation({ summary: 'Acknowledge a performance alert' })
   @ApiResponse({ status: 200, description: 'Alert acknowledged successfully' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async acknowledgeAlert(
-    @Param('id', ParseUUIDPipe) alertId: string,
-    @Body('notes') notes?: string,
-  ) {
+  async acknowledgeAlert(@Param('id', ParseUUIDPipe) alertId: string, @Body('notes') notes?: string) {
     // This would mark an alert as acknowledged
     return {
       message: 'Alert acknowledgment endpoint',
       alertId,
       notes,
       acknowledgedAt: new Date(),
-      note: 'This would mark the alert as read/acknowledged by the manager'
+      note: 'This would mark the alert as read/acknowledged by the manager',
     };
   }
 
@@ -379,7 +370,7 @@ export class ContractPerformanceController {
     @Query('format') format: 'json' | 'csv' | 'xlsx' = 'json',
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
-    @Query('contractIds') contractIds?: string,
+    @Query('contractIds') contractIds?: string
   ) {
     // This would export performance data in requested format
     const start = startDate ? new Date(startDate) : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
@@ -391,7 +382,7 @@ export class ContractPerformanceController {
       format,
       period: { start, end },
       contractIds: contracts,
-      note: 'This would generate and return performance data in the requested format'
+      note: 'This would generate and return performance data in the requested format',
     };
   }
 }

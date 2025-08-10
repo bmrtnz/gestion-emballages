@@ -1,18 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Request,
-  Put,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { SupplierContactsService } from './Supplier-contacts.service';
 import { CreateSupplierContactDto } from './dto/create-Supplier-contact.dto';
@@ -36,7 +36,7 @@ export class SupplierContactsController {
   async create(
     @Param('fournisseurId') supplierId: string,
     @Body() createDto: CreateSupplierContactDto,
-    @Request() req,
+    @Request() req
   ) {
     return this.contactsService.create(supplierId, createDto, req.user.id);
   }
@@ -67,10 +67,7 @@ export class SupplierContactsController {
   @ApiOperation({ summary: 'Get a specific contact for a supplier' })
   @ApiResponse({ status: 200, description: 'Contact retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async findOne(
-    @Param('fournisseurId') supplierId: string,
-    @Param('contactId') contactId: string,
-  ) {
+  async findOne(@Param('fournisseurId') supplierId: string, @Param('contactId') contactId: string) {
     return this.contactsService.findOne(supplierId, contactId);
   }
 
@@ -83,7 +80,7 @@ export class SupplierContactsController {
     @Param('fournisseurId') supplierId: string,
     @Param('contactId') contactId: string,
     @Body() updateDto: UpdateSupplierContactDto,
-    @Request() req,
+    @Request() req
   ) {
     return this.contactsService.update(supplierId, contactId, updateDto, req.user.id);
   }
@@ -98,7 +95,7 @@ export class SupplierContactsController {
   async setPrincipal(
     @Param('fournisseurId') supplierId: string,
     @Param('contactId') contactId: string,
-    @Request() req,
+    @Request() req
   ) {
     return this.contactsService.setPrincipal(supplierId, contactId, req.user.id);
   }
@@ -110,11 +107,7 @@ export class SupplierContactsController {
   @ApiResponse({ status: 200, description: 'Contact deactivated successfully' })
   @ApiResponse({ status: 400, description: 'Cannot deactivate principal contact' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async deactivate(
-    @Param('fournisseurId') supplierId: string,
-    @Param('contactId') contactId: string,
-    @Request() req,
-  ) {
+  async deactivate(@Param('fournisseurId') supplierId: string, @Param('contactId') contactId: string, @Request() req) {
     return this.contactsService.deactivate(supplierId, contactId, req.user.id);
   }
 
@@ -124,11 +117,7 @@ export class SupplierContactsController {
   @ApiOperation({ summary: 'Reactivate a contact for a supplier' })
   @ApiResponse({ status: 200, description: 'Contact reactivated successfully' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async reactivate(
-    @Param('fournisseurId') supplierId: string,
-    @Param('contactId') contactId: string,
-    @Request() req,
-  ) {
+  async reactivate(@Param('fournisseurId') supplierId: string, @Param('contactId') contactId: string, @Request() req) {
     return this.contactsService.reactivate(supplierId, contactId, req.user.id);
   }
 
@@ -139,10 +128,7 @@ export class SupplierContactsController {
   @ApiResponse({ status: 204, description: 'Contact deleted successfully' })
   @ApiResponse({ status: 400, description: 'Cannot delete principal contact' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async remove(
-    @Param('fournisseurId') supplierId: string,
-    @Param('contactId') contactId: string,
-  ) {
+  async remove(@Param('fournisseurId') supplierId: string, @Param('contactId') contactId: string) {
     await this.contactsService.remove(supplierId, contactId);
   }
 }

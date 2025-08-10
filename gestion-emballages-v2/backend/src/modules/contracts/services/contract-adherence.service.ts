@@ -1,11 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, MoreThan, LessThan } from 'typeorm';
-import { MasterContract, ContractStatus } from '../entities/master-contract.entity';
+import { Between, LessThan, MoreThan, Repository } from 'typeorm';
+import { ContractStatus, MasterContract } from '../entities/master-contract.entity';
 import { ContractProductSLA } from '../entities/contract-product-sla.entity';
-import { ContractPerformanceMetric, MetricType, PerformanceStatus, MeasurementPeriod } from '../entities/contract-performance-metric.entity';
+import {
+  ContractPerformanceMetric,
+  MeasurementPeriod,
+  MetricType,
+  PerformanceStatus,
+} from '../entities/contract-performance-metric.entity';
 import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
-import { OrderProduct } from '@modules/orders/entities/order-product.entity';
+import { PurchaseOrderProduct } from '@modules/orders/entities/purchase-order-product.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 
 export interface PerformanceCalculationResult {
@@ -64,18 +69,18 @@ export class ContractAdherenceService {
   constructor(
     @InjectRepository(MasterContract)
     private contractRepository: Repository<MasterContract>,
-    
+
     @InjectRepository(ContractProductSLA)
     private productSLARepository: Repository<ContractProductSLA>,
-    
+
     @InjectRepository(ContractPerformanceMetric)
     private performanceMetricRepository: Repository<ContractPerformanceMetric>,
-    
+
     @InjectRepository(PurchaseOrder)
     private purchaseOrderRepository: Repository<PurchaseOrder>,
-    
-    @InjectRepository(OrderProduct)
-    private orderProductRepository: Repository<OrderProduct>,
+
+    @InjectRepository(PurchaseOrderProduct)
+    private purchaseOrderProductRepository: Repository<PurchaseOrderProduct>
   ) {}
 
   /**
@@ -86,30 +91,26 @@ export class ContractAdherenceService {
     endDate: Date,
     measurementPeriod: MeasurementPeriod = MeasurementPeriod.MONTHLY
   ): Promise<PerformanceCalculationResult[]> {
-    this.logger.log(`Calculating contract performance for period: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+    this.logger.log(
+      `Calculating contract performance for period: ${startDate.toISOString()} to ${endDate.toISOString()}`
+    );
 
     const activeContracts = await this.contractRepository.find({
       where: {
         status: ContractStatus.ACTIVE,
         validFrom: LessThan(endDate),
         validUntil: MoreThan(startDate),
-        isActive: true
       },
-      relations: ['productSLAs', 'supplier']
+      relations: ['productSLAs', 'supplier'],
     });
 
     const results: PerformanceCalculationResult[] = [];
 
     for (const contract of activeContracts) {
       this.logger.debug(`Processing contract: ${contract.contractNumber}`);
-      
+
       // Calculate contract-level metrics
-      const contractMetrics = await this.calculateContractLevelMetrics(
-        contract,
-        startDate,
-        endDate,
-        measurementPeriod
-      );
+      const contractMetrics = await this.calculateContractLevelMetrics(contract, startDate, endDate, measurementPeriod);
       results.push(...contractMetrics);
 
       // Calculate product-specific metrics
@@ -148,36 +149,20 @@ export class ContractAdherenceService {
       where: {
         supplierId: contract.supplierId,
         createdAt: Between(startDate, endDate),
-        isActive: true
       },
-      relations: ['orderProducts', 'orderProducts.product']
+      relations: ['orderProducts', 'orderProducts.product'],
     });
 
     // Calculate delivery performance
-    const deliveryMetric = await this.calculateDeliveryPerformance(
-      contract,
-      orders,
-      startDate,
-      endDate
-    );
+    const deliveryMetric = await this.calculateDeliveryPerformance(contract, orders, startDate, endDate);
     if (deliveryMetric) results.push(deliveryMetric);
 
     // Calculate overall quality performance
-    const qualityMetric = await this.calculateQualityPerformance(
-      contract,
-      orders,
-      startDate,
-      endDate
-    );
+    const qualityMetric = await this.calculateQualityPerformance(contract, orders, startDate, endDate);
     if (qualityMetric) results.push(qualityMetric);
 
     // Calculate order fulfillment rate
-    const fulfillmentMetric = await this.calculateOrderFulfillmentRate(
-      contract,
-      orders,
-      startDate,
-      endDate
-    );
+    const fulfillmentMetric = await this.calculateOrderFulfillmentRate(contract, orders, startDate, endDate);
     if (fulfillmentMetric) results.push(fulfillmentMetric);
 
     return results;
@@ -196,19 +181,18 @@ export class ContractAdherenceService {
     const results: PerformanceCalculationResult[] = [];
 
     // Get orders for this specific product
-    const orderProducts = await this.orderProductRepository.find({
+    const purchaseOrderProducts = await this.purchaseOrderProductRepository.find({
       where: {
         productId: productSLA.productId,
         purchaseOrder: {
           supplierId: contract.supplierId,
           createdAt: Between(startDate, endDate),
-          isActive: true
-        }
+        },
       },
-      relations: ['purchaseOrder', 'product']
+      relations: ['purchaseOrder', 'product'],
     });
 
-    if (orderProducts.length === 0) {
+    if (purchaseOrderProducts.length === 0) {
       return results;
     }
 
@@ -216,7 +200,7 @@ export class ContractAdherenceService {
     const deliveryMetric = await this.calculateProductDeliveryPerformance(
       contract,
       productSLA,
-      orderProducts,
+      purchaseOrderProducts,
       startDate,
       endDate
     );
@@ -226,7 +210,7 @@ export class ContractAdherenceService {
     const qualityMetric = await this.calculateProductQualityPerformance(
       contract,
       productSLA,
-      orderProducts,
+      purchaseOrderProducts,
       startDate,
       endDate
     );
@@ -236,7 +220,7 @@ export class ContractAdherenceService {
     const quantityMetric = await this.calculateProductQuantityAccuracy(
       contract,
       productSLA,
-      orderProducts,
+      purchaseOrderProducts,
       startDate,
       endDate
     );
@@ -254,8 +238,8 @@ export class ContractAdherenceService {
     startDate: Date,
     endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
-    const deliveredOrders = orders.filter(order => 
-      order.status === OrderStatus.RECEPTIONNEE && order.actualDeliveryDate
+    const deliveredOrders = orders.filter(
+      order => order.status === OrderStatus.RECEPTIONNEE && order.actualDeliveryDate
     );
 
     if (deliveredOrders.length === 0) return null;
@@ -269,7 +253,7 @@ export class ContractAdherenceService {
         (order.actualDeliveryDate.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24)
       );
       totalDeliveryDays += deliveryTime;
-      
+
       if (deliveryTime <= targetSLA) {
         onTimeDeliveries++;
       }
@@ -291,15 +275,15 @@ export class ContractAdherenceService {
     const averageOrderValue = orders.reduce((sum, order) => sum + order.totalAmountExcludingTax, 0) / orders.length;
     const lateOrders = deliveredOrders.length - onTimeDeliveries;
     const penalties = lateOrders * averageOrderValue * (contract.lateDeliveryPenaltyPercent / 100);
-    
+
     const earlyDeliveries = deliveredOrders.filter(order => {
       const deliveryTime = Math.ceil(
         (order.actualDeliveryDate.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24)
       );
       return deliveryTime < targetSLA - 1; // 1 day early threshold
     }).length;
-    
-    const bonuses = earlyDeliveries * averageOrderValue * (contract.earlyDeliveryBonusPercent / 100);
+
+    const bonuses = earlyDeliveries * averageOrderValue * (contract.deliveryExcellenceBonusPercent / 100);
 
     return {
       contractId: contract.id,
@@ -316,8 +300,8 @@ export class ContractAdherenceService {
       financialImpact: {
         penalties,
         bonuses,
-        netImpact: bonuses - penalties
-      }
+        netImpact: bonuses - penalties,
+      },
     };
   }
 
@@ -332,14 +316,15 @@ export class ContractAdherenceService {
   ): Promise<PerformanceCalculationResult | null> {
     // This would integrate with the document management system to count quality issues
     // For now, we'll simulate based on order status
-    
+
     const deliveredOrders = orders.filter(order => order.status === OrderStatus.RECEPTIONNEE);
     if (deliveredOrders.length === 0) return null;
 
     // Count orders with quality issues (this would be determined by discrepancy photos/reports)
-    const ordersWithIssues = deliveredOrders.filter(order => 
-      // This is a placeholder - in reality, you'd check for quality discrepancy documents
-      Math.random() < 0.05 // Simulate 5% quality issue rate for demo
+    const ordersWithIssues = deliveredOrders.filter(
+      order =>
+        // This is a placeholder - in reality, you'd check for quality discrepancy documents
+        Math.random() < 0.05 // Simulate 5% quality issue rate for demo
     ).length;
 
     const ordersWithoutIssues = deliveredOrders.length - ordersWithIssues;
@@ -357,8 +342,10 @@ export class ContractAdherenceService {
 
     const averageOrderValue = orders.reduce((sum, order) => sum + order.totalAmountExcludingTax, 0) / orders.length;
     const penalties = ordersWithIssues * averageOrderValue * (contract.qualityIssuePenaltyPercent / 100);
-    const bonuses = ordersWithoutIssues === deliveredOrders.length ? 
-      deliveredOrders.length * averageOrderValue * (contract.qualityExcellenceBonusPercent / 100) : 0;
+    const bonuses =
+      ordersWithoutIssues === deliveredOrders.length
+        ? deliveredOrders.length * averageOrderValue * (contract.qualityExcellenceBonusPercent / 100)
+        : 0;
 
     return {
       contractId: contract.id,
@@ -375,8 +362,8 @@ export class ContractAdherenceService {
       financialImpact: {
         penalties,
         bonuses,
-        netImpact: bonuses - penalties
-      }
+        netImpact: bonuses - penalties,
+      },
     };
   }
 
@@ -391,7 +378,7 @@ export class ContractAdherenceService {
   ): Promise<PerformanceCalculationResult | null> {
     if (orders.length === 0) return null;
 
-    const fulfilledOrders = orders.filter(order => 
+    const fulfilledOrders = orders.filter(order =>
       [OrderStatus.RECEPTIONNEE, OrderStatus.CLOTUREE].includes(order.status)
     ).length;
 
@@ -418,7 +405,7 @@ export class ContractAdherenceService {
       sampleSize: orders.length,
       totalEvents: orders.length,
       successfulEvents: fulfilledOrders,
-      failedEvents: orders.length - fulfilledOrders
+      failedEvents: orders.length - fulfilledOrders,
     };
   }
 
@@ -428,12 +415,12 @@ export class ContractAdherenceService {
   private async calculateProductDeliveryPerformance(
     contract: MasterContract,
     productSLA: ContractProductSLA,
-    orderProducts: OrderProduct[],
+    purchaseOrderProducts: PurchaseOrderProduct[],
     startDate: Date,
     endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
-    const deliveredProducts = orderProducts.filter(op => 
-      op.purchaseOrder.status === OrderStatus.RECEPTIONNEE && op.purchaseOrder.actualDeliveryDate
+    const deliveredProducts = purchaseOrderProducts.filter(
+      pop => pop.purchaseOrder.status === OrderStatus.RECEPTIONNEE && pop.purchaseOrder.actualDeliveryDate
     );
 
     if (deliveredProducts.length === 0) return null;
@@ -441,11 +428,13 @@ export class ContractAdherenceService {
     const targetSLA = productSLA.getEffectiveDeliverySLA();
     let onTimeDeliveries = 0;
 
-    for (const orderProduct of deliveredProducts) {
+    for (const purchaseOrderProduct of deliveredProducts) {
       const deliveryTime = Math.ceil(
-        (orderProduct.purchaseOrder.deliveredAt.getTime() - orderProduct.purchaseOrder.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+        (purchaseOrderProduct.purchaseOrder.actualDeliveryDate.getTime() -
+          purchaseOrderProduct.purchaseOrder.createdAt.getTime()) /
+          (1000 * 60 * 60 * 24)
       );
-      
+
       if (deliveryTime <= targetSLA) {
         onTimeDeliveries++;
       }
@@ -473,9 +462,9 @@ export class ContractAdherenceService {
       variancePercent,
       status,
       sampleSize: deliveredProducts.length,
-      totalEvents: orderProducts.length,
+      totalEvents: purchaseOrderProducts.length,
       successfulEvents: onTimeDeliveries,
-      failedEvents: deliveredProducts.length - onTimeDeliveries
+      failedEvents: deliveredProducts.length - onTimeDeliveries,
     };
   }
 
@@ -485,20 +474,20 @@ export class ContractAdherenceService {
   private async calculateProductQualityPerformance(
     contract: MasterContract,
     productSLA: ContractProductSLA,
-    orderProducts: OrderProduct[],
+    purchaseOrderProducts: PurchaseOrderProduct[],
     startDate: Date,
     endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     // Similar implementation to contract-level quality, but product-specific
-    const deliveredProducts = orderProducts.filter(op => 
-      op.purchaseOrder.status === OrderStatus.RECEPTIONNEE
+    const deliveredProducts = purchaseOrderProducts.filter(
+      pop => pop.purchaseOrder.status === OrderStatus.RECEPTIONNEE
     );
 
     if (deliveredProducts.length === 0) return null;
 
     // Placeholder for quality issues detection
-    const productsWithIssues = deliveredProducts.filter(op => 
-      Math.random() < 0.03 // Simulate 3% quality issue rate for specific products
+    const productsWithIssues = deliveredProducts.filter(
+      pop => Math.random() < 0.03 // Simulate 3% quality issue rate for specific products
     ).length;
 
     const productsWithoutIssues = deliveredProducts.length - productsWithIssues;
@@ -526,7 +515,7 @@ export class ContractAdherenceService {
       sampleSize: deliveredProducts.length,
       totalEvents: deliveredProducts.length,
       successfulEvents: productsWithoutIssues,
-      failedEvents: productsWithIssues
+      failedEvents: productsWithIssues,
     };
   }
 
@@ -536,12 +525,12 @@ export class ContractAdherenceService {
   private async calculateProductQuantityAccuracy(
     contract: MasterContract,
     productSLA: ContractProductSLA,
-    orderProducts: OrderProduct[],
+    purchaseOrderProducts: PurchaseOrderProduct[],
     startDate: Date,
     endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
-    const deliveredProducts = orderProducts.filter(op => 
-      op.purchaseOrder.status === OrderStatus.RECEPTIONNEE && op.orderedQuantity !== undefined
+    const deliveredProducts = purchaseOrderProducts.filter(
+      pop => pop.purchaseOrder.status === OrderStatus.RECEPTIONNEE && pop.orderedQuantity !== undefined
     );
 
     if (deliveredProducts.length === 0) return null;
@@ -549,10 +538,11 @@ export class ContractAdherenceService {
     let accurateDeliveries = 0;
     const threshold = productSLA.quantityAccuracyThreshold || 98; // 98% accuracy threshold
 
-    for (const orderProduct of deliveredProducts) {
-      // TODO: Add deliveredQuantity field to OrderProduct entity
+    for (const purchaseOrderProduct of deliveredProducts) {
+      // TODO: Add deliveredQuantity field to PurchaseOrderProduct entity
       const accuracy = 100; // Placeholder - assuming accurate delivery until deliveredQuantity is available
-      if (accuracy >= threshold && accuracy <= 102) { // Allow 2% overdelivery
+      if (accuracy >= threshold && accuracy <= 102) {
+        // Allow 2% overdelivery
         accurateDeliveries++;
       }
     }
@@ -581,7 +571,7 @@ export class ContractAdherenceService {
       sampleSize: deliveredProducts.length,
       totalEvents: deliveredProducts.length,
       successfulEvents: accurateDeliveries,
-      failedEvents: deliveredProducts.length - accurateDeliveries
+      failedEvents: deliveredProducts.length - accurateDeliveries,
     };
   }
 
@@ -619,7 +609,7 @@ export class ContractAdherenceService {
         calculationMethod: 'automated_calculation',
         dataSources: ['purchase_orders', 'order_products'],
         calculationTimestamp: new Date(),
-        calculatedById: 'system' // In real implementation, use service account ID
+        calculatedById: 'system', // In real implementation, use service account ID
       });
 
       entities.push(entity);
@@ -639,7 +629,7 @@ export class ContractAdherenceService {
   ): Promise<ContractPerformanceReport> {
     const contract = await this.contractRepository.findOne({
       where: { id: contractId },
-      relations: ['supplier', 'productSLAs']
+      relations: ['supplier', 'productSLAs'],
     });
 
     if (!contract) {
@@ -653,15 +643,14 @@ export class ContractAdherenceService {
       where: {
         masterContractId: contractId,
         periodStart: MoreThan(startDate),
-        periodEnd: LessThan(endDate)
+        periodEnd: LessThan(endDate),
       },
-      order: { createdAt: 'DESC' }
+      order: { createdAt: 'DESC' },
     });
 
     // Calculate overall performance score
-    const overallScore = metrics.length > 0 
-      ? metrics.reduce((sum, m) => sum + m.performanceScore, 0) / metrics.length
-      : 0;
+    const overallScore =
+      metrics.length > 0 ? metrics.reduce((sum, m) => sum + m.performanceScore, 0) / metrics.length : 0;
 
     // Determine overall status
     let status: 'EXCELLENT' | 'GOOD' | 'NEEDS_ATTENTION' | 'CRITICAL';
@@ -685,7 +674,7 @@ export class ContractAdherenceService {
         level: m.escalationLevel,
         reason: m.escalationNotes || `${m.metricType} SLA breach`,
         actionRequired: m.actionPlan || 'Review performance and implement corrective actions',
-        deadline: m.actionDeadline
+        deadline: m.actionDeadline,
       }));
 
     return {
@@ -697,7 +686,7 @@ export class ContractAdherenceService {
       netFinancialImpact,
       metrics,
       recommendations,
-      escalations
+      escalations,
     };
   }
 
@@ -715,61 +704,59 @@ export class ContractAdherenceService {
       contractsExcellent,
       monthlyMetrics,
       pendingEscalations,
-      contractsExpiringWithin30Days
+      contractsExpiringWithin30Days,
     ] = await Promise.all([
       this.contractRepository.count({
-        where: { status: ContractStatus.ACTIVE, isActive: true }
+        where: { status: ContractStatus.ACTIVE },
       }),
-      
+
       this.performanceMetricRepository
         .createQueryBuilder('pm')
         .select('DISTINCT pm.masterContractId')
         .where('pm.status IN (:...statuses)', { statuses: [PerformanceStatus.BREACH, PerformanceStatus.CRITICAL] })
         .andWhere('pm.periodEnd >= :monthStart', { monthStart })
         .getCount(),
-      
+
       this.performanceMetricRepository
         .createQueryBuilder('pm')
         .select('DISTINCT pm.masterContractId')
         .where('pm.status = :status', { status: PerformanceStatus.EXCELLENT })
         .andWhere('pm.periodEnd >= :monthStart', { monthStart })
         .getCount(),
-      
+
       this.performanceMetricRepository.find({
         where: {
           periodStart: MoreThan(monthStart),
-          periodEnd: LessThan(now)
-        }
+          periodEnd: LessThan(now),
+        },
       }),
-      
+
       this.performanceMetricRepository.count({
         where: {
           escalationTriggered: true,
           requiresAction: true,
-          isActive: true
-        }
+        },
       }),
-      
+
       this.contractRepository.count({
         where: {
           status: ContractStatus.ACTIVE,
           validUntil: Between(now, thirtyDaysFromNow),
-          isActive: true
-        }
-      })
+        },
+      }),
     ]);
 
     // Calculate averages from monthly metrics
     const deliveryMetrics = monthlyMetrics.filter(m => m.metricType === MetricType.DELIVERY_PERFORMANCE);
     const qualityMetrics = monthlyMetrics.filter(m => m.metricType === MetricType.QUALITY_PERFORMANCE);
-    
-    const avgDeliveryPerformance = deliveryMetrics.length > 0
-      ? deliveryMetrics.reduce((sum, m) => sum + m.actualValue, 0) / deliveryMetrics.length
-      : 0;
-    
-    const avgQualityPerformance = qualityMetrics.length > 0
-      ? qualityMetrics.reduce((sum, m) => sum + m.actualValue, 0) / qualityMetrics.length
-      : 0;
+
+    const avgDeliveryPerformance =
+      deliveryMetrics.length > 0
+        ? deliveryMetrics.reduce((sum, m) => sum + m.actualValue, 0) / deliveryMetrics.length
+        : 0;
+
+    const avgQualityPerformance =
+      qualityMetrics.length > 0 ? qualityMetrics.reduce((sum, m) => sum + m.actualValue, 0) / qualityMetrics.length : 0;
 
     const totalPenaltiesThisMonth = monthlyMetrics.reduce((sum, m) => sum + m.penaltiesApplied, 0);
     const totalBonusesThisMonth = monthlyMetrics.reduce((sum, m) => sum + m.bonusesEarned, 0);
@@ -783,31 +770,32 @@ export class ContractAdherenceService {
       avgDeliveryPerformance,
       avgQualityPerformance,
       pendingEscalations,
-      contractsExpiringWithin30Days
+      contractsExpiringWithin30Days,
     };
   }
 
   /**
    * Generate recommendations based on performance metrics
    */
-  private generateRecommendations(
-    contract: MasterContract,
-    metrics: ContractPerformanceMetric[]
-  ): string[] {
+  private generateRecommendations(contract: MasterContract, metrics: ContractPerformanceMetric[]): string[] {
     const recommendations: string[] = [];
 
     const deliveryMetrics = metrics.filter(m => m.metricType === MetricType.DELIVERY_PERFORMANCE);
     const qualityMetrics = metrics.filter(m => m.metricType === MetricType.QUALITY_PERFORMANCE);
 
     // Delivery performance recommendations
-    const poorDeliveryMetrics = deliveryMetrics.filter(m => m.status === PerformanceStatus.BREACH || m.status === PerformanceStatus.CRITICAL);
+    const poorDeliveryMetrics = deliveryMetrics.filter(
+      m => m.status === PerformanceStatus.BREACH || m.status === PerformanceStatus.CRITICAL
+    );
     if (poorDeliveryMetrics.length > 0) {
       recommendations.push('Review delivery processes and consider renegotiating SLA terms or switching suppliers');
       recommendations.push('Implement closer monitoring of delivery schedules and early warning systems');
     }
 
     // Quality performance recommendations
-    const poorQualityMetrics = qualityMetrics.filter(m => m.status === PerformanceStatus.BREACH || m.status === PerformanceStatus.CRITICAL);
+    const poorQualityMetrics = qualityMetrics.filter(
+      m => m.status === PerformanceStatus.BREACH || m.status === PerformanceStatus.CRITICAL
+    );
     if (poorQualityMetrics.length > 0) {
       recommendations.push('Conduct quality audit with supplier and establish improvement action plan');
       recommendations.push('Consider increasing quality inspections or implementing stricter acceptance criteria');
@@ -815,7 +803,8 @@ export class ContractAdherenceService {
 
     // Financial impact recommendations
     const totalPenalties = metrics.reduce((sum, m) => sum + m.penaltiesApplied, 0);
-    if (totalPenalties > contract.volumeCommitment * 0.01) { // If penalties > 1% of volume commitment
+    if (totalPenalties > contract.volumeCommitment * 0.01) {
+      // If penalties > 1% of volume commitment
       recommendations.push('High penalty costs detected - consider contract renegotiation or supplier change');
     }
 

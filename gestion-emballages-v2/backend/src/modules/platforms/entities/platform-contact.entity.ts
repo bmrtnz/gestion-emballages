@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, Index, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { IBusinessContact } from '@common/interfaces/business-contact.interface';
 import { User } from '@modules/users/entities/user.entity';
@@ -35,7 +35,7 @@ export class PlatformContact extends BaseEntity implements IBusinessContact {
   updatedById?: string;
 
   // Relations
-  @ManyToOne(() => Platform, (platform) => platform.contacts, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Platform, platform => platform.contacts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'platform_id' })
   platform: Platform;
 

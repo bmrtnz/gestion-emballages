@@ -65,6 +65,19 @@
     "of": "de",
     "results": "résultats"
   },
+  "contractStatus": {
+    "DRAFT": "Brouillon",
+    "ACTIVE": "Actif",
+    "SUSPENDED": "Suspendu",
+    "EXPIRED": "Expiré",
+    "TERMINATED": "Terminé"
+  },
+  "contractType": {
+    "ANNUAL": "Annuel",
+    "MULTI_YEAR": "Pluriannuel",
+    "SEASONAL": "Saisonnier",
+    "SPOT": "Ponctuel"
+  },
   "messages": {
     "userActivated": "Utilisateur activé avec succès",
     "userDeactivated": "Utilisateur désactivé avec succès",

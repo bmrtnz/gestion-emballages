@@ -1,5 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { UserRole, EntityType } from '@common/enums/user-role.enum';
+import { EntityType, UserRole } from '@common/enums/user-role.enum';
 
 export class UserResponseDto {
   @Expose()
@@ -9,7 +9,7 @@ export class UserResponseDto {
   email: string;
 
   @Exclude()
-  passwordHash: string;
+  hashedPassword: string;
 
   @Expose()
   fullName: string;

@@ -1,22 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
   UseInterceptors,
-  Request
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { StocksService } from './stocks.service';
 import { CreateStockStationDto } from './dto/create-stock-station.dto';
-import { UpdateStockStationDto, AdjustStockDto } from './dto/update-stock-station.dto';
+import { AdjustStockDto, UpdateStockStationDto } from './dto/update-stock-station.dto';
 import { CreateStockSupplierDto } from './dto/create-stock-Supplier.dto';
 import { UpdateStockSupplierDto } from './dto/update-stock-Supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
@@ -64,10 +64,7 @@ export class StocksController {
   @Get('stations/by-location/:stationId/Product/:articleId')
   @ApiOperation({ summary: 'Get stock by station and Product' })
   @ApiResponse({ status: 200, description: 'Stock retrieved successfully' })
-  async findStockByStationAndArticle(
-    @Param('stationId') stationId: string,
-    @Param('articleId') articleId: string
-  ) {
+  async findStockByStationAndArticle(@Param('stationId') stationId: string, @Param('articleId') articleId: string) {
     return this.stocksService.findStockByStationAndArticle(stationId, articleId);
   }
 
@@ -87,11 +84,7 @@ export class StocksController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Adjust station stock quantity' })
   @ApiResponse({ status: 200, description: 'Station stock adjusted successfully' })
-  async adjustStockStation(
-    @Param('id') id: string,
-    @Body() adjustStockDto: AdjustStockDto,
-    @Request() req
-  ) {
+  async adjustStockStation(@Param('id') id: string, @Body() adjustStockDto: AdjustStockDto, @Request() req) {
     return this.stocksService.adjustStockStation(id, adjustStockDto, req.user.id);
   }
 
@@ -145,10 +138,7 @@ export class StocksController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.SUPPLIER)
   @ApiOperation({ summary: 'Update supplier stock' })
   @ApiResponse({ status: 200, description: 'Supplier stock updated successfully' })
-  async updateStockFournisseur(
-    @Param('id') id: string,
-    @Body() UpdateStockSupplierDto: UpdateStockSupplierDto
-  ) {
+  async updateStockFournisseur(@Param('id') id: string, @Body() UpdateStockSupplierDto: UpdateStockSupplierDto) {
     return this.stocksService.updateStockFournisseur(id, UpdateStockSupplierDto);
   }
 

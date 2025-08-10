@@ -1,46 +1,19 @@
-import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { BaseEntity } from '@common/entities/base.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { SoftDeletableEntity } from '@common/entities/base.entity';
 import { User } from '@modules/users/entities/user.entity';
 import { Station } from './station.entity';
 
 @Entity('station_groups')
-export class StationGroup extends BaseEntity {
-  @Column({ unique: true })
-  identifiant: string;
-
+export class StationGroup extends SoftDeletableEntity {
   @Column()
   name: string;
 
   @Column({ name: 'description', nullable: true })
   description?: string;
 
-  @Column({ name: 'main_contact', type: 'jsonb', default: {} })
-  mainContact: {
-    name?: string;
-    position?: string;
-    phone?: string;
-    email?: string;
-  };
-
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
-
-  @Column({ name: 'created_by', nullable: true })
-  createdById?: string;
-
-  @Column({ name: 'updated_by', nullable: true })
-  updatedById?: string;
-
   // Relations
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'created_by' })
-  createdBy?: User;
 
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'updated_by' })
-  updatedBy?: User;
-
-  @OneToMany(() => Station, (station) => station.groupe)
+  @OneToMany(() => Station, station => station.stationGroup)
   stations: Station[];
 
   // Virtual properties

@@ -1,18 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Request,
-  Put,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PlatformContactsService } from './platform-contacts.service';
 import { CreatePlatformContactDto } from './dto/create-platform-contact.dto';
@@ -33,11 +33,7 @@ export class PlatformContactsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Create a new contact for a platform' })
   @ApiResponse({ status: 201, description: 'Contact created successfully' })
-  async create(
-    @Param('platformId') platformId: string,
-    @Body() createDto: CreatePlatformContactDto,
-    @Request() req,
-  ) {
+  async create(@Param('platformId') platformId: string, @Body() createDto: CreatePlatformContactDto, @Request() req) {
     return this.contactsService.create(platformId, createDto, req.user.id);
   }
 
@@ -67,10 +63,7 @@ export class PlatformContactsController {
   @ApiOperation({ summary: 'Get a specific contact for a platform' })
   @ApiResponse({ status: 200, description: 'Contact retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async findOne(
-    @Param('platformId') platformId: string,
-    @Param('contactId') contactId: string,
-  ) {
+  async findOne(@Param('platformId') platformId: string, @Param('contactId') contactId: string) {
     return this.contactsService.findOne(platformId, contactId);
   }
 
@@ -83,7 +76,7 @@ export class PlatformContactsController {
     @Param('platformId') platformId: string,
     @Param('contactId') contactId: string,
     @Body() updateDto: UpdatePlatformContactDto,
-    @Request() req,
+    @Request() req
   ) {
     return this.contactsService.update(platformId, contactId, updateDto, req.user.id);
   }
@@ -95,11 +88,7 @@ export class PlatformContactsController {
   @ApiResponse({ status: 200, description: 'Contact set as principal successfully' })
   @ApiResponse({ status: 400, description: 'Cannot set inactive contact as principal' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async setPrincipal(
-    @Param('platformId') platformId: string,
-    @Param('contactId') contactId: string,
-    @Request() req,
-  ) {
+  async setPrincipal(@Param('platformId') platformId: string, @Param('contactId') contactId: string, @Request() req) {
     return this.contactsService.setPrincipal(platformId, contactId, req.user.id);
   }
 
@@ -110,11 +99,7 @@ export class PlatformContactsController {
   @ApiResponse({ status: 200, description: 'Contact deactivated successfully' })
   @ApiResponse({ status: 400, description: 'Cannot deactivate principal contact' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async deactivate(
-    @Param('platformId') platformId: string,
-    @Param('contactId') contactId: string,
-    @Request() req,
-  ) {
+  async deactivate(@Param('platformId') platformId: string, @Param('contactId') contactId: string, @Request() req) {
     return this.contactsService.deactivate(platformId, contactId, req.user.id);
   }
 
@@ -124,11 +109,7 @@ export class PlatformContactsController {
   @ApiOperation({ summary: 'Reactivate a contact for a platform' })
   @ApiResponse({ status: 200, description: 'Contact reactivated successfully' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async reactivate(
-    @Param('platformId') platformId: string,
-    @Param('contactId') contactId: string,
-    @Request() req,
-  ) {
+  async reactivate(@Param('platformId') platformId: string, @Param('contactId') contactId: string, @Request() req) {
     return this.contactsService.reactivate(platformId, contactId, req.user.id);
   }
 
@@ -139,10 +120,7 @@ export class PlatformContactsController {
   @ApiResponse({ status: 204, description: 'Contact deleted successfully' })
   @ApiResponse({ status: 400, description: 'Cannot delete principal contact' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  async remove(
-    @Param('platformId') platformId: string,
-    @Param('contactId') contactId: string,
-  ) {
+  async remove(@Param('platformId') platformId: string, @Param('contactId') contactId: string) {
     await this.contactsService.remove(platformId, contactId);
   }
 }

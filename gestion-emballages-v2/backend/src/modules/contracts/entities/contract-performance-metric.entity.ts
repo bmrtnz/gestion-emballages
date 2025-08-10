@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { MasterContract } from './master-contract.entity';
 import { ContractProductSLA } from './contract-product-sla.entity';
@@ -12,15 +12,15 @@ export enum MetricType {
   PACKAGING_COMPLIANCE = 'PACKAGING_COMPLIANCE',
   DOCUMENTATION_COMPLETENESS = 'DOCUMENTATION_COMPLETENESS',
   RESPONSE_TIME = 'RESPONSE_TIME',
-  ORDER_FULFILLMENT_RATE = 'ORDER_FULFILLMENT_RATE'
+  ORDER_FULFILLMENT_RATE = 'ORDER_FULFILLMENT_RATE',
 }
 
 export enum PerformanceStatus {
-  EXCELLENT = 'EXCELLENT',    // Above expectations
-  GOOD = 'GOOD',             // Meeting SLA
-  WARNING = 'WARNING',        // Approaching SLA breach
-  BREACH = 'BREACH',         // SLA breached
-  CRITICAL = 'CRITICAL'      // Critical breach requiring escalation
+  EXCELLENT = 'EXCELLENT', // Above expectations
+  GOOD = 'GOOD', // Meeting SLA
+  WARNING = 'WARNING', // Approaching SLA breach
+  BREACH = 'BREACH', // SLA breached
+  CRITICAL = 'CRITICAL', // Critical breach requiring escalation
 }
 
 export enum MeasurementPeriod {
@@ -28,7 +28,7 @@ export enum MeasurementPeriod {
   WEEKLY = 'WEEKLY',
   MONTHLY = 'MONTHLY',
   QUARTERLY = 'QUARTERLY',
-  ANNUAL = 'ANNUAL'
+  ANNUAL = 'ANNUAL',
 }
 
 @Entity('contract_performance_metrics')
@@ -48,14 +48,14 @@ export class ContractPerformanceMetric extends BaseEntity {
   // Metric identification
   @Column({
     type: 'enum',
-    enum: MetricType
+    enum: MetricType,
   })
   metricType: MetricType;
 
   @Column({
     type: 'enum',
     enum: MeasurementPeriod,
-    default: MeasurementPeriod.MONTHLY
+    default: MeasurementPeriod.MONTHLY,
   })
   measurementPeriod: MeasurementPeriod;
 
@@ -82,7 +82,7 @@ export class ContractPerformanceMetric extends BaseEntity {
   // Performance status
   @Column({
     type: 'enum',
-    enum: PerformanceStatus
+    enum: PerformanceStatus,
   })
   status: PerformanceStatus;
 
@@ -138,7 +138,7 @@ export class ContractPerformanceMetric extends BaseEntity {
       earlyDeliveries?: number;
       averageEarlyTime?: number;
     };
-    
+
     // Quality performance details
     qualityMetrics?: {
       qualityIssuesReported?: number;
@@ -148,7 +148,7 @@ export class ContractPerformanceMetric extends BaseEntity {
       returnRate?: number;
       reworkRequired?: number;
     };
-    
+
     // Quantity accuracy details
     quantityMetrics?: {
       shortDeliveries?: number;
@@ -157,7 +157,7 @@ export class ContractPerformanceMetric extends BaseEntity {
       averageVariance?: number;
       maxVariance?: number;
     };
-    
+
     // Response time details
     responseMetrics?: {
       averageResponseTime?: number;
@@ -177,7 +177,7 @@ export class ContractPerformanceMetric extends BaseEntity {
     communicationIssues?: string[];
     externalFactors?: string[];
     systemIssues?: string[];
-    
+
     // Corrective actions taken
     correctiveActions?: Array<{
       issue: string;
@@ -244,7 +244,7 @@ export class ContractPerformanceMetric extends BaseEntity {
   calculatedById: string;
 
   // Relations
-  @ManyToOne(() => MasterContract, (contract) => contract.performanceMetrics)
+  @ManyToOne(() => MasterContract, contract => contract.performanceMetrics)
   @JoinColumn({ name: 'master_contract_id' })
   masterContract: MasterContract;
 
@@ -264,7 +264,7 @@ export class ContractPerformanceMetric extends BaseEntity {
   get performanceScore(): number {
     // Calculate a 0-100 performance score
     if (this.targetValue === 0) return 100;
-    
+
     const score = (this.actualValue / this.targetValue) * 100;
     return Math.max(0, Math.min(100, score));
   }
@@ -277,16 +277,16 @@ export class ContractPerformanceMetric extends BaseEntity {
       case MetricType.DOCUMENTATION_COMPLETENESS:
         // For these metrics, higher is better
         return this.actualValue >= this.targetValue;
-      
+
       case MetricType.RESPONSE_TIME:
         // For response time, lower is better
         return this.actualValue <= this.targetValue;
-      
+
       case MetricType.QUALITY_PERFORMANCE:
       case MetricType.QUANTITY_ACCURACY:
         // For these, depends on what's being measured (usually higher is better)
         return this.actualValue >= this.targetValue;
-      
+
       default:
         return this.actualValue >= this.targetValue;
     }
@@ -294,7 +294,7 @@ export class ContractPerformanceMetric extends BaseEntity {
 
   get severityLevel(): 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' {
     const varianceAbs = Math.abs(this.variancePercent);
-    
+
     if (this.isWithinSLA) {
       return 'LOW';
     } else if (varianceAbs <= 10) {
@@ -337,9 +337,9 @@ export class ContractPerformanceMetric extends BaseEntity {
     }
 
     this.previousPeriodValue = previousMetric.actualValue;
-    
+
     const changePercent = ((this.actualValue - previousMetric.actualValue) / previousMetric.actualValue) * 100;
-    
+
     if (Math.abs(changePercent) < 5) {
       this.trendDirection = 'STABLE';
     } else {
@@ -353,12 +353,12 @@ export class ContractPerformanceMetric extends BaseEntity {
         case MetricType.DOCUMENTATION_COMPLETENESS:
           this.trendDirection = changePercent > 0 ? 'IMPROVING' : 'DECLINING';
           break;
-        
+
         case MetricType.RESPONSE_TIME:
           // For response time, lower is better
           this.trendDirection = changePercent < 0 ? 'IMPROVING' : 'DECLINING';
           break;
-        
+
         default:
           this.trendDirection = changePercent > 0 ? 'IMPROVING' : 'DECLINING';
       }
@@ -366,19 +366,21 @@ export class ContractPerformanceMetric extends BaseEntity {
   }
 
   shouldEscalate(): boolean {
-    return !this.isWithinSLA && 
-           (this.severityLevel === 'HIGH' || this.severityLevel === 'CRITICAL') &&
-           !this.escalationTriggered;
+    return (
+      !this.isWithinSLA &&
+      (this.severityLevel === 'HIGH' || this.severityLevel === 'CRITICAL') &&
+      !this.escalationTriggered
+    );
   }
 
   triggerEscalation(notes?: string): void {
     if (!this.shouldEscalate()) return;
-    
+
     this.escalationTriggered = true;
     this.escalationDate = new Date();
     this.escalationNotes = notes;
     this.requiresAction = true;
-    
+
     // Set escalation level based on severity
     switch (this.severityLevel) {
       case 'HIGH':
@@ -395,7 +397,7 @@ export class ContractPerformanceMetric extends BaseEntity {
   getPerformanceSummary(): string {
     const status = this.isWithinSLA ? 'MEETING' : 'MISSING';
     const variance = this.variancePercent > 0 ? '+' : '';
-    
+
     return `${this.metricType}: ${status} SLA (${this.actualValue} vs ${this.targetValue}, ${variance}${this.variancePercent.toFixed(1)}%)`;
   }
 }

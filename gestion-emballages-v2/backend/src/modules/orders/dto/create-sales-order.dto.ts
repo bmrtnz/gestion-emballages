@@ -1,4 +1,14 @@
-import { IsString, IsOptional, IsDateString, IsNumber, IsArray, ValidateNested, IsNotEmpty, Min, IsEnum } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class CreateSalesOrderProductDto {

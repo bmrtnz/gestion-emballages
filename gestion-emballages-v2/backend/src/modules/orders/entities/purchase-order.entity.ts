@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 import { Station } from '@modules/stations/entities/station.entity';
@@ -6,7 +6,7 @@ import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 import { Platform } from '@modules/platforms/entities/platform.entity';
 import { User } from '@modules/users/entities/user.entity';
 import { MasterOrder } from './master-order.entity';
-import { OrderProduct } from './order-product.entity';
+import { PurchaseOrderProduct } from './purchase-order-product.entity';
 import { SalesOrder } from './sales-order.entity';
 
 @Entity('purchase_orders')
@@ -110,7 +110,7 @@ export class PurchaseOrder extends BaseEntity {
   deliveredAt?: Date;
 
   // Relations
-  @ManyToOne(() => MasterOrder, (masterOrder) => masterOrder.purchaseOrders, {
+  @ManyToOne(() => MasterOrder, masterOrder => masterOrder.purchaseOrders, {
     nullable: true,
   })
   @JoinColumn({ name: 'master_order_id' })
@@ -145,12 +145,12 @@ export class PurchaseOrder extends BaseEntity {
   @JoinColumn({ name: 'approved_by' })
   approvedBy?: User;
 
-  @OneToOne(() => SalesOrder, (salesOrder) => salesOrder.linkedPurchaseOrder, {
+  @OneToOne(() => SalesOrder, salesOrder => salesOrder.linkedPurchaseOrder, {
     nullable: true,
   })
   @JoinColumn({ name: 'linked_sales_order_id' })
   linkedSalesOrder?: SalesOrder;
 
-  @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.purchaseOrder)
-  orderProducts: OrderProduct[];
+  @OneToMany(() => PurchaseOrderProduct, purchaseOrderProduct => purchaseOrderProduct.purchaseOrder)
+  orderProducts: PurchaseOrderProduct[];
 }

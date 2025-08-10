@@ -1,18 +1,18 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  Query, 
-  UseGuards,
+import {
+  Body,
   ClassSerializerInterceptor,
-  UseInterceptors
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -32,15 +32,15 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
-    private readonly dataIntegrityService: DataIntegrityService,
+    private readonly dataIntegrityService: DataIntegrityService
   ) {}
 
   // Development-only endpoint (no authentication required)
   @Get('dev/list')
   @ApiOperation({ summary: 'Get users for development login selector (no auth required)' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Users retrieved for development purposes' 
+  @ApiResponse({
+    status: 200,
+    description: 'Users retrieved for development purposes',
   })
   async getDevUsers(@Query() paginationDto: PaginationDto) {
     // Only allow in development environment
@@ -53,9 +53,9 @@ export class UsersController {
       const result = await this.usersService.findAll({
         ...paginationDto,
         limit: 100,
-        status: 'active'
+        status: 'active',
       });
-      
+
       // Return simplified user data for login selector
       // The service already populates station and Supplier data dynamically
       const simplifiedUsers = result.data.map(user => ({
@@ -63,19 +63,23 @@ export class UsersController {
         email: user.email,
         fullName: user.fullName,
         role: user.role,
-        station: (user as any).station ? { 
-          id: (user as any).station.id, 
-          name: (user as any).station.name 
-        } : null,
-        supplier: (user as any).Supplier ? { 
-          id: (user as any).Supplier.id, 
-          name: (user as any).Supplier.name 
-        } : null
+        station: (user as any).station
+          ? {
+              id: (user as any).station.id,
+              name: (user as any).station.name,
+            }
+          : null,
+        supplier: (user as any).Supplier
+          ? {
+              id: (user as any).Supplier.id,
+              name: (user as any).Supplier.name,
+            }
+          : null,
       }));
-      
+
       return {
         ...result,
-        data: simplifiedUsers
+        data: simplifiedUsers,
       };
     } catch (error) {
       console.error('Dev users endpoint error:', error.message);
@@ -88,10 +92,10 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'User created successfully', 
-    type: UserResponseDto 
+  @ApiResponse({
+    status: 201,
+    description: 'User created successfully',
+    type: UserResponseDto,
   })
   async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
@@ -102,9 +106,9 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users with pagination' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Users retrieved successfully' 
+  @ApiResponse({
+    status: 200,
+    description: 'Users retrieved successfully',
   })
   async findAll(@Query() paginationDto: PaginationDto) {
     try {
@@ -121,10 +125,10 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user by ID' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User retrieved successfully', 
-    type: UserResponseDto 
+  @ApiResponse({
+    status: 200,
+    description: 'User retrieved successfully',
+    type: UserResponseDto,
   })
   async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
@@ -135,10 +139,10 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User updated successfully', 
-    type: UserResponseDto 
+  @ApiResponse({
+    status: 200,
+    description: 'User updated successfully',
+    type: UserResponseDto,
   })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
@@ -149,9 +153,9 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Deactivate user' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User deactivated successfully' 
+  @ApiResponse({
+    status: 200,
+    description: 'User deactivated successfully',
   })
   async remove(@Param('id') id: string) {
     return this.usersService.remove(id);
@@ -162,10 +166,10 @@ export class UsersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Reactivate user' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User reactivated successfully', 
-    type: UserResponseDto 
+  @ApiResponse({
+    status: 200,
+    description: 'User reactivated successfully',
+    type: UserResponseDto,
   })
   async reactivate(@Param('id') id: string) {
     return this.usersService.reactivate(id);
@@ -177,9 +181,9 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Check data integrity before hard delete (Admin only)' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Data integrity report generated' 
+  @ApiResponse({
+    status: 200,
+    description: 'Data integrity report generated',
   })
   async checkDataIntegrity(@Param('id') id: string) {
     return this.dataIntegrityService.checkDeleteIntegrity('user', id);
@@ -190,9 +194,9 @@ export class UsersController {
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Permanently delete user with data integrity checks (Admin only)' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'User permanently deleted' 
+  @ApiResponse({
+    status: 200,
+    description: 'User permanently deleted',
   })
   async hardDelete(
     @Param('id') id: string,
@@ -201,19 +205,19 @@ export class UsersController {
   ) {
     return this.dataIntegrityService.performHardDelete('user', id, {
       cascadeDelete: cascadeDelete === true,
-      confirmIntegrityCheck: confirmIntegrityCheck === true
+      confirmIntegrityCheck: confirmIntegrityCheck === true,
     });
   }
 
   @Post('password-reset-link')
   @ApiOperation({ summary: 'Send password reset link via email' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Password reset link sent successfully' 
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset link sent successfully',
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Invalid email format' 
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid email format',
   })
   async sendPasswordResetLink(@Body() body: { email: string }) {
     return this.usersService.sendPasswordResetLink(body.email);
@@ -221,13 +225,13 @@ export class UsersController {
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password with valid token' })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Password reset successfully' 
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset successfully',
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Invalid or expired token' 
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid or expired token',
   })
   async resetPassword(@Body() body: { token: string; password: string }) {
     return this.usersService.resetPassword(body.token, body.password);

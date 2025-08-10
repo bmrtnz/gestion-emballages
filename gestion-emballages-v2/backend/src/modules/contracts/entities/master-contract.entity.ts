@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 import { User } from '@modules/users/entities/user.entity';
@@ -10,14 +10,14 @@ export enum ContractStatus {
   ACTIVE = 'ACTIVE',
   SUSPENDED = 'SUSPENDED',
   EXPIRED = 'EXPIRED',
-  TERMINATED = 'TERMINATED'
+  TERMINATED = 'TERMINATED',
 }
 
 export enum ContractType {
   ANNUAL = 'ANNUAL',
   MULTI_YEAR = 'MULTI_YEAR',
   SEASONAL = 'SEASONAL',
-  SPOT = 'SPOT'
+  SPOT = 'SPOT',
 }
 
 @Entity('master_contracts')
@@ -34,14 +34,14 @@ export class MasterContract extends BaseEntity {
   @Column({
     type: 'enum',
     enum: ContractType,
-    default: ContractType.ANNUAL
+    default: ContractType.ANNUAL,
   })
   contractType: ContractType;
 
   @Column({
     type: 'enum',
     enum: ContractStatus,
-    default: ContractStatus.DRAFT
+    default: ContractStatus.DRAFT,
   })
   status: ContractStatus;
 
@@ -89,8 +89,8 @@ export class MasterContract extends BaseEntity {
   @Column({ name: 'quality_issue_penalty_percent', type: 'decimal', precision: 5, scale: 2, default: 1.0 })
   qualityIssuePenaltyPercent: number; // % penalty for quality issues
 
-  @Column({ name: 'early_delivery_bonus_percent', type: 'decimal', precision: 5, scale: 2, default: 0.0 })
-  earlyDeliveryBonusPercent: number; // % bonus for early delivery
+  @Column({ name: 'delivery_excellence_bonus_percent', type: 'decimal', precision: 5, scale: 2, default: 0.0 })
+  deliveryExcellenceBonusPercent: number; // % bonus for delivery excellence
 
   @Column({ name: 'quality_excellence_bonus_percent', type: 'decimal', precision: 5, scale: 2, default: 0.0 })
   qualityExcellenceBonusPercent: number; // % bonus for zero quality issues
@@ -104,11 +104,11 @@ export class MasterContract extends BaseEntity {
     negotiationNotes?: string[];
     approvalNotes?: string;
     reviewNotes?: string;
-    
+
     // Performance thresholds
     criticalQualityThreshold?: number; // % that triggers contract review
     criticalDeliveryThreshold?: number; // % that triggers contract review
-    
+
     // Renewal terms
     autoRenewalClause?: boolean;
     renewalNoticeDays?: number;
@@ -119,12 +119,12 @@ export class MasterContract extends BaseEntity {
       newValidUntil: string;
       adjustments?: any;
     }>;
-    
+
     // Special clauses
     forceMAjeureClause?: boolean;
     qualityGuarantee?: boolean;
     exclusiveSupplier?: boolean;
-    
+
     // Suspension/Rejection details
     suspensionReason?: string;
     suspendedAt?: string;
@@ -133,7 +133,7 @@ export class MasterContract extends BaseEntity {
       rejectedBy: string;
       reason: string;
     }>;
-    
+
     // Custom fields
     customClauses?: Record<string, any>;
   };
@@ -155,7 +155,7 @@ export class MasterContract extends BaseEntity {
   nextReviewDate?: Date;
 
   // Relations
-  @ManyToOne(() => Supplier, (supplier) => supplier.masterContracts)
+  @ManyToOne(() => Supplier, supplier => supplier.masterContracts)
   @JoinColumn({ name: 'supplier_id' })
   supplier: Supplier;
 
@@ -167,27 +167,25 @@ export class MasterContract extends BaseEntity {
   @JoinColumn({ name: 'approved_by' })
   approvedBy?: User;
 
-  @OneToMany(() => ContractProductSLA, (productSLA) => productSLA.masterContract, { cascade: true })
+  @OneToMany(() => ContractProductSLA, productSLA => productSLA.masterContract, { cascade: true })
   productSLAs: ContractProductSLA[];
 
-  @OneToMany(() => ContractPerformanceMetric, (metric) => metric.masterContract)
+  @OneToMany(() => ContractPerformanceMetric, metric => metric.masterContract)
   performanceMetrics: ContractPerformanceMetric[];
 
   // Virtual properties
   get isCurrentlyActive(): boolean {
     const now = new Date();
-    return this.status === ContractStatus.ACTIVE && 
-           this.validFrom <= now && 
-           this.validUntil >= now;
+    return this.status === ContractStatus.ACTIVE && this.validFrom <= now && this.validUntil >= now;
   }
 
   get isExpiringSoon(): boolean {
     if (!this.isCurrentlyActive) return false;
-    
+
     const now = new Date();
     const daysUntilExpiry = Math.ceil((this.validUntil.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     const noticeDays = this.metadata.renewalNoticeDays || 30;
-    
+
     return daysUntilExpiry <= noticeDays;
   }
 
@@ -196,8 +194,8 @@ export class MasterContract extends BaseEntity {
   }
 
   get remainingDays(): number {
-    if (!this.isActive) return 0;
-    
+    if (this.status !== ContractStatus.ACTIVE) return 0;
+
     const now = new Date();
     return Math.max(0, Math.ceil((this.validUntil.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
   }

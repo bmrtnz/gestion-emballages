@@ -1,23 +1,23 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
   Query,
-  UseGuards,
   Request,
-  ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { ContractsService } from './contracts.service';
-import { CreateContractDto, UpdateContractDto, ContractFiltersDto } from './dto/contract.dto';
+import { ContractFiltersDto, CreateContractDto, UpdateContractDto } from './dto/contract.dto';
 import { CreateProductSLADto, UpdateProductSLADto } from './dto/product-sla.dto';
 import { MasterContract } from './entities/master-contract.entity';
 import { ContractProductSLA } from './entities/contract-product-sla.entity';
@@ -33,10 +33,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Create a new master contract' })
   @ApiResponse({ status: 201, description: 'Contract created successfully', type: MasterContract })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async createContract(
-    @Body() createContractDto: CreateContractDto,
-    @Request() req: any,
-  ): Promise<MasterContract> {
+  async createContract(@Body() createContractDto: CreateContractDto, @Request() req: any): Promise<MasterContract> {
     return this.contractsService.create(createContractDto, req.user.id);
   }
 
@@ -44,9 +41,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Get contracts with filters and pagination' })
   @ApiResponse({ status: 200, description: 'Contracts retrieved successfully' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async getContracts(
-    @Query() filters: ContractFiltersDto,
-  ) {
+  async getContracts(@Query() filters: ContractFiltersDto) {
     return this.contractsService.findAll(filters);
   }
 
@@ -55,9 +50,7 @@ export class ContractsController {
   @ApiResponse({ status: 200, description: 'Contract found', type: MasterContract })
   @ApiResponse({ status: 404, description: 'Contract not found' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async getContractById(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<MasterContract> {
+  async getContractById(@Param('id', ParseUUIDPipe) id: string): Promise<MasterContract> {
     return this.contractsService.findOne(id);
   }
 
@@ -68,7 +61,7 @@ export class ContractsController {
   async updateContract(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateContractDto: UpdateContractDto,
-    @Request() req: any,
+    @Request() req: any
   ): Promise<MasterContract> {
     return this.contractsService.update(id, updateContractDto, req.user.id);
   }
@@ -77,9 +70,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Deactivate contract' })
   @ApiResponse({ status: 200, description: 'Contract deactivated successfully' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async deactivateContract(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<{ message: string }> {
+  async deactivateContract(@Param('id', ParseUUIDPipe) id: string): Promise<{ message: string }> {
     await this.contractsService.deactivate(id);
     return { message: 'Contract deactivated successfully' };
   }
@@ -88,9 +79,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Activate contract' })
   @ApiResponse({ status: 200, description: 'Contract activated successfully' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async activateContract(
-    @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<MasterContract> {
+  async activateContract(@Param('id', ParseUUIDPipe) id: string): Promise<MasterContract> {
     return this.contractsService.activate(id);
   }
 
@@ -100,7 +89,7 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async suspendContract(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('reason') reason?: string,
+    @Body('reason') reason?: string
   ): Promise<MasterContract> {
     return this.contractsService.suspend(id, reason);
   }
@@ -111,7 +100,8 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async renewContract(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() renewalData: {
+    @Body()
+    renewalData: {
       validUntil: string;
       contractName?: string;
       adjustments?: {
@@ -121,7 +111,7 @@ export class ContractsController {
         qualityIssuePenaltyPercent?: number;
       };
     },
-    @Request() req: any,
+    @Request() req: any
   ): Promise<MasterContract> {
     return this.contractsService.renew(id, renewalData, req.user.id);
   }
@@ -135,7 +125,7 @@ export class ContractsController {
   async addProductSLA(
     @Param('id', ParseUUIDPipe) contractId: string,
     @Body() createProductSLADto: CreateProductSLADto,
-    @Request() req: any,
+    @Request() req: any
   ): Promise<ContractProductSLA> {
     return this.contractsService.addProductSLA(contractId, createProductSLADto, req.user.id);
   }
@@ -144,10 +134,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Get all product SLAs for contract' })
   @ApiResponse({ status: 200, description: 'Product SLAs retrieved successfully' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async getContractProductSLAs(
-    @Param('id', ParseUUIDPipe) contractId: string,
-    @Query('productId') productId?: string,
-  ) {
+  async getContractProductSLAs(@Param('id', ParseUUIDPipe) contractId: string, @Query('productId') productId?: string) {
     return this.contractsService.getProductSLAs(contractId, productId);
   }
 
@@ -159,7 +146,7 @@ export class ContractsController {
     @Param('id', ParseUUIDPipe) contractId: string,
     @Param('slaId', ParseUUIDPipe) slaId: string,
     @Body() updateProductSLADto: UpdateProductSLADto,
-    @Request() req: any,
+    @Request() req: any
   ): Promise<ContractProductSLA> {
     return this.contractsService.updateProductSLA(contractId, slaId, updateProductSLADto, req.user.id);
   }
@@ -170,7 +157,7 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async removeProductSLA(
     @Param('id', ParseUUIDPipe) contractId: string,
-    @Param('slaId', ParseUUIDPipe) slaId: string,
+    @Param('slaId', ParseUUIDPipe) slaId: string
   ): Promise<{ message: string }> {
     await this.contractsService.removeProductSLA(contractId, slaId);
     return { message: 'Product SLA removed successfully' };
@@ -183,7 +170,7 @@ export class ContractsController {
   async suspendProductSLA(
     @Param('id', ParseUUIDPipe) contractId: string,
     @Param('slaId', ParseUUIDPipe) slaId: string,
-    @Body('reason') reason: string,
+    @Body('reason') reason: string
   ): Promise<ContractProductSLA> {
     return this.contractsService.suspendProductSLA(contractId, slaId, reason);
   }
@@ -194,7 +181,7 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async resumeProductSLA(
     @Param('id', ParseUUIDPipe) contractId: string,
-    @Param('slaId', ParseUUIDPipe) slaId: string,
+    @Param('slaId', ParseUUIDPipe) slaId: string
   ): Promise<ContractProductSLA> {
     return this.contractsService.resumeProductSLA(contractId, slaId);
   }
@@ -207,7 +194,7 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async submitForReview(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('reviewNotes') reviewNotes?: string,
+    @Body('reviewNotes') reviewNotes?: string
   ): Promise<MasterContract> {
     return this.contractsService.submitForReview(id, reviewNotes);
   }
@@ -219,7 +206,7 @@ export class ContractsController {
   async approveContract(
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req: any,
-    @Body('approvalNotes') approvalNotes?: string,
+    @Body('approvalNotes') approvalNotes?: string
   ): Promise<MasterContract> {
     return this.contractsService.approve(id, req.user.id, approvalNotes);
   }
@@ -231,7 +218,7 @@ export class ContractsController {
   async rejectContract(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('rejectionReason') rejectionReason: string,
-    @Request() req: any,
+    @Request() req: any
   ): Promise<MasterContract> {
     return this.contractsService.reject(id, req.user.id, rejectionReason);
   }
@@ -242,9 +229,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Get contract summary with key metrics' })
   @ApiResponse({ status: 200, description: 'Contract summary retrieved' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async getContractSummary(
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  async getContractSummary(@Param('id', ParseUUIDPipe) id: string) {
     return this.contractsService.getContractSummary(id);
   }
 
@@ -252,9 +237,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Get all products covered by contract' })
   @ApiResponse({ status: 200, description: 'Contract products retrieved' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async getContractProducts(
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  async getContractProducts(@Param('id', ParseUUIDPipe) id: string) {
     return this.contractsService.getContractProducts(id);
   }
 
@@ -262,9 +245,7 @@ export class ContractsController {
   @ApiOperation({ summary: 'Validate all SLAs in contract for conflicts' })
   @ApiResponse({ status: 200, description: 'SLA validation completed' })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async validateContractSLAs(
-    @Param('id', ParseUUIDPipe) id: string,
-  ) {
+  async validateContractSLAs(@Param('id', ParseUUIDPipe) id: string) {
     return this.contractsService.validateSLAs(id);
   }
 
@@ -275,7 +256,7 @@ export class ContractsController {
   async getExpiringContracts(
     @Query('days') days: number = 30,
     @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query('limit') limit: number = 10
   ) {
     return this.contractsService.findExpiringContracts(days, page, limit);
   }
@@ -286,7 +267,7 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   async getContractsBySupplier(
     @Param('supplierId', ParseUUIDPipe) supplierId: string,
-    @Query('includeInactive') includeInactive: boolean = false,
+    @Query('includeInactive') includeInactive: boolean = false
   ) {
     return this.contractsService.findBySupplier(supplierId, includeInactive);
   }
@@ -305,7 +286,8 @@ export class ContractsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   async duplicateContract(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() duplicationOptions: {
+    @Body()
+    duplicationOptions: {
       contractName: string;
       supplierId?: string;
       validFrom: string;
@@ -313,7 +295,7 @@ export class ContractsController {
       includeSLAs?: boolean;
       adjustments?: Record<string, any>;
     },
-    @Request() req: any,
+    @Request() req: any
   ): Promise<MasterContract> {
     return this.contractsService.duplicate(id, duplicationOptions, req.user.id);
   }

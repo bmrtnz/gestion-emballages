@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,34 +8,36 @@ import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductSupplierDto } from './dto/create-product-supplier.dto';
+import { UpdateProductSupplierDto } from './dto/update-product-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationService, PaginationOptions } from '@common/services/pagination.service';
+import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
 import { ProductCategory } from '@common/enums/product-category.enum';
+import { ConditioningUnit } from '@common/enums/conditioning-unit.enum';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
-    private articleRepository: Repository<Product>,
+    private productRepository: Repository<Product>,
     @InjectRepository(ProductSupplier)
-    private articleFournisseurRepository: Repository<ProductSupplier>,
+    private productSupplierRepository: Repository<ProductSupplier>,
     @InjectRepository(Supplier)
-    private fournisseurRepository: Repository<Supplier>,
-    private paginationService: PaginationService,
+    private supplierRepository: Repository<Supplier>,
+    private paginationService: PaginationService
   ) {}
 
   async create(CreateProductDto: CreateProductDto): Promise<Product> {
     // Check if Product code already exists
-    const existingArticle = await this.articleRepository.findOne({
-      where: { productCode: CreateProductDto.productCode }
+    const existingProduct = await this.productRepository.findOne({
+      where: { productCode: CreateProductDto.productCode },
     });
 
-    if (existingArticle) {
-      throw new ConflictException('Un Product avec ce code existe déjà');
+    if (existingProduct) {
+      throw new ConflictException('A product with this code already exists');
     }
 
-    const Product = this.articleRepository.create(CreateProductDto);
-    return this.articleRepository.save(Product);
+    const product = this.productRepository.create(CreateProductDto);
+    return this.productRepository.save(product);
   }
 
   async findAll(paginationDto: PaginationDto) {
@@ -43,18 +45,18 @@ export class ProductsService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
-      sortOrder: paginationDto.sortOrder || 'DESC'
+      sortOrder: paginationDto.sortOrder || 'DESC',
     });
 
-    const queryBuilder = this.articleRepository
+    const queryBuilder = this.productRepository
       .createQueryBuilder('Product')
-      .leftJoinAndSelect('Product.articleFournisseurs', 'ProductSupplier')
-      .leftJoinAndSelect('ProductSupplier.Supplier', 'Supplier');
+      .leftJoinAndSelect('Product.productSuppliers', 'ProductSupplier')
+      .leftJoinAndSelect('ProductSupplier.supplier', 'Supplier');
 
     // Add search functionality
     if (paginationDto.search) {
       queryBuilder.where(
-        '(Product.codeArticle ILIKE :search OR Product.designation ILIKE :search OR Supplier.name ILIKE :search)',
+        '(Product.productCode ILIKE :search OR Product.description ILIKE :search OR Supplier.name ILIKE :search)',
         { search: `%${paginationDto.search}%` }
       );
     }
@@ -78,112 +80,107 @@ export class ProductsService {
   }
 
   async findOne(id: string): Promise<Product> {
-    const Product = await this.articleRepository.findOne({
+    const product = await this.productRepository.findOne({
       where: { id },
-      relations: [
-        'articleFournisseurs',
-        'articleFournisseurs.Supplier',
-        'createdBy',
-        'updatedBy'
-      ]
+      relations: ['productSuppliers', 'productSuppliers.supplier', 'createdBy', 'updatedBy'],
     });
 
-    if (!Product) {
-      throw new NotFoundException('Product non trouvé');
+    if (!product) {
+      throw new NotFoundException('Product not found');
     }
 
-    return Product;
+    return product;
   }
 
   async update(id: string, UpdateProductDto: UpdateProductDto): Promise<Product> {
-    const Product = await this.findOne(id);
+    const product = await this.findOne(id);
 
     // Check if code is being changed and if it already exists
-    if (UpdateProductDto.productCode && UpdateProductDto.productCode !== Product.productCode) {
-      const existingArticle = await this.articleRepository.findOne({
-        where: { productCode: UpdateProductDto.productCode }
+    if (UpdateProductDto.productCode && UpdateProductDto.productCode !== product.productCode) {
+      const existingProduct = await this.productRepository.findOne({
+        where: { productCode: UpdateProductDto.productCode },
       });
 
-      if (existingArticle) {
-        throw new ConflictException('Un Product avec ce code existe déjà');
+      if (existingProduct) {
+        throw new ConflictException('A product with this code already exists');
       }
     }
 
-    Object.assign(Product, UpdateProductDto);
-    return this.articleRepository.save(Product);
+    Object.assign(product, UpdateProductDto);
+    return this.productRepository.save(product);
   }
 
   async remove(id: string): Promise<void> {
-    const Product = await this.findOne(id);
-    Product.isActive = false;
-    await this.articleRepository.save(Product);
+    const product = await this.findOne(id);
+    product.isActive = false;
+    await this.productRepository.save(product);
   }
 
   async reactivate(id: string): Promise<Product> {
-    const Product = await this.findOne(id);
-    Product.isActive = true;
-    return this.articleRepository.save(Product);
+    const product = await this.findOne(id);
+    product.isActive = true;
+    return this.productRepository.save(product);
   }
 
   // Product-Supplier relationship methods
-  async addFournisseur(productId: string, CreateProductSupplierDto: CreateProductSupplierDto): Promise<ProductSupplier> {
-    const Product = await this.findOne(productId);
-    const Supplier = await this.fournisseurRepository.findOne({
-      where: { id: CreateProductSupplierDto.supplierId }
+  async addSupplier(productId: string, CreateProductSupplierDto: CreateProductSupplierDto): Promise<ProductSupplier> {
+    const product = await this.findOne(productId);
+    const supplier = await this.supplierRepository.findOne({
+      where: { id: CreateProductSupplierDto.supplierId },
     });
 
-    if (!Supplier) {
-      throw new NotFoundException('Supplier non trouvé');
+    if (!supplier) {
+      throw new NotFoundException('Supplier not found');
     }
 
     // Check if relationship already exists
-    const existingRelation = await this.articleFournisseurRepository.findOne({
+    const existingRelation = await this.productSupplierRepository.findOne({
       where: {
         productId: productId,
-        supplierId: CreateProductSupplierDto.supplierId
-      }
+        supplierId: CreateProductSupplierDto.supplierId,
+      },
     });
 
     if (existingRelation) {
-      throw new ConflictException('Ce Supplier est déjà associé à cet Product');
+      throw new ConflictException('This supplier is already associated with this product');
     }
 
-    const ProductSupplier = this.articleFournisseurRepository.create({
+    const productSupplier = this.productSupplierRepository.create({
       ...CreateProductSupplierDto,
-      productId: productId
+      productId: productId,
     });
 
-    return this.articleFournisseurRepository.save(ProductSupplier);
+    return this.productSupplierRepository.save(productSupplier);
   }
 
-  async updateFournisseur(
-    productId: string, 
-    productSupplierInfoId: string, 
-    updateData: Partial<CreateProductSupplierDto>
+  async updateSupplier(
+    productId: string,
+    productSupplierInfoId: string,
+    updateData: UpdateProductSupplierDto
   ): Promise<ProductSupplier> {
-    const ProductSupplier = await this.articleFournisseurRepository.findOne({
+    const productSupplier = await this.productSupplierRepository.findOne({
       where: { id: productSupplierInfoId, productId: productId },
-      relations: ['product', 'supplier']
+      relations: ['product', 'supplier'],
     });
 
-    if (!ProductSupplier) {
-      throw new NotFoundException('Relation Product-Supplier non trouvée');
+    if (!productSupplier) {
+      throw new NotFoundException('Product-Supplier relationship not found');
     }
 
-    Object.assign(ProductSupplier, updateData);
-    return this.articleFournisseurRepository.save(ProductSupplier);
+    Object.assign(productSupplier, updateData);
+    return this.productSupplierRepository.save(productSupplier);
   }
 
-  async removeFournisseur(productId: string, productSupplierInfoId: string): Promise<void> {
-    const ProductSupplier = await this.articleFournisseurRepository.findOne({
-      where: { id: productSupplierInfoId, productId: productId }
+  async removeSupplier(productId: string, productSupplierInfoId: string): Promise<void> {
+    const productSupplier = await this.productSupplierRepository.findOne({
+      where: { id: productSupplierInfoId, productId: productId },
     });
 
-    if (!ProductSupplier) {
-      throw new NotFoundException('Relation Product-Supplier non trouvée');
+    if (!productSupplier) {
+      throw new NotFoundException('Product-Supplier relationship not found');
     }
 
-    await this.articleFournisseurRepository.remove(ProductSupplier);
+    await this.productSupplierRepository.remove(productSupplier);
   }
 
   // Get Product categories
@@ -191,15 +188,20 @@ export class ProductsService {
     return Object.values(ProductCategory);
   }
 
-  // Search articles for autocomplete
-  async searchArticles(query: string, limit: number = 10): Promise<Product[]> {
-    return this.articleRepository
+  // Get conditioning units
+  getConditioningUnits(): ConditioningUnit[] {
+    return Object.values(ConditioningUnit);
+  }
+
+  // Search products for autocomplete
+  async searchProducts(query: string, limit: number = 10): Promise<Product[]> {
+    return this.productRepository
       .createQueryBuilder('Product')
       .where('Product.isActive = :isActive', { isActive: true })
       .andWhere('(Product.productCode ILIKE :search OR Product.description ILIKE :search)', {
-        search: `%${query}%`
+        search: `%${query}%`,
       })
-      .orderBy('Product.designation', 'ASC')
+      .orderBy('Product.description', 'ASC')
       .limit(limit)
       .getMany();
   }

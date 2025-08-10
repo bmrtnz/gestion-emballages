@@ -1,18 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
   UseInterceptors,
-  Request
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { StationsService } from './stations.service';
 import { CreateStationDto } from './dto/create-station.dto';
@@ -45,7 +45,7 @@ export class StationsController {
   async create(@Body() createStationDto: CreateStationDto, @Request() req) {
     const stationData = {
       ...createStationDto,
-      createdById: req.user.id
+      createdById: req.user.id,
     };
     return this.stationsService.create(stationData);
   }
@@ -70,14 +70,10 @@ export class StationsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update station' })
   @ApiResponse({ status: 200, description: 'Station updated successfully' })
-  async update(
-    @Param('id') id: string, 
-    @Body() updateStationDto: UpdateStationDto,
-    @Request() req
-  ) {
+  async update(@Param('id') id: string, @Body() updateStationDto: UpdateStationDto, @Request() req) {
     const stationData = {
       ...updateStationDto,
-      updatedById: req.user.id
+      updatedById: req.user.id,
     };
     return this.stationsService.update(id, stationData);
   }

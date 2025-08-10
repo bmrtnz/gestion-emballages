@@ -1,14 +1,20 @@
-import { IsString, IsOptional, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
-class AdresseDto {
+export class CreateStationDto {
+  @IsOptional()
+  @IsUUID()
+  stationGroupId?: string;
+
+  @IsString()
+  name: string;
+
   @IsOptional()
   @IsString()
-  street?: string;
+  code?: string;
 
   @IsOptional()
   @IsString()
-  postalCode?: string;
+  address?: string;
 
   @IsOptional()
   @IsString()
@@ -16,38 +22,15 @@ class AdresseDto {
 
   @IsOptional()
   @IsString()
+  postalCode?: string;
+
+  @IsOptional()
+  @IsString()
   country?: string;
-}
-
-class ContactPrincipalDto {
-  @IsOptional()
-  @IsString()
-  name?: string;
 
   @IsOptional()
-  @IsString()
-  phone?: string;
-
-  @IsOptional()
-  @IsString()
-  email?: string;
-}
-
-export class CreateStationDto {
-  @IsString()
-  name: string;
-
-  @IsOptional()
-  @IsString()
-  internalId?: string;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => AdresseDto)
-  address?: AdresseDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => ContactPrincipalDto)
-  mainContact?: ContactPrincipalDto;
+  coordinates?: {
+    lat?: number;
+    lng?: number;
+  };
 }

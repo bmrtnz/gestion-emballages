@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsArray, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreatePlatformDto {
@@ -8,14 +8,40 @@ export class CreatePlatformDto {
   name: string;
 
   @IsOptional()
-  @IsString({ message: 'Le type doit être une chaîne de caractères' })
-  @Transform(({ value }) => value?.trim())
-  type?: string;
+  @IsString()
+  address?: string;
 
   @IsOptional()
-  @IsArray({ message: 'Les spécialités doivent être un tableau' })
-  @IsString({ each: true, message: 'Chaque spécialité doit être une chaîne de caractères' })
-  specialties?: string[];
+  @IsString()
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  postalCode?: string;
+
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  website?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  specialties?: string;
 
   @IsOptional()
   @IsBoolean({ message: 'isActive doit être un booléen' })

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+coverage/
+.angular/
+.vscode/
+.idea/
+*.min.js
+*.bundle.js
+e2e/
+src/assets/
+*.d.ts

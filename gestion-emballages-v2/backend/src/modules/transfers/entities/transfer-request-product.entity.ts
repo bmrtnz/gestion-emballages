@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { TransferRequest } from './transfer-request.entity';
 import { Product } from '@modules/products/entities/product.entity';
@@ -21,13 +21,13 @@ export class TransferRequestProduct extends BaseEntity {
   deliveredQuantity?: number;
 
   // Relations
-  @ManyToOne(() => TransferRequest, (transferRequest) => transferRequest.products, {
+  @ManyToOne(() => TransferRequest, transferRequest => transferRequest.products, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'demande_transfert_id' })
   transferRequest: TransferRequest;
 
-  @ManyToOne(() => Product, (product) => product.transferRequests)
+  @ManyToOne(() => Product, product => product.transferRequests)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }

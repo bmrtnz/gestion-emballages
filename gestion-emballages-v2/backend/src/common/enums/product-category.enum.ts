@@ -1,6 +1,6 @@
 export enum ProductCategory {
   TRAY = 'Tray',
-  CRATE = 'Crate', 
+  CRATE = 'Crate',
   PLATTER = 'Platter',
   PLASTIC_FILM = 'Plastic Film',
   CARDBOARD = 'Cardboard',

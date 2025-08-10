@@ -1,20 +1,19 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Request,
-  Query,
+  Get,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PlatformsService } from './platforms.service';
 import { CreatePlatformDto } from './dto/create-platform.dto';
 import { UpdatePlatformDto } from './dto/update-platform.dto';
-import { CreatePlatformSiteDto } from './dto/create-platform-site.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from '@modules/auth/decorators/roles.decorator';
@@ -62,11 +61,7 @@ export class PlatformsController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
-  async update(
-    @Param('id') id: string,
-    @Body() updatePlatformDto: UpdatePlatformDto,
-    @Request() req,
-  ) {
+  async update(@Param('id') id: string, @Body() updatePlatformDto: UpdatePlatformDto, @Request() req) {
     const platform = await this.platformsService.update(id, updatePlatformDto, req.user.id);
     return {
       statusCode: HttpStatus.OK,

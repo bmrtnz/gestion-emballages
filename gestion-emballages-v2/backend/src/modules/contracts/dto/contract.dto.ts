@@ -1,8 +1,19 @@
-import { IsString, IsUUID, IsEnum, IsOptional, IsDecimal, IsInt, IsDateString, IsBoolean, ValidateNested, IsObject } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDateString,
+  IsDecimal,
+  IsEnum,
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { ContractType, ContractStatus } from '../entities/master-contract.entity';
+import { ContractStatus, ContractType } from '../entities/master-contract.entity';
 
 export class CreateContractDto {
   @ApiProperty({ description: 'Unique contract number' })
@@ -91,11 +102,11 @@ export class CreateContractDto {
   @Transform(({ value }) => parseFloat(value))
   qualityIssuePenaltyPercent?: number;
 
-  @ApiProperty({ description: 'Early delivery bonus percentage', required: false, default: 0.0 })
+  @ApiProperty({ description: 'Delivery excellence bonus percentage', required: false, default: 0.0 })
   @IsOptional()
   @IsDecimal({ decimal_digits: '2' })
   @Transform(({ value }) => parseFloat(value))
-  earlyDeliveryBonusPercent?: number;
+  deliveryExcellenceBonusPercent?: number;
 
   @ApiProperty({ description: 'Quality excellence bonus percentage', required: false, default: 0.0 })
   @IsOptional()
@@ -233,7 +244,6 @@ export class ContractSummaryDto {
     contractType: ContractType;
     validFrom: Date;
     validUntil: Date;
-    isActive: boolean;
     isExpiringSoon: boolean;
     remainingDays: number;
   };
@@ -243,7 +253,6 @@ export class ContractSummaryDto {
     id: string;
     name: string;
     siret?: string;
-    isActive: boolean;
   };
 
   @ApiProperty({ description: 'Contract performance summary' })
@@ -283,7 +292,7 @@ export class ContractSummaryDto {
       qualityIssue: number;
     };
     defaultBonusRates: {
-      earlyDelivery: number;
+      deliveryExcellence: number;
       qualityExcellence: number;
     };
   };

@@ -1,8 +1,7 @@
-import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
-import { User } from '@modules/users/entities/user.entity';
 import { PlatformContact } from './platform-contact.entity';
-import { Order } from '@modules/orders/entities/order.entity';
+import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
 import { StockPlatform } from '@modules/stocks/entities/stock-platform.entity';
 
 @Entity('platforms')
@@ -10,37 +9,41 @@ export class Platform extends BaseEntity {
   @Column()
   name: string;
 
-  @Column({ length: 50, nullable: true })
-  type?: string;
+  @Column({ nullable: true })
+  address?: string;
 
-  @Column({ type: 'text', array: true, default: [] })
-  specialties: string[];
+  @Column({ nullable: true })
+  city?: string;
 
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
+  @Column({ name: 'postal_code', nullable: true })
+  postalCode?: string;
 
-  @Column({ name: 'created_by', nullable: true })
-  createdById?: string;
+  @Column({ nullable: true })
+  country?: string;
 
-  @Column({ name: 'updated_by', nullable: true })
-  updatedById?: string;
+  @Column({ nullable: true })
+  phone?: string;
+
+  @Column({ nullable: true })
+  email?: string;
+
+  @Column({ nullable: true })
+  website?: string;
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
+  @Column({ type: 'text', nullable: true })
+  specialties?: string;
 
   // Relations
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'created_by' })
-  createdBy?: User;
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'updated_by' })
-  updatedBy?: User;
-
-  @OneToMany(() => PlatformContact, (contact) => contact.platform, { cascade: true })
+  @OneToMany(() => PlatformContact, contact => contact.platform, { cascade: true })
   contacts: PlatformContact[];
 
-  @OneToMany(() => Order, (order) => order.platform)
-  orders: Order[];
+  @OneToMany(() => PurchaseOrder, purchaseOrder => purchaseOrder.platform)
+  purchaseOrders: PurchaseOrder[];
 
-  @OneToMany(() => StockPlatform, (stock) => stock.platform)
+  @OneToMany(() => StockPlatform, stock => stock.platform)
   stocks: StockPlatform[];
 
   // Virtual properties

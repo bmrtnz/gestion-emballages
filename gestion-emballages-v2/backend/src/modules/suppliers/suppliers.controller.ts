@@ -1,18 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
   UseInterceptors,
-  Request
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { SuppliersService } from './suppliers.service';
 import { CreateSupplierDto } from './dto/create-Supplier.dto';
@@ -45,7 +45,7 @@ export class SuppliersController {
   async create(@Body() CreateSupplierDto: CreateSupplierDto, @Request() req) {
     const fournisseurData = {
       ...CreateSupplierDto,
-      createdById: req.user.id
+      createdById: req.user.id,
     };
     return this.SuppliersService.create(fournisseurData);
   }
@@ -70,14 +70,10 @@ export class SuppliersController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update supplier' })
   @ApiResponse({ status: 200, description: 'Supplier updated successfully' })
-  async update(
-    @Param('id') id: string, 
-    @Body() UpdateSupplierDto: UpdateSupplierDto,
-    @Request() req
-  ) {
+  async update(@Param('id') id: string, @Body() UpdateSupplierDto: UpdateSupplierDto, @Request() req) {
     const fournisseurData = {
       ...UpdateSupplierDto,
-      updatedById: req.user.id
+      updatedById: req.user.id,
     };
     return this.SuppliersService.update(id, fournisseurData);
   }

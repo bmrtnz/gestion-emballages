@@ -25,7 +25,7 @@ export class MinioService {
         accessKey: accessKey,
         secretKey: secretKey,
       });
-      
+
       this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME') || 'gestion-emballages-dev';
       console.log('MinIO service initialized successfully');
     } catch (error) {
@@ -41,7 +41,7 @@ export class MinioService {
       console.warn('MinIO client not available');
       return;
     }
-    
+
     try {
       const exists = await this.minioClient.bucketExists(this.bucketName);
       if (!exists) {
@@ -53,11 +53,7 @@ export class MinioService {
     }
   }
 
-  async uploadFile(
-    objectName: string,
-    buffer: Buffer,
-    contentType: string,
-  ): Promise<string> {
+  async uploadFile(objectName: string, buffer: Buffer, contentType: string): Promise<string> {
     if (!this.minioClient) {
       console.warn('MinIO not available, file upload skipped');
       throw new Error('File storage service not available');
@@ -65,15 +61,9 @@ export class MinioService {
 
     try {
       await this.ensureBucket();
-      await this.minioClient.putObject(
-        this.bucketName,
-        objectName,
-        buffer,
-        buffer.length,
-        {
-          'Content-Type': contentType,
-        },
-      );
+      await this.minioClient.putObject(this.bucketName, objectName, buffer, buffer.length, {
+        'Content-Type': contentType,
+      });
 
       return objectName;
     } catch (error) {
@@ -92,7 +82,7 @@ export class MinioService {
       return await this.minioClient.presignedGetObject(
         this.bucketName,
         objectName,
-        24 * 60 * 60, // 24 hours
+        24 * 60 * 60 // 24 hours
       );
     } catch (error) {
       console.error('MinIO getFileUrl failed:', error.message);
@@ -122,10 +112,10 @@ export class MinioService {
     try {
       const objectsList = [];
       const stream = this.minioClient.listObjects(this.bucketName, prefix);
-      
+
       return new Promise((resolve, reject) => {
-        stream.on('data', (obj) => objectsList.push(obj));
-        stream.on('error', (err) => reject(err));
+        stream.on('data', obj => objectsList.push(obj));
+        stream.on('error', err => reject(err));
         stream.on('end', () => resolve(objectsList));
       });
     } catch (error) {

@@ -1,7 +1,7 @@
-import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { BaseEntity } from '@common/entities/base.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { SoftDeletableEntity } from '@common/entities/base.entity';
 import { User } from '@modules/users/entities/user.entity';
-import { Order } from '@modules/orders/entities/order.entity';
+import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
 import { MasterOrder } from '@modules/orders/entities/master-order.entity';
 import { StockStation } from '@modules/stocks/entities/stock-station.entity';
 import { TransferRequest } from '@modules/transfers/entities/transfer-request.entity';
@@ -11,63 +11,49 @@ import { StationGroup } from './station-group.entity';
 import { StationContact } from './station-contact.entity';
 
 @Entity('stations')
-export class Station extends BaseEntity {
+export class Station extends SoftDeletableEntity {
+  @Column({ name: 'station_group_id', nullable: true })
+  stationGroupId?: string;
+
   @Column()
   name: string;
 
-  @Column({ name: 'internal_id', nullable: true })
-  internalId?: string;
+  @Column({ nullable: true })
+  code?: string;
 
-  @Column({ type: 'jsonb', default: {} })
-  address: {
-    street?: string;
-    postalCode?: string;
-    city?: string;
-    country?: string;
+  @Column({ nullable: true })
+  address?: string;
+
+  @Column({ nullable: true })
+  city?: string;
+
+  @Column({ name: 'postal_code', nullable: true })
+  postalCode?: string;
+
+  @Column({ nullable: true })
+  country?: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  coordinates?: {
+    lat?: number;
+    lng?: number;
   };
-
-  @Column({ name: 'group_id', nullable: true })
-  groupId?: string; // NULL for independent stations that don't belong to any group
-
-  @Column({ name: 'main_contact', type: 'jsonb', default: {} })
-  mainContact: {
-    name?: string;
-    phone?: string;
-    email?: string;
-  };
-
-  @Column({ name: 'is_active', default: true })
-  isActive: boolean;
-
-  @Column({ name: 'created_by', nullable: true })
-  createdById?: string;
-
-  @Column({ name: 'updated_by', nullable: true })
-  updatedById?: string;
 
   // Relations
-  @ManyToOne(() => StationGroup, (groupe) => groupe.stations, { nullable: true })
-  @JoinColumn({ name: 'group_id' })
-  groupe?: StationGroup;
+  @ManyToOne(() => StationGroup, group => group.stations, { nullable: true })
+  @JoinColumn({ name: 'station_group_id' })
+  stationGroup?: StationGroup;
 
-  @OneToMany(() => StationContact, (contact) => contact.station, { cascade: true })
+  @OneToMany(() => StationContact, contact => contact.station, { cascade: true })
   contacts: StationContact[];
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'created_by' })
-  createdBy?: User;
-
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'updated_by' })
-  updatedBy?: User;
 
   // Note: Users are linked via polymorphic relationship (entiteType/entiteId)
   // No direct OneToMany relationship to avoid foreign key conflicts
 
-  @OneToMany(() => Order, (order) => order.station)
-  orders: Order[];
+  @OneToMany(() => PurchaseOrder, purchaseOrder => purchaseOrder.station)
+  purchaseOrders: PurchaseOrder[];
 
-  @OneToMany(() => MasterOrder, (masterOrder) => masterOrder.station)
+  @OneToMany(() => MasterOrder, masterOrder => masterOrder.station)
   masterOrders: MasterOrder[];
 
   // Alias for backward compatibility
@@ -75,24 +61,24 @@ export class Station extends BaseEntity {
     return this.masterOrders;
   }
 
-  @OneToMany(() => StockStation, (stock) => stock.station)
+  @OneToMany(() => StockStation, stock => stock.station)
   stocks: StockStation[];
 
-  @OneToMany(() => TransferRequest, (demande) => demande.requestingStationId)
+  @OneToMany(() => TransferRequest, demande => demande.requestingStationId)
   outgoingTransferRequests: TransferRequest[];
 
-  @OneToMany(() => TransferRequest, (demande) => demande.sourceStationId)
+  @OneToMany(() => TransferRequest, demande => demande.sourceStationId)
   incomingTransferRequests: TransferRequest[];
 
-  @OneToMany(() => Forecast, (forecast) => forecast.station)
+  @OneToMany(() => Forecast, forecast => forecast.station)
   forecasts: Forecast[];
 
-  @OneToMany(() => ShoppingCart, (liste) => liste.station)
+  @OneToMany(() => ShoppingCart, liste => liste.station)
   shoppingCarts: ShoppingCart[];
 
   // Virtual properties
   get principalContactFromContacts(): StationContact | undefined {
-    return this.contacts?.find(contact => contact.isPrincipal && contact.isActive);
+    return this.contacts?.find(contact => contact.isPrimary && contact.isActive);
   }
 
   get activeContacts(): StationContact[] {
@@ -100,21 +86,46 @@ export class Station extends BaseEntity {
   }
 
   get hasGroup(): boolean {
-    return !!this.groupId && !!this.groupe;
+    return !!this.stationGroupId && !!this.stationGroup;
   }
 
   get isIndependent(): boolean {
-    return !this.groupId;
+    return !this.stationGroupId;
   }
 
   get fullNameWithGroup(): string {
-    if (this.hasGroup && this.groupe) {
-      return `${this.name} (${this.groupe.name})`;
+    if (this.hasGroup && this.stationGroup) {
+      return `${this.name} (${this.stationGroup.name})`;
     }
     return this.name;
   }
 
   get stationType(): 'grouped' | 'independent' {
     return this.hasGroup ? 'grouped' : 'independent';
+  }
+
+  // Backward compatibility getters
+  get internalId(): string | undefined {
+    return this.code;
+  }
+
+  set internalId(value: string | undefined) {
+    this.code = value;
+  }
+
+  get groupId(): string | undefined {
+    return this.stationGroupId;
+  }
+
+  set groupId(value: string | undefined) {
+    this.stationGroupId = value;
+  }
+
+  get groupe(): StationGroup | undefined {
+    return this.stationGroup;
+  }
+
+  set groupe(value: StationGroup | undefined) {
+    this.stationGroup = value;
   }
 }

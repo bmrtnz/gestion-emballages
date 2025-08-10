@@ -1,29 +1,33 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
   UseInterceptors,
-  Request
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ShoppingCartsService } from './shopping-carts.service';
 import { CreateShoppingCartDto } from './dto/create-shopping-cart.dto';
-import { UpdateShoppingCartDto, AddItemToShoppingCartDto, ValidateShoppingCartDto } from './dto/update-shopping-cart.dto';
+import {
+  AddItemToShoppingCartDto,
+  UpdateShoppingCartDto,
+  ValidateShoppingCartDto,
+} from './dto/update-shopping-cart.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from '@modules/auth/decorators/roles.decorator';
 import { UserRole } from '@common/enums/user-role.enum';
 
-@ApiTags('Listes d\'achat')
+@ApiTags("Listes d'achat")
 @Controller('shopping-carts')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
@@ -85,10 +89,7 @@ export class ShoppingCartsController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update shopping list' })
   @ApiResponse({ status: 200, description: 'Shopping list updated successfully' })
-  async update(
-    @Param('id') id: string,
-    @Body() UpdateShoppingCartDto: UpdateShoppingCartDto
-  ) {
+  async update(@Param('id') id: string, @Body() UpdateShoppingCartDto: UpdateShoppingCartDto) {
     return this.ShoppingCartsService.update(id, UpdateShoppingCartDto);
   }
 
@@ -96,10 +97,7 @@ export class ShoppingCartsController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Add item to shopping list' })
   @ApiResponse({ status: 200, description: 'Item added successfully' })
-  async addItem(
-    @Param('id') id: string,
-    @Body() addItemDto: AddItemToShoppingCartDto
-  ) {
+  async addItem(@Param('id') id: string, @Body() addItemDto: AddItemToShoppingCartDto) {
     return this.ShoppingCartsService.addItem(id, addItemDto);
   }
 
@@ -107,10 +105,7 @@ export class ShoppingCartsController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Remove item from shopping list' })
   @ApiResponse({ status: 200, description: 'Item removed successfully' })
-  async removeItem(
-    @Param('id') id: string,
-    @Param('itemId') itemId: string
-  ) {
+  async removeItem(@Param('id') id: string, @Param('itemId') itemId: string) {
     return this.ShoppingCartsService.removeItem(id, itemId);
   }
 
@@ -118,10 +113,7 @@ export class ShoppingCartsController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Validate shopping list and convert to orders' })
   @ApiResponse({ status: 200, description: 'Shopping list validated and orders created' })
-  async validateAndConvertToOrders(
-    @Param('id') id: string,
-    @Body() validateDto: ValidateShoppingCartDto
-  ) {
+  async validateAndConvertToOrders(@Param('id') id: string, @Body() validateDto: ValidateShoppingCartDto) {
     return this.ShoppingCartsService.validateAndConvertToOrders(id, validateDto);
   }
 

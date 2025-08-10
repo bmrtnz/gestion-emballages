@@ -1,6 +1,6 @@
-import { PartialType, OmitType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { CreateStockSupplierDto } from './create-stock-Supplier.dto';
-import { IsNumber, Min, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateStockSupplierDto extends PartialType(

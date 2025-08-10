@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { MasterContract } from './master-contract.entity';
 import { Product } from '@modules/products/entities/product.entity';
@@ -8,14 +8,14 @@ export enum SLAMetricType {
   QUALITY_CONFORMITY = 'QUALITY_CONFORMITY',
   QUANTITY_ACCURACY = 'QUANTITY_ACCURACY',
   PACKAGING_COMPLIANCE = 'PACKAGING_COMPLIANCE',
-  DOCUMENTATION_COMPLETENESS = 'DOCUMENTATION_COMPLETENESS'
+  DOCUMENTATION_COMPLETENESS = 'DOCUMENTATION_COMPLETENESS',
 }
 
 export enum SLASeverityLevel {
-  WARNING = 'WARNING',     // Minor deviation, no penalty
-  MINOR = 'MINOR',         // Small penalty
-  MAJOR = 'MAJOR',         // Significant penalty
-  CRITICAL = 'CRITICAL'    // Contract review trigger
+  WARNING = 'WARNING', // Minor deviation, no penalty
+  MINOR = 'MINOR', // Small penalty
+  MAJOR = 'MAJOR', // Significant penalty
+  CRITICAL = 'CRITICAL', // Contract review trigger
 }
 
 @Entity('contract_product_slas')
@@ -64,8 +64,8 @@ export class ContractProductSLA extends BaseEntity {
   quantityShortagePenaltyPercent?: number; // % penalty for quantity shortages
 
   // Performance bonuses
-  @Column({ name: 'early_delivery_bonus_percent', type: 'decimal', precision: 5, scale: 2, nullable: true })
-  earlyDeliveryBonusPercent?: number; // % bonus for early delivery
+  @Column({ name: 'delivery_excellence_bonus_percent', type: 'decimal', precision: 5, scale: 2, nullable: true })
+  deliveryExcellenceBonusPercent?: number; // % bonus for delivery excellence
 
   @Column({ name: 'quality_excellence_bonus_percent', type: 'decimal', precision: 5, scale: 2, nullable: true })
   qualityExcellenceBonusPercent?: number; // % bonus for zero quality issues
@@ -107,19 +107,19 @@ export class ContractProductSLA extends BaseEntity {
   specialRequirements: {
     // Cold chain requirements
     temperatureRange?: { min: number; max: number };
-    
+
     // Handling requirements
     fragileHandling?: boolean;
     specialPackaging?: boolean;
-    
+
     // Documentation requirements
     certificationRequired?: boolean;
     traceabilityRequired?: boolean;
-    
+
     // Delivery constraints
     deliveryTimeWindows?: Array<{ start: string; end: string }>;
     specialDeliveryInstructions?: string;
-    
+
     // Quality checks
     mandatoryInspection?: boolean;
     sampleTestingRequired?: boolean;
@@ -134,14 +134,14 @@ export class ContractProductSLA extends BaseEntity {
       qualityIssueRate?: number; // %
       quantityShortage?: number; // %
     };
-    
+
     // Notification rules
     notifications?: {
       warningThreshold?: number;
       escalationThreshold?: number;
       criticalThreshold?: number;
     };
-    
+
     // Contract review triggers
     reviewTriggers?: {
       consecutiveBreaches?: number;
@@ -184,7 +184,7 @@ export class ContractProductSLA extends BaseEntity {
   reviewNotes?: string;
 
   // Relations
-  @ManyToOne(() => MasterContract, (contract) => contract.productSLAs)
+  @ManyToOne(() => MasterContract, contract => contract.productSLAs)
   @JoinColumn({ name: 'master_contract_id' })
   masterContract: MasterContract;
 
@@ -195,10 +195,7 @@ export class ContractProductSLA extends BaseEntity {
   // Virtual properties
   get isCurrentlyEffective(): boolean {
     const now = new Date();
-    return this.effectiveFrom <= now && 
-           (!this.effectiveUntil || this.effectiveUntil >= now) &&
-           !this.isSuspended &&
-           this.isActive;
+    return this.effectiveFrom <= now && (!this.effectiveUntil || this.effectiveUntil >= now) && !this.isSuspended;
   }
 
   get hasSeasonalAdjustments(): boolean {
@@ -217,42 +214,39 @@ export class ContractProductSLA extends BaseEntity {
   getEffectiveDeliverySLA(forDate?: Date): number {
     const checkDate = forDate || new Date();
     const month = checkDate.getMonth() + 1;
-    
+
     let baseSLA = this.deliverySLADays || this.masterContract?.defaultDeliverySLADays || 7;
-    
+
     // Apply seasonal adjustments
     if (this.seasonalAdjustments?.peakSeason?.months?.includes(month)) {
       baseSLA += this.seasonalAdjustments.peakSeason.deliverySLAAdjustment || 0;
     } else if (this.seasonalAdjustments?.offPeakSeason?.months?.includes(month)) {
       baseSLA += this.seasonalAdjustments.offPeakSeason.deliverySLAAdjustment || 0;
     }
-    
+
     return baseSLA;
   }
 
   getEffectiveQualityTolerance(forDate?: Date): number {
     const checkDate = forDate || new Date();
     const month = checkDate.getMonth() + 1;
-    
+
     let baseTolerance = this.qualityTolerancePercent || this.masterContract?.defaultQualityTolerancePercent || 2.0;
-    
+
     // Apply seasonal adjustments
     if (this.seasonalAdjustments?.peakSeason?.months?.includes(month)) {
       baseTolerance += this.seasonalAdjustments.peakSeason.qualityToleranceAdjustment || 0;
     } else if (this.seasonalAdjustments?.offPeakSeason?.months?.includes(month)) {
       baseTolerance += this.seasonalAdjustments.offPeakSeason.qualityToleranceAdjustment || 0;
     }
-    
+
     return Math.max(0, baseTolerance); // Never go below 0%
   }
 
-  shouldEscalateImmediately(violation: {
-    type: 'DELIVERY' | 'QUALITY' | 'QUANTITY';
-    value: number;
-  }): boolean {
+  shouldEscalateImmediately(violation: { type: 'DELIVERY' | 'QUALITY' | 'QUANTITY'; value: number }): boolean {
     const rules = this.escalationRules?.immediateEscalation;
     if (!rules) return false;
-    
+
     switch (violation.type) {
       case 'DELIVERY':
         return violation.value >= (rules.deliveryDelay || Infinity);
@@ -271,7 +265,7 @@ export class ContractProductSLA extends BaseEntity {
     orderValue: number;
   }): number {
     let penaltyRate = 0;
-    
+
     switch (violation.type) {
       case 'DELIVERY':
         penaltyRate = this.lateDeliveryPenaltyPercent || this.masterContract?.lateDeliveryPenaltyPercent || 0.5;
@@ -283,26 +277,26 @@ export class ContractProductSLA extends BaseEntity {
         penaltyRate = this.quantityShortagePenaltyPercent || 2.0; // Default 2% for quantity issues
         break;
     }
-    
+
     return (violation.orderValue * penaltyRate * violation.value) / 100;
   }
 
   calculateBonus(performance: {
-    type: 'EARLY_DELIVERY' | 'QUALITY_EXCELLENCE';
+    type: 'DELIVERY_EXCELLENCE' | 'QUALITY_EXCELLENCE';
     value: number;
     orderValue: number;
   }): number {
     let bonusRate = 0;
-    
+
     switch (performance.type) {
-      case 'EARLY_DELIVERY':
-        bonusRate = this.earlyDeliveryBonusPercent || this.masterContract?.earlyDeliveryBonusPercent || 0;
+      case 'DELIVERY_EXCELLENCE':
+        bonusRate = this.deliveryExcellenceBonusPercent || this.masterContract?.deliveryExcellenceBonusPercent || 0;
         break;
       case 'QUALITY_EXCELLENCE':
         bonusRate = this.qualityExcellenceBonusPercent || this.masterContract?.qualityExcellenceBonusPercent || 0;
         break;
     }
-    
+
     return (performance.orderValue * bonusRate * performance.value) / 100;
   }
 }

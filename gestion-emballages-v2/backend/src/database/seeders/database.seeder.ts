@@ -20,8 +20,9 @@ import { StockStation } from '@modules/stocks/entities/stock-station.entity';
 import { StockPlatform } from '@modules/stocks/entities/stock-platform.entity';
 
 // Import enums
-import { UserRole, EntityType } from '@common/enums/user-role.enum';
+import { EntityType, UserRole } from '@common/enums/user-role.enum';
 import { ProductCategory } from '@common/enums/product-category.enum';
+import { ConditioningUnit } from '@common/enums/conditioning-unit.enum';
 
 @Injectable()
 export class DatabaseSeeder {
@@ -29,7 +30,7 @@ export class DatabaseSeeder {
 
   constructor(
     @InjectDataSource()
-    private dataSource: DataSource,
+    private dataSource: DataSource
   ) {}
 
   async run(): Promise<void> {
@@ -75,7 +76,6 @@ export class DatabaseSeeder {
       console.log(`✅ Created initial platform stock data`);
 
       console.log('🎉 Database seeding completed successfully!');
-
     } catch (error) {
       console.error('❌ Database seeding failed:', error);
       throw error;
@@ -85,18 +85,18 @@ export class DatabaseSeeder {
   private async clearDatabaseDirectly(): Promise<void> {
     // List of tables to clear in reverse dependency order
     const tablesToClear = [
-      'stocks_platform',
-      'stock_stations', 
-      'article_fournisseurs',
+      'stock_platforms',
+      'stock_stations',
+      'product_suppliers',
       'products',
       'users',
       'platform_sites',
       'platforms',
-      'fournisseur_sites',
+      'supplier_sites',
       'suppliers',
       'station_contacts',
       'stations',
-      'station_groups'
+      'station_groups',
     ];
 
     for (const tableName of tablesToClear) {
@@ -115,62 +115,120 @@ export class DatabaseSeeder {
         console.log(`⚠️  Skipped table ${tableName}: ${error.message}`);
       }
     }
-    
+
     console.log('🧹 Database cleanup completed');
   }
 
   private async seedStationGroups(): Promise<StationGroup[]> {
     const stationGroupsData = this.loadJsonData('station-groups.json');
+
+    // Map properties to match actual database schema (no identifiant column)
+    const processedGroups = stationGroupsData.map(groupData => ({
+      name: groupData.name,
+      description: groupData.description,
+      isActive: groupData.isActive,
+    }));
+
     const stationGroupRepo = this.dataSource.getRepository(StationGroup);
-    const stationGroups = await stationGroupRepo.save(stationGroupsData);
+    const stationGroups = await stationGroupRepo.save(processedGroups);
     return stationGroups;
   }
 
   private async seedStations(stationGroups: StationGroup[]): Promise<Station[]> {
     const stationsData = this.loadJsonData('stations.json');
-    
-    // Create lookup map for station groups by identifiant
-    const groupMap = new Map(stationGroups.map(group => [group.identifiant, group.id]));
-    
-    // Process stations data to resolve group references
-    const processedStations = stationsData.map(stationData => {
-      const { groupeId, address, mainContact, ...stationInfo } = stationData;
-      
-      return {
-        ...stationInfo,
-        groupeId: groupeId && groupMap.has(groupeId) ? groupMap.get(groupeId) : null,
-        // Flatten address
-        address: address.street,
-        city: address.city,
-        postalCode: address.postalCode,
-        country: address.country,
-        // Flatten main contact
-        contact: mainContact.name,
-        phone: mainContact.phone,
-        email: mainContact.email,
-      };
-    });
+    const stationGroupsJsonData = this.loadJsonData('station-groups.json');
 
-    const stationRepo = this.dataSource.getRepository(Station);
-    const stations = await stationRepo.save(processedStations);
-    return stations;
+    // First, we need a platform for stations. Create using direct SQL to avoid entity issues
+    const platformResult = await this.dataSource.query(
+      `
+      INSERT INTO platforms (name, address, city, postal_code, country, phone, email, description, specialties, created_at, updated_at, is_active)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW(), $10)
+      ON CONFLICT DO NOTHING
+      RETURNING id
+    `,
+      [
+        'Default Platform',
+        'Default Address',
+        'Default City',
+        '00000',
+        'France',
+        '+33 1 00 00 00 00',
+        'platform@default.com',
+        'Default platform created by seeder',
+        'General logistics',
+        true,
+      ]
+    );
+
+    let platformId;
+    if (platformResult.length > 0) {
+      platformId = platformResult[0].id;
+    } else {
+      // Platform already exists, get it
+      const existingPlatform = await this.dataSource.query('SELECT id FROM platforms LIMIT 1');
+      platformId = existingPlatform[0].id;
+    }
+
+    // Create lookup map from identifiant to name, then name to ID
+    const identifiantToName = new Map(stationGroupsJsonData.map(g => [g.identifiant, g.name]));
+    const groupMap = new Map(stationGroups.map(group => [group.name, group.id]));
+
+    // Insert stations using direct SQL
+    const stations = [];
+    for (const stationData of stationsData) {
+      const { groupeId, address, mainContact, internalId, ...stationInfo } = stationData;
+
+      // Resolve group reference: identifiant -> name -> ID
+      const groupName = groupeId ? identifiantToName.get(groupeId) : null;
+      const resolvedGroupId = groupName ? groupMap.get(groupName) : null;
+
+      const result = await this.dataSource.query(
+        `
+        INSERT INTO stations (
+          platform_id, station_group_id, name, code, address, city, postal_code, country, 
+          phone, email, manager_name, created_at, updated_at, is_active
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW(), $12)
+        RETURNING *
+      `,
+        [
+          platformId,
+          resolvedGroupId,
+          stationInfo.name,
+          internalId,
+          address.street,
+          address.city,
+          address.postalCode,
+          address.country,
+          mainContact.phone,
+          mainContact.email,
+          mainContact.name,
+          stationInfo.isActive || true,
+        ]
+      );
+
+      stations.push(result[0]);
+    }
+
+    return stations as Station[];
   }
 
   private async seedStationContacts(stations: Station[]): Promise<void> {
     const contactsData = this.loadJsonData('station-contacts.json');
-    
-    // Create lookup map for stations by their identifiant
-    const stationMap = new Map(stations.map(station => [station.internalId, station]));
-    
+
+    // Create lookup map for stations by their code (mapped from internalId)
+    const stationMap = new Map(stations.map(station => [station.code, station]));
+
     const processedContacts = [];
-    
+
     for (const contactData of contactsData) {
-      const { stationIdentifiant, ...contactInfo } = contactData;
-      
+      const { stationIdentifiant, fullName, isPrincipal, ...otherInfo } = contactData;
+
       const station = stationMap.get(stationIdentifiant);
       if (station) {
         processedContacts.push({
-          ...contactInfo,
+          ...otherInfo,
+          name: fullName, // Map fullName to name
+          isPrimary: isPrincipal, // Map isPrincipal to isPrimary
           stationId: station.id,
         });
       } else {
@@ -192,10 +250,17 @@ export class DatabaseSeeder {
 
     // Create suppliers and their sites from JSON data
     for (const fournisseurData of fournisseursData) {
-      const { sites, ...fournisseurInfo } = fournisseurData;
-      
+      const { sites, specialties, ...fournisseurInfo } = fournisseurData;
+
+      // Process supplier data to match database schema
+      const processedSupplierData = {
+        ...fournisseurInfo,
+        // Convert specialties array to string
+        specialties: Array.isArray(specialties) ? specialties.join(', ') : specialties,
+      };
+
       // Create supplier
-      const supplier = await supplierRepo.save(fournisseurInfo);
+      const supplier = await supplierRepo.save(processedSupplierData);
       fournisseurs.push(supplier);
 
       // Create supplier sites
@@ -204,14 +269,13 @@ export class DatabaseSeeder {
           const processedSiteData = {
             supplierId: supplier.id,
             name: siteData.name,
-            address: {
-              street: siteData.adresse.rue,
-              city: siteData.adresse.city,
-              postalCode: siteData.adresse.postalCode,
-            },
-            isPrincipal: siteData.estPrincipal,
+            address: siteData.adresse.rue,
+            city: siteData.adresse.city,
+            postalCode: siteData.adresse.postalCode,
+            country: 'France',
+            isPrimary: siteData.estPrincipal,
           };
-          
+
           await supplierSiteRepo.save(processedSiteData);
         }
       } else {
@@ -219,14 +283,13 @@ export class DatabaseSeeder {
         const siteData = {
           supplierId: supplier.id,
           name: `Site Principal ${supplier.name}`,
-          address: {
-            street: supplier.address,
-            city: supplier.city,
-            postalCode: supplier.postalCode,
-          },
-          isPrincipal: true,
+          address: supplier.address,
+          city: supplier.city,
+          postalCode: supplier.postalCode,
+          country: supplier.country || 'France',
+          isPrimary: true,
         };
-        
+
         await supplierSiteRepo.save(siteData);
       }
     }
@@ -243,14 +306,14 @@ export class DatabaseSeeder {
     // Create platforms and their sites from JSON data
     for (const platformData of platformsData) {
       const { site, nom, specialites, ...platformInfo } = platformData;
-      
+
       // Map French properties to English
       const processedPlatformData = {
         ...platformInfo,
         name: nom,
         specialties: specialites,
       };
-      
+
       // Create platform
       const platform = await platformRepo.save(processedPlatformData);
       platforms.push(platform);
@@ -258,7 +321,7 @@ export class DatabaseSeeder {
       // Create platform site
       if (site) {
         const { nom, adresse, ville, codePostal, telephone, ...siteInfo } = site;
-        
+
         const siteData = {
           platformId: platform.id,
           name: nom,
@@ -266,6 +329,8 @@ export class DatabaseSeeder {
           city: ville,
           postalCode: codePostal,
           phone: telephone,
+          country: 'France',
+          isPrimary: true,
           ...siteInfo,
         };
         await platformSiteRepo.save(siteData);
@@ -285,17 +350,17 @@ export class DatabaseSeeder {
 
     for (const userData of usersData) {
       const { password, entityRef, ...userInfo } = userData;
-      
+
       // Hash the password from JSON file
-      const passwordHash = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       // Convert role string to enum
       const roleEnum = userData.role as UserRole;
-      
+
       // Resolve entity ID if needed
       let entityId = undefined;
       let entityType = undefined;
-      
+
       if (entityRef) {
         if (userData.entityType === 'STATION') {
           const station = stationMap.get(entityRef);
@@ -314,7 +379,7 @@ export class DatabaseSeeder {
 
       processedUsers.push({
         ...userInfo,
-        passwordHash,
+        hashedPassword,
         role: roleEnum,
         entityId,
         entityType,
@@ -328,21 +393,21 @@ export class DatabaseSeeder {
 
   private async seedArticles(): Promise<Product[]> {
     const articlesData = this.loadJsonData('articles.json');
-    
-    // French to English category mapping
+
+    // French to English category mapping (use actual enum values from database)
     const categoryMapping = {
-      'Barquette': ProductCategory.TRAY,
-      'Cagette': ProductCategory.CRATE,
-      'Plateau': ProductCategory.PLATTER,
-      'Film Plastique': ProductCategory.PLASTIC_FILM,
-      'Carton': ProductCategory.CARDBOARD,
-      'Sac Plastique': ProductCategory.PLASTIC_BAG,
-      'Sac Papier': ProductCategory.PAPER_BAG,
-      'Emballage Isotherme': ProductCategory.ISOTHERMAL_PACKAGING,
-      'Étiquette': ProductCategory.LABEL,
-      'Autre': ProductCategory.OTHER,
+      Barquette: 'trays',
+      Cagette: 'boxes',
+      Plateau: 'trays',
+      'Film Plastique': 'films',
+      Carton: 'boxes',
+      'Sac Plastique': 'bags',
+      'Sac Papier': 'bags',
+      'Emballage Isotherme': 'boxes',
+      Étiquette: 'labels',
+      Autre: 'other',
     };
-    
+
     // Convert category strings to enums and map properties
     const processedArticles = articlesData.map(articleData => ({
       productCode: articleData.codeArticle,
@@ -375,10 +440,10 @@ export class DatabaseSeeder {
         relationships.push({
           productId: product.id,
           supplierId: supplier.id,
-          supplierReference: `${supplier.name.substring(0, 3).toUpperCase()}-${product.productCode}`,
-          unitPrice: Math.round(finalPrice * 100) / 100,
-          packagingUnit: this.getConditionnementForCategory(product.category),
-          quantityPerPackage: this.getQuantiteConditionnement(product.category),
+          supplierProductCode: `${supplier.name.substring(0, 3).toUpperCase()}-${product.productCode}`,
+          conditioningPrice: Math.round(finalPrice * 100) / 100,
+          conditioningUnit: this.getConditionnementForCategory(product.category),
+          quantityPerConditioning: this.getQuantiteConditionnement(product.category),
           indicativeSupplyDelay: Math.floor(Math.random() * 10) + 5, // 5-14 days
         });
       }
@@ -395,16 +460,16 @@ export class DatabaseSeeder {
     for (const station of stations) {
       // Each station will have stock for 60-80% of articles
       const articlesToStock = this.getRandomElements(articles, Math.floor(articles.length * 0.7));
-      
+
       for (const product of articlesToStock) {
         const quantite = Math.floor(Math.random() * 1000) + 100; // 100-1099 units
-        
+
         stockData.push({
           stationId: station.id,
-          articleId: product.id,
-          quantiteActuelle: quantite,
-          seuilAlerte: Math.floor(quantite * 0.2), // 20% of current stock
-          seuilCritique: Math.floor(quantite * 0.1), // 10% of current stock
+          productId: product.id,
+          quantity: quantite,
+          alertThreshold: Math.floor(quantite * 0.2), // 20% of current stock
+          criticalThreshold: Math.floor(quantite * 0.1), // 10% of current stock
         });
       }
     }
@@ -420,17 +485,17 @@ export class DatabaseSeeder {
     for (const platform of platforms) {
       // Each platform will have stock for 40-60% of articles (platforms have less diverse stock than stations)
       const articlesToStock = this.getRandomElements(articles, Math.floor(articles.length * 0.5));
-      
+
       for (const product of articlesToStock) {
         // Platforms typically have larger quantities than stations
         const quantite = Math.floor(Math.random() * 5000) + 1000; // 1000-5999 units
-        
+
         stockData.push({
           platformId: platform.id,
-          articleId: product.id,
-          quantite: quantite,
-          stockMinimum: Math.floor(quantite * 0.15), // 15% of current stock
-          stockMaximum: Math.floor(quantite * 2), // 200% of current stock for restocking
+          productId: product.id,
+          quantity: quantite,
+          minimumStock: Math.floor(quantite * 0.15), // 15% of current stock
+          maximumStock: Math.floor(quantite * 2), // 200% of current stock for restocking
           isPointInTime: false,
         });
       }
@@ -451,31 +516,31 @@ export class DatabaseSeeder {
       [ProductCategory.TRAY]: 0.15,
       [ProductCategory.CRATE]: 0.45,
       [ProductCategory.PLATTER]: 0.25,
-      [ProductCategory.PLASTIC_FILM]: 12.50,
+      [ProductCategory.PLASTIC_FILM]: 12.5,
       [ProductCategory.CARDBOARD]: 0.35,
       [ProductCategory.PLASTIC_BAG]: 0.08,
       [ProductCategory.PAPER_BAG]: 0.12,
-      [ProductCategory.ISOTHERMAL_PACKAGING]: 2.80,
-      [ProductCategory.LABEL]: 45.00,
-      [ProductCategory.OTHER]: 1.20,
+      [ProductCategory.ISOTHERMAL_PACKAGING]: 2.8,
+      [ProductCategory.LABEL]: 45.0,
+      [ProductCategory.OTHER]: 1.2,
     };
-    return prices[categorie] || 1.00;
+    return prices[categorie] || 1.0;
   }
 
-  private getConditionnementForCategory(categorie: ProductCategory): string {
+  private getConditionnementForCategory(categorie: ProductCategory): ConditioningUnit {
     const conditionnements = {
-      [ProductCategory.TRAY]: 'Carton de 100',
-      [ProductCategory.CRATE]: 'Palette de 50',
-      [ProductCategory.PLATTER]: 'Carton de 200',
-      [ProductCategory.PLASTIC_FILM]: 'Rouleau',
-      [ProductCategory.CARDBOARD]: 'Lot de 25',
-      [ProductCategory.PLASTIC_BAG]: 'Carton de 500',
-      [ProductCategory.PAPER_BAG]: 'Carton de 250',
-      [ProductCategory.ISOTHERMAL_PACKAGING]: 'Carton de 20',
-      [ProductCategory.LABEL]: 'Rouleau',
-      [ProductCategory.OTHER]: 'Unité',
+      [ProductCategory.TRAY]: ConditioningUnit.BOX_OF_100,
+      [ProductCategory.CRATE]: ConditioningUnit.PALLET_OF_50,
+      [ProductCategory.PLATTER]: ConditioningUnit.BOX_OF_200,
+      [ProductCategory.PLASTIC_FILM]: ConditioningUnit.ROLL,
+      [ProductCategory.CARDBOARD]: ConditioningUnit.BOX_OF_25,
+      [ProductCategory.PLASTIC_BAG]: ConditioningUnit.BOX_OF_500,
+      [ProductCategory.PAPER_BAG]: ConditioningUnit.BOX_OF_250,
+      [ProductCategory.ISOTHERMAL_PACKAGING]: ConditioningUnit.BOX_OF_25,
+      [ProductCategory.LABEL]: ConditioningUnit.ROLL,
+      [ProductCategory.OTHER]: ConditioningUnit.UNIT,
     };
-    return conditionnements[categorie] || 'Unité';
+    return conditionnements[categorie] || ConditioningUnit.UNIT;
   }
 
   private getQuantiteConditionnement(categorie: ProductCategory): number {

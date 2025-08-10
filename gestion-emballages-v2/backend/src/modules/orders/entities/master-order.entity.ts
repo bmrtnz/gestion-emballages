@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 import { Station } from '@modules/stations/entities/station.entity';
@@ -58,7 +58,7 @@ export class MasterOrder extends BaseEntity {
   createdById?: string;
 
   // Relations
-  @ManyToOne(() => Station, (station) => station.globalOrders)
+  @ManyToOne(() => Station, station => station.globalOrders)
   @JoinColumn({ name: 'station_id' })
   station: Station;
 
@@ -66,7 +66,7 @@ export class MasterOrder extends BaseEntity {
   @JoinColumn({ name: 'created_by' })
   createdBy?: User;
 
-  @OneToMany(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.masterOrder)
+  @OneToMany(() => PurchaseOrder, purchaseOrder => purchaseOrder.masterOrder)
   purchaseOrders: PurchaseOrder[];
 
   // Backward compatibility for old Order entity
@@ -85,14 +85,14 @@ export class MasterOrder extends BaseEntity {
 
   get overallProgress(): string {
     if (!this.purchaseOrders?.length) return 'No child orders';
-    
+
     const statuses = this.purchaseOrders.map(po => po.status);
     const uniqueStatuses = [...new Set(statuses)];
-    
+
     if (uniqueStatuses.length === 1) {
       return `All orders: ${uniqueStatuses[0]}`;
     }
-    
+
     return `Mixed progress across ${statuses.length} suppliers`;
   }
 

@@ -4,7 +4,7 @@ import { DatabaseSeeder } from './database.seeder';
 
 async function runSeeder() {
   console.log('🚀 Starting NestJS application for seeding...');
-  
+
   const app = await NestFactory.createApplicationContext(AppModule);
   const seeder = app.get(DatabaseSeeder);
 

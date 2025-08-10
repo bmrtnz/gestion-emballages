@@ -1,6 +1,6 @@
-import { PartialType, OmitType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { CreateStockStationDto } from './create-stock-station.dto';
-import { IsNumber, Min, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateStockStationDto extends PartialType(
@@ -12,7 +12,7 @@ export class UpdateStockStationDto extends PartialType(
   @Min(0)
   quantiteActuelle?: number;
 
-  @ApiPropertyOptional({ description: 'Seuil d\'alerte', minimum: 0 })
+  @ApiPropertyOptional({ description: "Seuil d'alerte", minimum: 0 })
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -30,7 +30,7 @@ export class AdjustStockDto {
   @IsNumber()
   ajustement: number;
 
-  @ApiPropertyOptional({ description: 'Raison de l\'ajustement' })
+  @ApiPropertyOptional({ description: "Raison de l'ajustement" })
   @IsOptional()
   raison?: string;
 }

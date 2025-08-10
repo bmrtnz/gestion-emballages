@@ -65,6 +65,19 @@
     "of": "of",
     "results": "results"
   },
+  "contractStatus": {
+    "DRAFT": "Draft",
+    "ACTIVE": "Active",
+    "SUSPENDED": "Suspended",
+    "EXPIRED": "Expired",
+    "TERMINATED": "Terminated"
+  },
+  "contractType": {
+    "ANNUAL": "Annual",
+    "MULTI_YEAR": "Multi-Year",
+    "SEASONAL": "Seasonal",
+    "SPOT": "Spot"
+  },
   "messages": {
     "userActivated": "User activated successfully",
     "userDeactivated": "User deactivated successfully", 

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 // Configuration
 import { databaseConfig } from './config/database.config';
@@ -21,11 +22,10 @@ import { PlatformSite } from './modules/platforms/entities/platform-site.entity'
 import { PlatformContact } from './modules/platforms/entities/platform-contact.entity';
 import { Product } from './modules/products/entities/product.entity';
 import { ProductSupplier } from './modules/products/entities/product-supplier.entity';
-import { Order } from './modules/orders/entities/order.entity';
 import { MasterOrder } from './modules/orders/entities/master-order.entity';
 import { PurchaseOrder } from './modules/orders/entities/purchase-order.entity';
 import { SalesOrder } from './modules/orders/entities/sales-order.entity';
-import { OrderProduct } from './modules/orders/entities/order-product.entity';
+import { PurchaseOrderProduct } from './modules/orders/entities/purchase-order-product.entity';
 import { SalesOrderProduct } from './modules/orders/entities/sales-order-product.entity';
 import { StockStation } from './modules/stocks/entities/stock-station.entity';
 import { StockSupplier } from './modules/stocks/entities/stock-supplier.entity';
@@ -35,6 +35,7 @@ import { TransferRequestProduct } from './modules/transfers/entities/transfer-re
 import { Forecast } from './modules/forecasts/entities/forecast.entity';
 import { ShoppingCart } from './modules/shopping-carts/entities/shopping-cart.entity';
 import { ShoppingCartItem } from './modules/shopping-carts/entities/shopping-cart-item.entity';
+import { EntityHistory } from './common/entities/entity-history.entity';
 
 // Modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -58,7 +59,10 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
       load: [appConfig, databaseConfig, authConfig, minioConfig],
       envFilePath: '.env',
     }),
-    
+
+    // Event Emitter
+    EventEmitterModule.forRoot(),
+
     // Database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -82,11 +86,10 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           PlatformContact,
           Product,
           ProductSupplier,
-          Order,
           MasterOrder,
           PurchaseOrder,
           SalesOrder,
-          OrderProduct,
+          PurchaseOrderProduct,
           SalesOrderProduct,
           StockStation,
           StockSupplier,
@@ -96,17 +99,18 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           Forecast,
           ShoppingCart,
           ShoppingCartItem,
+          EntityHistory,
         ],
-        synchronize: configService.get<string>('DB_SYNCHRONIZE') === 'true' || configService.get<string>('NODE_ENV') === 'development',
+        synchronize: false, // Disabled - using migrations instead
         logging: configService.get<string>('DB_LOGGING') === 'true',
         ssl: configService.get<string>('DB_SSL') === 'true' ? { rejectUnauthorized: false } : false,
       }),
       inject: [ConfigService],
     }),
-    
+
     // Common module
     CommonModule,
-    
+
     // Feature modules
     AuthModule,
     UsersModule,

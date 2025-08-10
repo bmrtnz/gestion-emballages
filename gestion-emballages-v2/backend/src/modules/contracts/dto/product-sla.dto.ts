@@ -1,5 +1,15 @@
-import { IsString, IsUUID, IsOptional, IsDecimal, IsInt, IsDateString, IsBoolean, IsObject, IsEnum } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDateString,
+  IsDecimal,
+  IsEnum,
+  IsInt,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateProductSLADto {
@@ -73,11 +83,11 @@ export class CreateProductSLADto {
   @Transform(({ value }) => parseFloat(value))
   quantityShortagePenaltyPercent?: number;
 
-  @ApiProperty({ description: 'Early delivery bonus percentage (overrides contract default)', required: false })
+  @ApiProperty({ description: 'Delivery excellence bonus percentage (overrides contract default)', required: false })
   @IsOptional()
   @IsDecimal({ decimal_digits: '2' })
   @Transform(({ value }) => parseFloat(value))
-  earlyDeliveryBonusPercent?: number;
+  deliveryExcellenceBonusPercent?: number;
 
   @ApiProperty({ description: 'Quality excellence bonus percentage (overrides contract default)', required: false })
   @IsOptional()
@@ -290,7 +300,6 @@ export class ProductSLAResponseDto {
     id: string;
     name: string;
     category: string;
-    isActive: boolean;
   };
 
   @ApiProperty({ description: 'Effective SLA values' })
@@ -307,7 +316,7 @@ export class ProductSLAResponseDto {
     deliveryTolerancePercent?: number;
     lateDeliveryPenaltyPercent?: number;
     qualityIssuePenaltyPercent?: number;
-    earlyDeliveryBonusPercent?: number;
+    deliveryExcellenceBonusPercent?: number;
     qualityExcellenceBonusPercent?: number;
   };
 
@@ -383,9 +392,4 @@ export class ProductSLATemplateDto {
   @ApiProperty({ description: 'Template SLA configuration' })
   @IsObject()
   template: Omit<CreateProductSLADto, 'productId' | 'effectiveFrom'>;
-
-  @ApiProperty({ description: 'Template is active and available for use' })
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
 }

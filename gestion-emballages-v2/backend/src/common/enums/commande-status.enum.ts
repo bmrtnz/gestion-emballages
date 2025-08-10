@@ -5,5 +5,5 @@ export enum CommandeStatus {
   RECEPTIONNEE = 'Réceptionnée',
   CLOTUREE = 'Clôturée',
   FACTUREE = 'Facturée',
-  ARCHIVEE = 'Archivée'
+  ARCHIVEE = 'Archivée',
 }

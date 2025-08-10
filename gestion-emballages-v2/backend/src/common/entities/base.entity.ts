@@ -1,9 +1,9 @@
 import {
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   Column,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
   BaseEntity as TypeOrmBaseEntity,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export abstract class BaseEntity extends TypeOrmBaseEntity {
@@ -15,7 +15,9 @@ export abstract class BaseEntity extends TypeOrmBaseEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+}
 
+export abstract class SoftDeletableEntity extends BaseEntity {
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 }

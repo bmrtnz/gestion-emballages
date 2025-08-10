@@ -9,10 +9,7 @@ import { PlatformContact } from './entities/platform-contact.entity';
 import { CommonModule } from '@common/common.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Platform, PlatformContact]),
-    CommonModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Platform, PlatformContact]), CommonModule],
   controllers: [PlatformsController, PlatformContactsController],
   providers: [PlatformsService, PlatformContactsService],
   exports: [PlatformsService, PlatformContactsService],

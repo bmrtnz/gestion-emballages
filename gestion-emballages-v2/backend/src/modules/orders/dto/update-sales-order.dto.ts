@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateSalesOrderDto } from './create-sales-order.dto';
-import { IsOptional, IsEnum, IsDateString, IsString, IsNumber, Min } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { OrderStatus } from '@common/enums/order-status.enum';
 import { Transform } from 'class-transformer';
 
@@ -26,8 +26,8 @@ export class UpdateSalesOrderDto extends PartialType(CreateSalesOrderDto) {
   invoiceDate?: string;
 
   @IsOptional()
-  @IsEnum(['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED'], { 
-    message: 'invoiceStatus doit être une valeur valide' 
+  @IsEnum(['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED'], {
+    message: 'invoiceStatus doit être une valeur valide',
   })
   invoiceStatus?: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED';
 

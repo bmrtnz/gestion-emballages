@@ -18,8 +18,8 @@ import { authConfig } from '@config/auth.config';
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: authConfig.jwtSecret,
-        signOptions: { 
-          expiresIn: authConfig.jwtExpiresIn 
+        signOptions: {
+          expiresIn: authConfig.jwtExpiresIn,
         },
       }),
     }),

@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -19,7 +19,7 @@ export interface DataIntegrityReport {
 export class DataIntegrityService {
   constructor(
     @InjectDataSource()
-    private dataSource: DataSource,
+    private dataSource: DataSource
   ) {}
 
   /**
@@ -27,21 +27,21 @@ export class DataIntegrityService {
    */
   async checkDeleteIntegrity(entityType: string, entityId: string): Promise<DataIntegrityReport> {
     const checks: DataIntegrityCheck[] = [];
-    let blockers: DataIntegrityCheck[] = [];
-    let warnings: DataIntegrityCheck[] = [];
+    const blockers: DataIntegrityCheck[] = [];
+    const warnings: DataIntegrityCheck[] = [];
 
     switch (entityType.toLowerCase()) {
       case 'station':
-        checks.push(...await this.checkStationReferences(entityId));
+        checks.push(...(await this.checkStationReferences(entityId)));
         break;
       case 'Supplier':
-        checks.push(...await this.checkFournisseurReferences(entityId));
+        checks.push(...(await this.checkFournisseurReferences(entityId)));
         break;
       case 'Product':
-        checks.push(...await this.checkArticleReferences(entityId));
+        checks.push(...(await this.checkArticleReferences(entityId)));
         break;
       case 'user':
-        checks.push(...await this.checkUserReferences(entityId));
+        checks.push(...(await this.checkUserReferences(entityId)));
         break;
       default:
         throw new BadRequestException(`Unsupported entity type: ${entityType}`);
@@ -66,7 +66,7 @@ export class DataIntegrityService {
       canDelete: blockers.length === 0,
       blockers,
       warnings,
-      totalReferences
+      totalReferences,
     };
   }
 
@@ -81,18 +81,17 @@ export class DataIntegrityService {
     checks.push({
       entity: 'users',
       count: parseInt(userCount[0].count),
-      references: ['Users assigned to this station']
+      references: ['Users assigned to this station'],
     });
 
     // Check orders
-    const orderCount = await this.dataSource.query(
-      'SELECT COUNT(*) as count FROM commandes WHERE "stationId" = $1',
-      [stationId]
-    );
+    const orderCount = await this.dataSource.query('SELECT COUNT(*) as count FROM commandes WHERE "stationId" = $1', [
+      stationId,
+    ]);
     checks.push({
       entity: 'commandes',
       count: parseInt(orderCount[0].count),
-      references: ['Orders placed by this station']
+      references: ['Orders placed by this station'],
     });
 
     // Check stock
@@ -103,7 +102,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'stock_stations',
       count: parseInt(stockCount[0].count),
-      references: ['Stock records for this station']
+      references: ['Stock records for this station'],
     });
 
     // Check transfer requests (as source or destination)
@@ -114,7 +113,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'demandes_transfert',
       count: parseInt(transferCount[0].count),
-      references: ['Transfer requests involving this station']
+      references: ['Transfer requests involving this station'],
     });
 
     return checks;
@@ -131,7 +130,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'users',
       count: parseInt(userCount[0].count),
-      references: ['Users assigned to this supplier']
+      references: ['Users assigned to this supplier'],
     });
 
     // Check Product-Supplier relationships
@@ -142,7 +141,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'article_fournisseurs',
       count: parseInt(articleCount[0].count),
-      references: ['Articles supplied by this supplier']
+      references: ['Articles supplied by this supplier'],
     });
 
     // Check orders
@@ -153,7 +152,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'commandes',
       count: parseInt(orderCount[0].count),
-      references: ['Orders placed with this supplier']
+      references: ['Orders placed with this supplier'],
     });
 
     // Check Supplier sites
@@ -164,7 +163,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'fournisseur_sites',
       count: parseInt(siteCount[0].count),
-      references: ['Sites belonging to this supplier']
+      references: ['Sites belonging to this supplier'],
     });
 
     return checks;
@@ -181,7 +180,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'article_fournisseurs',
       count: parseInt(supplierCount[0].count),
-      references: ['Supplier relationships for this Product']
+      references: ['Supplier relationships for this Product'],
     });
 
     // Check order items
@@ -192,7 +191,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'commande_items',
       count: parseInt(orderItemCount[0].count),
-      references: ['Order items containing this Product']
+      references: ['Order items containing this Product'],
     });
 
     // Check stock stations
@@ -203,7 +202,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'stock_stations',
       count: parseInt(stockStationCount[0].count),
-      references: ['Station stock records for this Product']
+      references: ['Station stock records for this Product'],
     });
 
     // Check platform stock
@@ -214,7 +213,7 @@ export class DataIntegrityService {
     checks.push({
       entity: 'stocks_platform',
       count: parseInt(stockPlatformCount[0].count),
-      references: ['Platform stock records for this Product']
+      references: ['Platform stock records for this Product'],
     });
 
     return checks;
@@ -227,47 +226,62 @@ export class DataIntegrityService {
     try {
       // Tables with created_by only
       const createdOnlyTables = ['commandes', 'commandes_globales', 'previsions', 'demandes_transfert', 'liste_achats'];
-      
+
       // Tables with both created_by and updated_by
-      const fullAuditTables = ['stations', 'fournisseurs', 'articles', 'platforms', 'station_groups', 'station_contacts'];
-      
+      const fullAuditTables = [
+        'stations',
+        'fournisseurs',
+        'articles',
+        'platforms',
+        'station_groups',
+        'station_contacts',
+      ];
+
       // Tables with updated_by only
       const updatedOnlyTables = ['stock_stations', 'stocks_platform'];
 
       // Build comprehensive audit trail query
       const auditQueries = [
         // created_by checks
-        ...createdOnlyTables.map(table => `SELECT '${table}' as table_name, COUNT(*) as count FROM ${table} WHERE created_by = $1`),
-        ...fullAuditTables.map(table => `SELECT '${table}_created' as table_name, COUNT(*) as count FROM ${table} WHERE created_by = $1`),
-        
+        ...createdOnlyTables.map(
+          table => `SELECT '${table}' as table_name, COUNT(*) as count FROM ${table} WHERE created_by = $1`
+        ),
+        ...fullAuditTables.map(
+          table => `SELECT '${table}_created' as table_name, COUNT(*) as count FROM ${table} WHERE created_by = $1`
+        ),
+
         // updated_by checks
-        ...fullAuditTables.map(table => `SELECT '${table}_updated' as table_name, COUNT(*) as count FROM ${table} WHERE updated_by = $1`),
-        ...updatedOnlyTables.map(table => `SELECT '${table}' as table_name, COUNT(*) as count FROM ${table} WHERE updated_by = $1`)
+        ...fullAuditTables.map(
+          table => `SELECT '${table}_updated' as table_name, COUNT(*) as count FROM ${table} WHERE updated_by = $1`
+        ),
+        ...updatedOnlyTables.map(
+          table => `SELECT '${table}' as table_name, COUNT(*) as count FROM ${table} WHERE updated_by = $1`
+        ),
       ];
 
       const unionQuery = auditQueries.join(' UNION ALL ');
       const results = await this.dataSource.query(unionQuery, [userId]);
-      
+
       const totalCount = results.reduce((sum: number, row: any) => sum + parseInt(row.count), 0);
       const referencingTables = results
         .filter((row: any) => parseInt(row.count) > 0)
         .map((row: any) => `${row.table_name}: ${row.count} records`);
-      
+
       checks.push({
         entity: 'audit_trails',
         count: totalCount,
-        references: referencingTables.length > 0 
-          ? ['Entities created or updated by this user:', ...referencingTables]
-          : ['No audit trail references found']
+        references:
+          referencingTables.length > 0
+            ? ['Entities created or updated by this user:', ...referencingTables]
+            : ['No audit trail references found'],
       });
-
     } catch (error) {
       // If audit trail check fails, skip it but don't block deletion
       console.warn('Could not check audit trails for user references:', error.message);
       checks.push({
         entity: 'audit_trails',
         count: 0,
-        references: ['Audit trail check skipped due to schema mismatch']
+        references: ['Audit trail check skipped due to schema mismatch'],
       });
     }
 
@@ -279,9 +293,9 @@ export class DataIntegrityService {
     const blockingEntities = [
       'commandes', // Orders should prevent deletion
       'commande_items', // Order items should prevent deletion
-      'audit_trails' // Audit trails should prevent deletion
+      'audit_trails', // Audit trails should prevent deletion
     ];
-    
+
     return blockingEntities.includes(entityType);
   }
 
@@ -289,28 +303,27 @@ export class DataIntegrityService {
    * Perform hard delete with cascade options
    */
   async performHardDelete(
-    entityType: string, 
-    entityId: string, 
-    options: { 
+    entityType: string,
+    entityId: string,
+    options: {
       cascadeDelete?: boolean;
       confirmIntegrityCheck?: boolean;
     } = {}
   ): Promise<{ deleted: boolean; cascadeCount: number; message: string }> {
-    
     // Always check integrity first
     const integrityReport = await this.checkDeleteIntegrity(entityType, entityId);
-    
+
     if (!integrityReport.canDelete && !options.cascadeDelete) {
       throw new BadRequestException(
         `Cannot delete ${entityType}. Found ${integrityReport.blockers.length} blocking references. ` +
-        `Use cascadeDelete option to force deletion.`
+          `Use cascadeDelete option to force deletion.`
       );
     }
 
     if (options.confirmIntegrityCheck && integrityReport.totalReferences > 0 && !options.cascadeDelete) {
       throw new BadRequestException(
         `Integrity check required. Found ${integrityReport.totalReferences} references. ` +
-        `Confirm with cascadeDelete option if you want to proceed.`
+          `Confirm with cascadeDelete option if you want to proceed.`
       );
     }
 
@@ -333,9 +346,8 @@ export class DataIntegrityService {
       return {
         deleted: true,
         cascadeCount,
-        message: `Successfully deleted ${entityType} and ${cascadeCount} related records`
+        message: `Successfully deleted ${entityType} and ${cascadeCount} related records`,
       };
-
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
@@ -345,21 +357,24 @@ export class DataIntegrityService {
   }
 
   private async performCascadeDelete(entityType: string, entityId: string, queryRunner: any): Promise<number> {
-    let deleteCount = 0;
+    const deleteCount = 0;
 
     switch (entityType.toLowerCase()) {
       case 'station':
         // Delete station-related data
         await queryRunner.query('DELETE FROM stock_stations WHERE "stationId" = $1', [entityId]);
-        await queryRunner.query('DELETE FROM demandes_transfert WHERE "stationSourceId" = $1 OR "stationDestinationId" = $1', [entityId]);
+        await queryRunner.query(
+          'DELETE FROM demandes_transfert WHERE "stationSourceId" = $1 OR "stationDestinationId" = $1',
+          [entityId]
+        );
         break;
-      
+
       case 'Supplier':
         // Delete supplier-related data (but keep historical orders)
         await queryRunner.query('DELETE FROM article_fournisseurs WHERE "fournisseurId" = $1', [entityId]);
         await queryRunner.query('DELETE FROM fournisseur_sites WHERE "fournisseurId" = $1', [entityId]);
         break;
-      
+
       case 'Product':
         // Delete Product-related data (but keep historical order items)
         await queryRunner.query('DELETE FROM article_fournisseurs WHERE "articleId" = $1', [entityId]);
@@ -373,10 +388,10 @@ export class DataIntegrityService {
 
   private async deleteMainEntity(entityType: string, entityId: string, queryRunner: any): Promise<void> {
     const tableMap = {
-      'station': 'stations',
-      'Supplier': 'fournisseurs',
-      'Product': 'articles',
-      'user': 'users'
+      station: 'stations',
+      Supplier: 'fournisseurs',
+      Product: 'articles',
+      user: 'users',
     };
 
     const tableName = tableMap[entityType.toLowerCase()];

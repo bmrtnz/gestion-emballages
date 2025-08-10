@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { OrderStatus } from '@common/enums/order-status.enum';
 import { Station } from '@modules/stations/entities/station.entity';
@@ -158,9 +158,9 @@ export class SalesOrder extends BaseEntity {
   @JoinColumn({ name: 'fulfilled_by' })
   fulfilledBy?: User;
 
-  @OneToOne(() => PurchaseOrder, (purchaseOrder) => purchaseOrder.linkedSalesOrder)
+  @OneToOne(() => PurchaseOrder, purchaseOrder => purchaseOrder.linkedSalesOrder)
   linkedPurchaseOrder: PurchaseOrder;
 
-  @OneToMany(() => SalesOrderProduct, (salesOrderProduct) => salesOrderProduct.salesOrder)
+  @OneToMany(() => SalesOrderProduct, salesOrderProduct => salesOrderProduct.salesOrder)
   salesOrderProducts: SalesOrderProduct[];
 }

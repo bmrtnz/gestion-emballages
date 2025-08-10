@@ -1,23 +1,24 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-  UseGuards,
   ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UseGuards,
   UseInterceptors,
-  Request
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductSupplierDto } from './dto/create-product-supplier.dto';
+import { UpdateProductSupplierDto } from './dto/update-product-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
@@ -39,11 +40,18 @@ export class ProductsController {
     return { categories: this.ProductsService.getCategories() };
   }
 
+  @Get('conditioning-units')
+  @ApiOperation({ summary: 'Get conditioning units' })
+  @ApiResponse({ status: 200, description: 'Conditioning units retrieved successfully' })
+  getConditioningUnits() {
+    return { conditioningUnits: this.ProductsService.getConditioningUnits() };
+  }
+
   @Get('search')
-  @ApiOperation({ summary: 'Search articles for autocomplete' })
-  @ApiResponse({ status: 200, description: 'Articles found' })
-  async searchArticles(@Query('q') query: string, @Query('limit') limit?: number) {
-    return this.ProductsService.searchArticles(query, limit);
+  @ApiOperation({ summary: 'Search products for autocomplete' })
+  @ApiResponse({ status: 200, description: 'Products found' })
+  async searchProducts(@Query('q') query: string, @Query('limit') limit?: number) {
+    return this.ProductsService.searchProducts(query, limit);
   }
 
   @Post()
@@ -52,16 +60,16 @@ export class ProductsController {
   @ApiResponse({ status: 201, description: 'Product created successfully' })
   async create(@Body() CreateProductDto: CreateProductDto, @Request() req) {
     // Add created by user ID
-    const articleData = {
+    const productData = {
       ...CreateProductDto,
-      createdById: req.user.id
+      createdById: req.user.id,
     };
-    return this.ProductsService.create(articleData);
+    return this.ProductsService.create(productData);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all articles with pagination' })
-  @ApiResponse({ status: 200, description: 'Articles retrieved successfully' })
+  @ApiOperation({ summary: 'Get all products with pagination' })
+  @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
   async findAll(@Query() paginationDto: PaginationDto) {
     return this.ProductsService.findAll(paginationDto);
   }
@@ -77,17 +85,13 @@ export class ProductsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update Product' })
   @ApiResponse({ status: 200, description: 'Product updated successfully' })
-  async update(
-    @Param('id') id: string, 
-    @Body() UpdateProductDto: UpdateProductDto,
-    @Request() req
-  ) {
+  async update(@Param('id') id: string, @Body() UpdateProductDto: UpdateProductDto, @Request() req) {
     // Add updated by user ID
-    const articleData = {
+    const productData = {
       ...UpdateProductDto,
-      updatedById: req.user.id
+      updatedById: req.user.id,
     };
-    return this.ProductsService.update(id, articleData);
+    return this.ProductsService.update(id, productData);
   }
 
   @Delete(':id')
@@ -107,37 +111,31 @@ export class ProductsController {
   }
 
   // Product-Supplier relationship endpoints
-  @Post(':id/fournisseurs')
+  @Post(':id/suppliers')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Add supplier to Product' })
   @ApiResponse({ status: 201, description: 'Supplier added to Product successfully' })
-  async addFournisseur(
-    @Param('id') articleId: string,
-    @Body() CreateProductSupplierDto: CreateProductSupplierDto
-  ) {
-    return this.ProductsService.addFournisseur(articleId, CreateProductSupplierDto);
+  async addSupplier(@Param('id') productId: string, @Body() CreateProductSupplierDto: CreateProductSupplierDto) {
+    return this.ProductsService.addSupplier(productId, CreateProductSupplierDto);
   }
 
-  @Patch(':id/fournisseurs/:fournisseurInfoId')
+  @Patch(':id/suppliers/:supplierInfoId')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update Product-supplier relationship' })
   @ApiResponse({ status: 200, description: 'Product-supplier relationship updated successfully' })
-  async updateFournisseur(
-    @Param('id') articleId: string,
-    @Param('fournisseurInfoId') fournisseurInfoId: string,
-    @Body() updateData: Partial<CreateProductSupplierDto>
+  async updateSupplier(
+    @Param('id') productId: string,
+    @Param('supplierInfoId') supplierInfoId: string,
+    @Body() updateData: UpdateProductSupplierDto
   ) {
-    return this.ProductsService.updateFournisseur(articleId, fournisseurInfoId, updateData);
+    return this.ProductsService.updateSupplier(productId, supplierInfoId, updateData);
   }
 
-  @Delete(':id/fournisseurs/:fournisseurInfoId')
+  @Delete(':id/suppliers/:supplierInfoId')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Remove supplier from Product' })
   @ApiResponse({ status: 200, description: 'Supplier removed from Product successfully' })
-  async removeFournisseur(
-    @Param('id') articleId: string,
-    @Param('fournisseurInfoId') fournisseurInfoId: string
-  ) {
-    return this.ProductsService.removeFournisseur(articleId, fournisseurInfoId);
+  async removeSupplier(@Param('id') productId: string, @Param('supplierInfoId') supplierInfoId: string) {
+    return this.ProductsService.removeSupplier(productId, supplierInfoId);
   }
 }

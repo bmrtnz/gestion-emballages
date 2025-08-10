@@ -1,6 +1,6 @@
-import { PartialType, OmitType } from '@nestjs/swagger';
-import { CreateTransferRequestDto, CreateDemandeTransfertArticleDto } from './create-transfer-request.dto';
-import { IsEnum, IsOptional, IsArray, ValidateNested, IsNumber, Min, IsUUID } from 'class-validator';
+import { OmitType, PartialType } from '@nestjs/swagger';
+import { CreateDemandeTransfertArticleDto, CreateTransferRequestDto } from './create-transfer-request.dto';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { TransferStatus } from '@common/enums/transfer-status.enum';
@@ -41,9 +41,9 @@ export class UpdateTransferRequestDto {
   @IsUUID()
   sourceStationId?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Statut de la demande',
-    enum: TransferStatus
+    enum: TransferStatus,
   })
   @IsOptional()
   @IsEnum(TransferStatus)
@@ -73,9 +73,9 @@ export class UpdateTransferRequestDto {
   @IsOptional()
   notes?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Articles de la demande de transfert',
-    type: [UpdateTransferRequestProductDto]
+    type: [UpdateTransferRequestProductDto],
   })
   @IsOptional()
   @IsArray()
@@ -85,9 +85,9 @@ export class UpdateTransferRequestDto {
 }
 
 export class ApproveTransferDto {
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Articles approuvés avec quantités accordées',
-    type: [UpdateTransferRequestProductDto]
+    type: [UpdateTransferRequestProductDto],
   })
   @IsArray()
   @ValidateNested({ each: true })

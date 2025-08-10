@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, Unique, Check } from 'typeorm';
+import { Check, Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
 import { Station } from '@modules/stations/entities/station.entity';
 import { Product } from '@modules/products/entities/product.entity';
@@ -31,15 +31,15 @@ export class Forecast extends BaseEntity {
   createdById?: string;
 
   // Relations
-  @ManyToOne(() => Station, (station) => station.forecasts)
+  @ManyToOne(() => Station, station => station.forecasts)
   @JoinColumn({ name: 'station_id' })
   station: Station;
 
-  @ManyToOne(() => Product, (product) => product.forecasts)
+  @ManyToOne(() => Product, product => product.forecasts)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => Supplier, (supplier) => supplier.forecasts)
+  @ManyToOne(() => Supplier, supplier => supplier.forecasts)
   @JoinColumn({ name: 'supplier_id' })
   supplier: Supplier;
 

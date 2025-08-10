@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, Like } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 
 import { TransferRequest } from './entities/transfer-request.entity';
 import { TransferRequestProduct } from './entities/transfer-request-product.entity';
 import { CreateTransferRequestDto } from './dto/create-transfer-request.dto';
-import { UpdateTransferRequestDto, ApproveTransferDto } from './dto/update-transfer-request.dto';
+import { ApproveTransferDto, UpdateTransferRequestDto } from './dto/update-transfer-request.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService } from '@common/services/pagination.service';
 import { TransferStatus } from '@common/enums/transfer-status.enum';
@@ -18,10 +18,13 @@ export class TransfersService {
     @InjectRepository(TransferRequestProduct)
     private demandeTransfertArticleRepository: Repository<TransferRequestProduct>,
     private dataSource: DataSource,
-    private paginationService: PaginationService,
+    private paginationService: PaginationService
   ) {}
 
-  async createDemandeTransfert(createTransferRequestDto: CreateTransferRequestDto, createdById?: string): Promise<TransferRequest> {
+  async createDemandeTransfert(
+    createTransferRequestDto: CreateTransferRequestDto,
+    createdById?: string
+  ): Promise<TransferRequest> {
     // Validate that stations are different
     if (createTransferRequestDto.requestingStationId === createTransferRequestDto.sourceStationId) {
       throw new BadRequestException('La station demandeuse et la station source doivent être différentes');
@@ -49,7 +52,7 @@ export class TransfersService {
       const savedDemandeTransfert = await queryRunner.manager.save(transferRequest);
 
       // Create transfer articles
-      const transferArticles = createTransferRequestDto.articles.map(articleDto => 
+      const transferArticles = createTransferRequestDto.articles.map(articleDto =>
         queryRunner.manager.create(TransferRequestProduct, {
           ...articleDto,
           transferRequestId: savedDemandeTransfert.id,
@@ -75,7 +78,7 @@ export class TransfersService {
       page: paginationDto.page || 1,
       limit: paginationDto.limit || 10,
       sortBy: paginationDto.sortBy || 'createdAt',
-      sortOrder: paginationDto.sortOrder || 'DESC'
+      sortOrder: paginationDto.sortOrder || 'DESC',
     });
 
     const queryBuilder = this.demandeTransfertRepository
@@ -96,39 +99,39 @@ export class TransfersService {
 
     // Add status filter
     if (paginationDto.status === 'active') {
-      queryBuilder.andWhere('transfert.status NOT IN (:...inactiveStatuses)', { 
-        inactiveStatuses: [TransferStatus.ARCHIVEE, TransferStatus.REJETEE] 
+      queryBuilder.andWhere('transfert.status NOT IN (:...inactiveStatuses)', {
+        inactiveStatuses: [TransferStatus.ARCHIVEE, TransferStatus.REJETEE],
       });
     } else if (paginationDto.status === 'inactive') {
-      queryBuilder.andWhere('transfert.status IN (:...inactiveStatuses)', { 
-        inactiveStatuses: [TransferStatus.ARCHIVEE, TransferStatus.REJETEE] 
+      queryBuilder.andWhere('transfert.status IN (:...inactiveStatuses)', {
+        inactiveStatuses: [TransferStatus.ARCHIVEE, TransferStatus.REJETEE],
       });
     }
 
     // Add role-based filtering
     if (paginationDto['requestingStationIdId']) {
-      queryBuilder.andWhere('transfert.requestingStationIdId = :requestingStationIdId', { 
-        requestingStationIdId: paginationDto['requestingStationIdId'] 
+      queryBuilder.andWhere('transfert.requestingStationIdId = :requestingStationIdId', {
+        requestingStationIdId: paginationDto['requestingStationIdId'],
       });
     }
 
     if (paginationDto['sourceStationIdId']) {
-      queryBuilder.andWhere('transfert.sourceStationIdId = :sourceStationIdId', { 
-        sourceStationIdId: paginationDto['sourceStationIdId'] 
+      queryBuilder.andWhere('transfert.sourceStationIdId = :sourceStationIdId', {
+        sourceStationIdId: paginationDto['sourceStationIdId'],
       });
     }
 
     // Add statut filter
     if (paginationDto['statut']) {
-      queryBuilder.andWhere('transfert.status = :statut', { 
-        status: paginationDto['statut'] 
+      queryBuilder.andWhere('transfert.status = :statut', {
+        status: paginationDto['statut'],
       });
     }
 
     // Add pending approval filter
     if (paginationDto['pendingApproval'] === 'true') {
-      queryBuilder.andWhere('transfert.status = :pendingStatus', { 
-        pendingStatus: TransferStatus.ENREGISTREE 
+      queryBuilder.andWhere('transfert.status = :pendingStatus', {
+        pendingStatus: TransferStatus.ENREGISTREE,
       });
     }
 
@@ -146,13 +149,7 @@ export class TransfersService {
   async findOne(id: string): Promise<TransferRequest> {
     const TransferRequest = await this.demandeTransfertRepository.findOne({
       where: { id },
-      relations: [
-        'requestingStationId',
-        'sourceStationId',
-        'createdBy',
-        'articles',
-        'articles.Product'
-      ]
+      relations: ['requestingStationId', 'sourceStationId', 'createdBy', 'articles', 'articles.Product'],
     });
 
     if (!TransferRequest) {
@@ -182,12 +179,12 @@ export class TransfersService {
       // Update articles if provided
       if (updateTransferRequestDto.products) {
         // Delete existing articles
-        await queryRunner.manager.delete(TransferRequestProduct, { 
-          transferRequestId: id 
+        await queryRunner.manager.delete(TransferRequestProduct, {
+          transferRequestId: id,
         });
 
         // Create new articles
-        const transferArticles = updateTransferRequestDto.products.map(productDto => 
+        const transferArticles = updateTransferRequestDto.products.map(productDto =>
           queryRunner.manager.create(TransferRequestProduct, {
             ...productDto,
             transferRequestId: id,
@@ -210,18 +207,18 @@ export class TransfersService {
 
   async updateStatus(id: string, status: TransferStatus): Promise<TransferRequest> {
     const transferRequest = await this.findOne(id);
-    
+
     // Validate status transition
     this.validateStatusTransition(transferRequest.status, status);
 
     transferRequest.status = status;
-    
+
     return this.demandeTransfertRepository.save(transferRequest);
   }
 
   async approveTransfer(id: string, approveTransferDto: ApproveTransferDto): Promise<TransferRequest> {
     const transferRequest = await this.findOne(id);
-    
+
     if (transferRequest.status !== TransferStatus.ENREGISTREE) {
       throw new BadRequestException('Seules les demandes enregistrées peuvent être approuvées');
     }
@@ -257,19 +254,19 @@ export class TransfersService {
 
   async rejectTransfer(id: string, reason?: string): Promise<TransferRequest> {
     const transferRequest = await this.findOne(id);
-    
+
     if (transferRequest.status !== TransferStatus.ENREGISTREE) {
       throw new BadRequestException('Seules les demandes enregistrées peuvent être rejetées');
     }
 
     transferRequest.status = TransferStatus.REJETEE;
-    
+
     return this.demandeTransfertRepository.save(transferRequest);
   }
 
   async delete(id: string): Promise<void> {
     const transferRequest = await this.findOne(id);
-    
+
     if (transferRequest.status !== TransferStatus.ENREGISTREE) {
       throw new BadRequestException('Seules les demandes enregistrées peuvent être supprimées');
     }
@@ -279,14 +276,12 @@ export class TransfersService {
 
   // Analytics and Reports
   async getTransferAnalytics(stationId?: string) {
-    const queryBuilder = this.demandeTransfertRepository
-      .createQueryBuilder('transfert');
+    const queryBuilder = this.demandeTransfertRepository.createQueryBuilder('transfert');
 
     if (stationId) {
-      queryBuilder.where(
-        'transfert.requestingStationIdId = :stationId OR transfert.sourceStationIdId = :stationId',
-        { stationId }
-      );
+      queryBuilder.where('transfert.requestingStationIdId = :stationId OR transfert.sourceStationIdId = :stationId', {
+        stationId,
+      });
     }
 
     const transfers = await queryBuilder.getMany();
@@ -308,7 +303,7 @@ export class TransfersService {
         [TransferStatus.CONFIRMEE]: approvedTransfers,
         [TransferStatus.CLOTUREE]: completedTransfers,
         [TransferStatus.REJETEE]: rejectedTransfers,
-      }
+      },
     };
   }
 
@@ -325,9 +320,7 @@ export class TransfersService {
       queryBuilder.andWhere('transfert.sourceStationIdId = :stationId', { stationId });
     }
 
-    return queryBuilder
-      .orderBy('transfert.createdAt', 'ASC')
-      .getMany();
+    return queryBuilder.orderBy('transfert.createdAt', 'ASC').getMany();
   }
 
   // Utility methods
@@ -335,8 +328,8 @@ export class TransfersService {
     const year = new Date().getFullYear();
     const count = await this.demandeTransfertRepository.count({
       where: {
-        numeroDemande: Like(`TRF-${year}-%`)
-      }
+        numeroDemande: Like(`TRF-${year}-%`),
+      },
     });
     return `TRF-${year}-${(count + 1).toString().padStart(6, '0')}`;
   }
@@ -351,13 +344,11 @@ export class TransfersService {
       [TransferStatus.CLOTUREE]: [TransferStatus.TRAITEE_COMPTABILITE, TransferStatus.ARCHIVEE],
       [TransferStatus.TRAITEE_COMPTABILITE]: [TransferStatus.ARCHIVEE],
       [TransferStatus.REJETEE]: [],
-      [TransferStatus.ARCHIVEE]: []
+      [TransferStatus.ARCHIVEE]: [],
     };
 
     if (!validTransitions[currentStatus]?.includes(newStatus)) {
-      throw new BadRequestException(
-        `Transition de statut invalide: ${currentStatus} vers ${newStatus}`
-      );
+      throw new BadRequestException(`Transition de statut invalide: ${currentStatus} vers ${newStatus}`);
     }
   }
 }

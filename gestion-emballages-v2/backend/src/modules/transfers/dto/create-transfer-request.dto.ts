@@ -1,4 +1,4 @@
-import { IsString, IsUUID, IsEnum, IsOptional, IsArray, ValidateNested, IsNumber, Min } from 'class-validator';
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TransferStatus } from '@common/enums/transfer-status.enum';
@@ -35,18 +35,18 @@ export class CreateTransferRequestDto {
   @IsUUID()
   sourceStationId: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Statut de la demande',
     enum: TransferStatus,
-    default: TransferStatus.ENREGISTREE
+    default: TransferStatus.ENREGISTREE,
   })
   @IsOptional()
   @IsEnum(TransferStatus)
   status?: TransferStatus;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Articles de la demande de transfert',
-    type: [CreateDemandeTransfertArticleDto]
+    type: [CreateDemandeTransfertArticleDto],
   })
   @IsArray()
   @ValidateNested({ each: true })

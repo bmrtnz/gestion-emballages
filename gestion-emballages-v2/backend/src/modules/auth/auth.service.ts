@@ -14,15 +14,15 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.userRepository.findOne({
-      where: { email, isActive: true }
+      where: { email, isActive: true },
     });
 
-    if (user && await bcrypt.compare(password, user.passwordHash)) {
+    if (user && (await bcrypt.compare(password, user.hashedPassword))) {
       return user;
     }
 
@@ -31,7 +31,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const user = await this.validateUser(loginDto.email, loginDto.password);
-    
+
     if (!user) {
       throw new UnauthorizedException('Identifiants invalides');
     }
@@ -57,7 +57,7 @@ export class AuthService {
 
   async getProfile(userId: string): Promise<UserResponseDto> {
     const user = await this.userRepository.findOne({
-      where: { id: userId, isActive: true }
+      where: { id: userId, isActive: true },
     });
 
     if (!user) {

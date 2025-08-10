@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+coverage/
+.env
+.env.*
+*.log
+.git/
+.vscode/
+.idea/
+*.min.js
+*.bundle.js
+migrations/
+seeders/data/
+*.d.ts
