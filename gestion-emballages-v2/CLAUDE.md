@@ -4,7 +4,7 @@ This file provides comprehensive guidance to Claude Code (claude.ai/code) when w
 
 ## Project Overview
 
-The "Gestion Emballages v2" system is a modern B2B packaging management platform designed for agricultural cooperatives. It facilitates the procurement, inventory management, and distribution of packaging materials (boxes, trays, plastic films, etc.) across a network of cooperative stations. The system consists of a NestJS backend API and an Angular 18 frontend application built with modern best practices and performance optimizations.
+The "Blue Whale Portal" system is a modern B2B supply chain management platform designed for agricultural cooperatives. It facilitates the procurement, inventory management, and distribution of packaging materials (boxes, trays, plastic films, etc.) across a network of cooperative stations. The system consists of a NestJS backend API and an Angular 18 frontend application built with modern best practices and performance optimizations.
 
 ## Architecture
 
@@ -43,10 +43,11 @@ The "Gestion Emballages v2" system is a modern B2B packaging management platform
 - Platform fees handled externally by Blue Whale
 
 #### 2. **Stations** (Agricultural Cooperatives)
-- Belong to a Platform
 - Physical locations with inventory management
 - Can place orders and request inter-station transfers
 - Grouped by StationGroups for organization
+- Contact management with primary contact designation
+- **Important**: Station contacts are permanently deleted (no soft delete)
 
 #### 3. **Suppliers** (Fournisseurs)
 - External suppliers with multiple sites
@@ -740,6 +741,7 @@ export abstract class SoftDeletableEntity extends BaseEntity {
 - **SoftDeletableEntity**: Separate class for entities requiring soft delete functionality
 - **Clean Separation**: Entities only inherit fields they actually need
 - **Performance Optimized**: No unused columns in entities that don't need soft delete
+- **Selective Soft Deletion**: StationContact entities use hard deletion for data integrity
 
 ##### 2. **EntityHistory Entity**
 ```typescript
@@ -1193,8 +1195,8 @@ docker-compose -f docker-compose.prod.yml up   # Production mode
 
 #### Stations Module (`/api/stations`)
 - Station CRUD with group management
-- Contact management
-- Relationship with platforms
+- Contact management (hard delete only)
+- Station groups with cascading deactivation
 
 #### Suppliers Module (`/api/suppliers`)
 - Supplier management with sites
@@ -1232,10 +1234,14 @@ docker-compose -f docker-compose.prod.yml up   # Production mode
 
 #### Base Entity
 All entities extend `BaseEntity` with:
-- `id`: UUID primary key
+- `id`: UUID primary key  
 - `createdAt`: Creation timestamp
 - `updatedAt`: Update timestamp
+
+Some entities extend `SoftDeletableEntity` which adds:
 - `isActive`: Soft delete flag
+
+**Note**: Not all entities support soft deletion. StationContact entities use hard deletion.
 
 #### Key Relationships
 - **Platform** → has many **Stations**

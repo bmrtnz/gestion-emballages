@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   apiUrl: '/api/v1',
-  appName: 'Gestion Emballages',
+  appName: 'Blue Whale Portal',
   version: '2.0.0',
   features: {
     enableDebugMode: false,

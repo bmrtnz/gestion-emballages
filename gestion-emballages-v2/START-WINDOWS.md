@@ -1,6 +1,6 @@
-# Starting Gestion Emballages v2 on Windows
+# Starting Blue Whale Portal v2 on Windows
 
-This guide provides step-by-step instructions for starting the Gestion Emballages v2 application on Windows systems.
+This guide provides step-by-step instructions for starting the Blue Whale Portal v2 application on Windows systems.
 
 ## 🚀 Option 1: Docker Desktop (Recommended)
 

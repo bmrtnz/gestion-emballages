@@ -1,6 +1,6 @@
-# Deployment Guide - Gestion Emballages V2
+# Deployment Guide - Blue Whale Portal V2
 
-This guide covers various deployment scenarios for the Gestion Emballages V2 application.
+This guide covers various deployment scenarios for the Blue Whale Portal V2 application.
 
 ## 🐳 Docker Deployment (Recommended)
 
@@ -619,4 +619,4 @@ sudo logrotate -f /etc/logrotate.d/nginx
 - [ ] Test user workflows
 - [ ] Update documentation
 
-This deployment guide provides comprehensive instructions for deploying the Gestion Emballages V2 application in various environments. Choose the deployment method that best fits your infrastructure requirements.
+This deployment guide provides comprehensive instructions for deploying the Blue Whale Portal V2 application in various environments. Choose the deployment method that best fits your infrastructure requirements.

@@ -1,4 +1,4 @@
-# Guide Utilisateur - Gestion Emballages v2.0
+# Guide Utilisateur - Blue Whale Portal v2.0
 
 *Système de gestion des emballages pour coopératives agricoles*
 
@@ -23,9 +23,9 @@
 
 ## 🎯 Vue d'ensemble
 
-### Qu'est-ce que Gestion Emballages v2 ?
+### Qu'est-ce que Blue Whale Portal v2 ?
 
-**Gestion Emballages v2** est une plateforme B2B moderne conçue spécifiquement pour les **coopératives agricoles** afin de faciliter la gestion complète des matériaux d'emballage (barquettes, cagettes, plateaux, films plastiques, cartons, etc.).
+**Blue Whale Portal v2** est une plateforme B2B moderne conçue spécifiquement pour les **coopératives agricoles** afin de faciliter la gestion complète des matériaux d'emballage (barquettes, cagettes, plateaux, films plastiques, cartons, etc.).
 
 ### 🏗️ Architecture technique
 
@@ -603,7 +603,7 @@
 
 ### 🎯 Vision long terme
 
-**Gestion Emballages v2** a pour ambition de devenir **la référence** de la gestion d'emballages pour l'agriculture française, en intégrant :
+**Blue Whale Portal v2** a pour ambition de devenir **la référence** de la gestion d'emballages pour l'agriculture française, en intégrant :
 
 - **Durabilité** environnementale
 - **Intelligence artificielle** 
@@ -642,7 +642,7 @@
 
 ## 🏆 Conclusion
 
-**Gestion Emballages v2** représente une **révolution digitale** pour les coopératives agricoles, offrant :
+**Blue Whale Portal v2** représente une **révolution digitale** pour les coopératives agricoles, offrant :
 
 ### 🎯 **Valeur immédiate**
 - **Interface moderne** et intuitive
@@ -675,4 +675,4 @@
 
 ---
 
-**© 2025 Gestion Emballages - Tous droits réservés**
+**© 2025 Blue Whale Portal - Tous droits réservés**

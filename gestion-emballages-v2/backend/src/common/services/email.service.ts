@@ -40,9 +40,9 @@ export class EmailService {
     const resetUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:4200')}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
-      from: this.configService.get('EMAIL_FROM', 'Gestion Emballages <noreply@localhost>'),
+      from: this.configService.get('EMAIL_FROM', 'Blue Whale Portal <noreply@localhost>'),
       to: email,
-      subject: 'Réinitialisation de mot de passe - Gestion Emballages',
+      subject: 'Réinitialisation de mot de passe - Blue Whale Portal',
       html: this.getPasswordResetTemplate(resetUrl, userName),
       text: this.getPasswordResetTextTemplate(resetUrl, userName),
     };
@@ -60,9 +60,9 @@ export class EmailService {
     const loginUrl = `${this.configService.get('FRONTEND_URL', 'http://localhost:4200')}/login`;
 
     const mailOptions = {
-      from: this.configService.get('EMAIL_FROM', 'Gestion Emballages <noreply@localhost>'),
+      from: this.configService.get('EMAIL_FROM', 'Blue Whale Portal <noreply@localhost>'),
       to: email,
-      subject: 'Bienvenue sur Gestion Emballages',
+      subject: 'Bienvenue sur Blue Whale Portal',
       html: this.getWelcomeTemplate(userName, loginUrl, temporaryPassword),
       text: this.getWelcomeTextTemplate(userName, loginUrl, temporaryPassword),
     };
@@ -105,14 +105,14 @@ export class EmailService {
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">Gestion Emballages</div>
+          <div class="logo">Blue Whale Portal</div>
         </div>
         
         <h2>Réinitialisation de votre mot de passe</h2>
         
         <p>Bonjour ${userName},</p>
         
-        <p>Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Gestion Emballages.</p>
+        <p>Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Blue Whale Portal.</p>
         
         <p>Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :</p>
         
@@ -134,7 +134,7 @@ export class EmailService {
         
         <div class="footer">
           <p>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</p>
-          <p>© ${new Date().getFullYear()} Gestion Emballages - Système de gestion des emballages agricoles</p>
+          <p>© ${new Date().getFullYear()} Blue Whale Portal - Système de gestion des emballages agricoles</p>
         </div>
       </div>
     </body>
@@ -143,11 +143,11 @@ export class EmailService {
 
   private getPasswordResetTextTemplate(resetUrl: string, userName: string): string {
     return `
-Gestion Emballages - Réinitialisation de mot de passe
+Blue Whale Portal - Réinitialisation de mot de passe
 
 Bonjour ${userName},
 
-Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Gestion Emballages.
+Vous avez demandé la réinitialisation de votre mot de passe pour votre compte Blue Whale Portal.
 
 Pour créer un nouveau mot de passe, visitez ce lien :
 ${resetUrl}
@@ -159,7 +159,7 @@ IMPORTANT:
 
 Cet email a été envoyé automatiquement, merci de ne pas y répondre.
 
-© ${new Date().getFullYear()} Gestion Emballages
+© ${new Date().getFullYear()} Blue Whale Portal
 `;
   }
 
@@ -170,7 +170,7 @@ Cet email a été envoyé automatiquement, merci de ne pas y répondre.
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Bienvenue sur Gestion Emballages</title>
+      <title>Bienvenue sur Blue Whale Portal</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -192,12 +192,12 @@ Cet email a été envoyé automatiquement, merci de ne pas y répondre.
     <body>
       <div class="container">
         <div class="header">
-          <div class="logo">Gestion Emballages</div>
+          <div class="logo">Blue Whale Portal</div>
         </div>
         
         <h2>Bienvenue ${userName} !</h2>
         
-        <p>Votre compte a été créé avec succès sur la plateforme Gestion Emballages.</p>
+        <p>Votre compte a été créé avec succès sur la plateforme Blue Whale Portal.</p>
         
         ${
           temporaryPassword
@@ -217,7 +217,7 @@ Cet email a été envoyé automatiquement, merci de ne pas y répondre.
         
         <div class="footer">
           <p>Si vous avez des questions, contactez votre administrateur système.</p>
-          <p>© ${new Date().getFullYear()} Gestion Emballages</p>
+          <p>© ${new Date().getFullYear()} Blue Whale Portal</p>
         </div>
       </div>
     </body>
@@ -226,9 +226,9 @@ Cet email a été envoyé automatiquement, merci de ne pas y répondre.
 
   private getWelcomeTextTemplate(userName: string, loginUrl: string, temporaryPassword?: string): string {
     return `
-Gestion Emballages - Bienvenue ${userName} !
+Blue Whale Portal - Bienvenue ${userName} !
 
-Votre compte a été créé avec succès sur la plateforme Gestion Emballages.
+Votre compte a été créé avec succès sur la plateforme Blue Whale Portal.
 
 ${temporaryPassword ? `Mot de passe temporaire : ${temporaryPassword}\nIMPORTANT: Veuillez changer votre mot de passe temporaire lors de votre première connexion.\n` : ''}
 
@@ -236,7 +236,7 @@ Pour vous connecter, visitez : ${loginUrl}
 
 Si vous avez des questions, contactez votre administrateur système.
 
-© ${new Date().getFullYear()} Gestion Emballages
+© ${new Date().getFullYear()} Blue Whale Portal
 `;
   }
 }

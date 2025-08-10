@@ -34,8 +34,8 @@ async function bootstrap() {
 
   // Swagger setup
   const config = new DocumentBuilder()
-    .setTitle('Gestion Emballages API V2')
-    .setDescription('API documentation for the packaging management system')
+    .setTitle('Blue Whale Portal API')
+    .setDescription('API documentation for the Blue Whale Portal - B2B Supply Chain Management Platform')
     .setVersion('2.0')
     .addBearerAuth()
     .build();

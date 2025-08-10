@@ -199,7 +199,6 @@ export class InitializeCompleteSchema1754768491804 implements MigrationInterface
             "is_primary" boolean DEFAULT false,
             "created_at" TIMESTAMP NOT NULL DEFAULT now(),
             "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
-            "is_active" boolean NOT NULL DEFAULT true,
             CONSTRAINT "PK_station_contacts" PRIMARY KEY ("id")
         )`);
 

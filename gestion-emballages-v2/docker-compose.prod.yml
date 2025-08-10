@@ -1,13 +1,13 @@
-# Production Docker Compose Configuration
-# This extends the main docker-compose.yml for production
+# Production Docker Compose Override
+# Extends docker-compose.yml with production-specific configurations
 
 services:
-  # PostgreSQL Database (Production)
+  # PostgreSQL Database (Production overrides)
   postgres:
     environment:
-      POSTGRES_DB: gestion_emballages_prod
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-gestion_emballages_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
       - ./docker/postgres/backup:/backup
@@ -21,7 +21,7 @@ services:
           memory: 512M
           cpus: '0.25'
 
-  # Redis (Production)
+  # Redis (Production overrides)
   redis:
     volumes:
       - redis_prod_data:/data
@@ -33,12 +33,12 @@ services:
           memory: 512M
           cpus: '0.25'
 
-  # MinIO (Production)
+  # MinIO (Production overrides)
   minio:
     environment:
-      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
-      MINIO_BROWSER_REDIRECT_URL: https://minio.yourdomain.com
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-https://minio.yourdomain.com}
     volumes:
       - minio_prod_data:/data
       - ./docker/minio/config:/root/.minio
@@ -55,18 +55,20 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
+    container_name: blue-whale-portal-backend-prod
+    restart: always
     environment:
       NODE_ENV: production
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
       
       # Database Configuration
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE: gestion_emballages_prod
+      DB_USERNAME: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_DATABASE: ${POSTGRES_DB:-gestion_emballages_prod}
       DB_SYNCHRONIZE: false
       DB_LOGGING: false
       DB_SSL: ${DB_SSL:-false}
@@ -78,24 +80,43 @@ services:
       # MinIO Configuration
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_BUCKET_NAME: gestion-emballages
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-gestion-emballages}
+      MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
       
       # Production Settings
-      CORS_ORIGIN: ${FRONTEND_URL}
-      LOG_LEVEL: warn
-      RATE_LIMIT_WINDOW_MS: 900000
-      RATE_LIMIT_MAX_REQUESTS: 100
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      LOG_LEVEL: ${LOG_LEVEL:-warn}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
+      
+      # API Configuration
+      API_PREFIX: api
+      API_VERSION: v1
+      
+      # File Upload Configuration
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+      ALLOWED_FILE_TYPES: ${ALLOWED_FILE_TYPES:-jpg,jpeg,png,pdf,doc,docx,xls,xlsx}
       
       # Security
       SECURITY_HSTS_MAX_AGE: 31536000
       SECURITY_HSTS_INCLUDE_SUBDOMAINS: true
       
+    ports:
+      - "3000:3000"
     volumes:
       - ./backend/uploads:/app/uploads:ro
       - ./logs/backend:/app/logs
-    restart: always
+    networks:
+      - blue-whale-portal-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     deploy:
       replicas: 2
       resources:
@@ -109,15 +130,11 @@ services:
         condition: on-failure
         delay: 5s
         max_attempts: 3
-    networks:
-      - gestion-emballages-network
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Angular Frontend (Production)
   frontend:
@@ -126,12 +143,21 @@ services:
       dockerfile: Dockerfile
       target: production
       args:
-        API_URL: ${API_URL}
+        API_URL: ${API_URL:-http://backend:3000/api}
         PRODUCTION: true
+    container_name: blue-whale-portal-frontend-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
       - ./logs/nginx:/var/log/nginx
-    restart: always
+    networks:
+      - blue-whale-portal-network
+    depends_on:
+      - backend
     deploy:
       resources:
         limits:
@@ -140,34 +166,39 @@ services:
         reservations:
           memory: 128M
           cpus: '0.1'
-    networks:
-      - gestion-emballages-network
-    depends_on:
-      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Load Balancer (HAProxy)
   loadbalancer:
     image: haproxy:2.8-alpine
-    container_name: gestion-emballages-lb
+    container_name: blue-whale-portal-loadbalancer
     ports:
-      - "80:80"
-      - "443:443"
-      - "8404:8404"  # HAProxy stats
+      - "${LB_HTTP_PORT:-80}:80"
+      - "${LB_HTTPS_PORT:-443}:443"
+      - "${LB_STATS_PORT:-8404}:8404"  # HAProxy stats
     volumes:
       - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
       - ./docker/haproxy/ssl:/etc/ssl/certs:ro
     restart: always
     networks:
-      - gestion-emballages-network
+      - blue-whale-portal-network
     depends_on:
       - frontend
+    profiles:
+      - loadbalancer
 
   # Backup Service
   backup:
     image: postgres:15-alpine
-    container_name: gestion-emballages-backup
+    container_name: blue-whale-portal-backup
     environment:
-      PGPASSWORD: ${DB_PASSWORD}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-gestion_emballages_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
     volumes:
       - ./docker/backup/scripts:/scripts:ro
       - ./backups:/backups
@@ -175,18 +206,18 @@ services:
     command: ["/scripts/backup.sh"]
     restart: "no"
     networks:
-      - gestion-emballages-network
+      - blue-whale-portal-network
     depends_on:
       - postgres
     profiles:
       - backup
 
-  # Monitoring - Prometheus
+  # Monitoring Stack (Optional profiles)
   prometheus:
     image: prom/prometheus:latest
-    container_name: gestion-emballages-prometheus
+    container_name: blue-whale-portal-prometheus
     ports:
-      - "9090:9090"
+      - "${PROMETHEUS_PORT:-9090}:9090"
     volumes:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -199,16 +230,15 @@ services:
       - '--web.enable-lifecycle'
     restart: always
     networks:
-      - gestion-emballages-network
+      - blue-whale-portal-network
     profiles:
       - monitoring
 
-  # Monitoring - Grafana
   grafana:
     image: grafana/grafana:latest
-    container_name: gestion-emballages-grafana
+    container_name: blue-whale-portal-grafana
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-3001}:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
     volumes:
@@ -216,25 +246,24 @@ services:
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
     restart: always
     networks:
-      - gestion-emballages-network
+      - blue-whale-portal-network
     depends_on:
       - prometheus
     profiles:
       - monitoring
 
-  # Log Aggregation - Loki
   loki:
     image: grafana/loki:latest
-    container_name: gestion-emballages-loki
+    container_name: blue-whale-portal-loki
     ports:
-      - "3100:3100"
+      - "${LOKI_PORT:-3100}:3100"
     volumes:
       - ./docker/loki/loki.yml:/etc/loki/local-config.yaml:ro
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
     restart: always
     networks:
-      - gestion-emballages-network
+      - blue-whale-portal-network
     profiles:
       - monitoring
 
@@ -259,8 +288,3 @@ volumes:
     driver: local
   loki_data:
     driver: local
-
-networks:
-  gestion-emballages-network:
-    driver: bridge
-    name: gestion-emballages-prod-network

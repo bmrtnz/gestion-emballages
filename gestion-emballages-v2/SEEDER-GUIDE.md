@@ -1,6 +1,6 @@
 # Database Seeder Guide
 
-This guide explains how to use the PostgreSQL database seeder for the Gestion Emballages application.
+This guide explains how to use the PostgreSQL database seeder for the Blue Whale Portal application.
 
 ## 🌱 What Gets Seeded
 

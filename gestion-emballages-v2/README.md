@@ -1,6 +1,6 @@
-# Gestion Emballages v2
+# Blue Whale Portal
 
-A modern B2B packaging management platform for agricultural cooperatives, built with NestJS, Angular, and PostgreSQL.
+A modern B2B supply chain management platform for agricultural cooperatives, built with NestJS, Angular, and PostgreSQL.
 
 ## 🏗️ Architecture
 

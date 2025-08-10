@@ -1,8 +1,8 @@
-# Development Docker Compose Configuration
-# This extends the main docker-compose.yml for development
+# Development Docker Compose Override
+# Extends docker-compose.yml with development-specific configurations
 
 services:
-  # PostgreSQL Database (Development)
+  # PostgreSQL Database (Development overrides)
   postgres:
     environment:
       POSTGRES_DB: gestion_emballages_dev
@@ -14,22 +14,24 @@ services:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d
       - ./docker/postgres/dev-scripts:/docker-entrypoint-initdb.d/dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user"]
 
-  # Redis (Development)
+  # Redis (Development overrides)
   redis:
     ports:
       - "6380:6379"  # Different port to avoid conflicts
     volumes:
       - redis_dev_data:/data
 
-  # MinIO (Development)
+  # MinIO (Development overrides)
   minio:
     environment:
       MINIO_ROOT_USER: devuser
       MINIO_ROOT_PASSWORD: devpassword123
     ports:
-      - "9001:9000"   # API port
-      - "9002:9001"   # Console port
+      - "9010:9000"   # API port
+      - "9011:9001"   # Console port
     volumes:
       - minio_dev_data:/data
 
@@ -38,12 +40,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: development  # Use development stage
+      target: development
+    container_name: blue-whale-portal-backend-dev
+    restart: unless-stopped
     environment:
       NODE_ENV: development
-      PORT: 3001
+      PORT: 3000
       JWT_SECRET: dev-jwt-secret-key
-      JWT_EXPIRES_IN: 7d  # Longer expiry for development
+      JWT_EXPIRES_IN: 7d
       
       # Database Configuration
       DB_HOST: postgres
@@ -51,8 +55,8 @@ services:
       DB_USERNAME: dev_user
       DB_PASSWORD: dev_password
       DB_DATABASE: gestion_emballages_dev
-      DB_SYNCHRONIZE: true   # Auto-sync schemas in development
-      DB_LOGGING: true       # Enable query logging
+      DB_SYNCHRONIZE: true
+      DB_LOGGING: true
       
       # Redis Configuration
       REDIS_HOST: redis
@@ -64,93 +68,112 @@ services:
       MINIO_ACCESS_KEY: devuser
       MINIO_SECRET_KEY: devpassword123
       MINIO_BUCKET_NAME: gestion-emballages-dev
+      MINIO_USE_SSL: false
       
       # Development Settings
-      HOT_RELOAD: true
       DEBUG: true
       SWAGGER_ENABLED: true
       SEED_DATABASE: true
       SEED_ADMIN_EMAIL: admin@dev.com
       SEED_ADMIN_PASSWORD: admin123
       
-      # CORS for development
+      # CORS Configuration
       CORS_ORIGIN: http://localhost:4200,http://localhost:3000
       
+      # API Configuration
+      API_PREFIX: api
+      API_VERSION: v1
+      
+      # File Upload Configuration
+      MAX_FILE_SIZE: 10485760
+      ALLOWED_FILE_TYPES: jpg,jpeg,png,pdf,doc,docx,xls,xlsx
+      
     ports:
-      - "3001:3001"
+      - "3000:3000"
     volumes:
       - ./backend:/app
-      - /app/node_modules  # Anonymous volume for node_modules
+      - /app/node_modules
       - ./backend/uploads:/app/uploads
       - ./backend/logs:/app/logs
     command: npm run start:dev
     networks:
-      - gestion-emballages-dev-network
+      - blue-whale-portal-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   # Angular Frontend (Development)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      target: development  # Use development stage
+      target: development
       args:
-        API_URL: http://localhost:3001/api
+        API_URL: http://localhost:3000/api
+    container_name: blue-whale-portal-frontend-dev
+    restart: unless-stopped
     environment:
-      - CHOKIDAR_USEPOLLING=true  # For file watching in Docker
+      - CHOKIDAR_USEPOLLING=true
     ports:
-      - "4201:4200"
+      - "4200:4200"
     volumes:
       - ./frontend:/app
-      - /app/node_modules  # Anonymous volume for node_modules
-      - /app/.angular      # Anonymous volume for Angular cache
+      - /app/node_modules
+      - /app/.angular
     command: npm run start -- --host 0.0.0.0 --port 4200 --poll 2000
     networks:
-      - gestion-emballages-dev-network
+      - blue-whale-portal-network
+    depends_on:
+      - backend
 
-  # Adminer for Database Management
+  # Development Tools
   adminer:
     image: adminer:latest
-    container_name: gestion-emballages-dev-adminer
+    container_name: blue-whale-portal-adminer
     restart: unless-stopped
     ports:
-      - "8081:8080"
+      - "8080:8080"
     environment:
       ADMINER_DEFAULT_SERVER: postgres
       ADMINER_DESIGN: dracula
     networks:
-      - gestion-emballages-dev-network
+      - blue-whale-portal-network
     depends_on:
       - postgres
 
   # MailHog for Email Testing
   mailhog:
     image: mailhog/mailhog:latest
-    container_name: gestion-emballages-dev-mailhog
+    container_name: blue-whale-portal-mailhog
     restart: unless-stopped
     ports:
       - "1025:1025"  # SMTP server
       - "8025:8025"  # Web UI
     networks:
-      - gestion-emballages-dev-network
+      - blue-whale-portal-network
 
   # Redis Commander for Redis Management
   redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: gestion-emballages-dev-redis-commander
+    container_name: blue-whale-portal-redis-commander
     restart: unless-stopped
     environment:
       REDIS_HOSTS: local:redis:6379
     ports:
-      - "8082:8081"
+      - "8081:8081"
     networks:
-      - gestion-emballages-dev-network
+      - blue-whale-portal-network
     depends_on:
       - redis
 
   # PostgreSQL Test Database
   postgres-test:
     image: postgres:15-alpine
-    container_name: gestion-emballages-test-postgres
+    container_name: blue-whale-portal-postgres-test
     restart: unless-stopped
     environment:
       POSTGRES_DB: gestion_emballages_test
@@ -161,9 +184,14 @@ services:
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
     networks:
-      - gestion-emballages-dev-network
+      - blue-whale-portal-network
     profiles:
       - test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_dev_data:
@@ -174,8 +202,3 @@ volumes:
     driver: local
   postgres_test_data:
     driver: local
-
-networks:
-  gestion-emballages-dev-network:
-    driver: bridge
-    name: gestion-emballages-dev-network

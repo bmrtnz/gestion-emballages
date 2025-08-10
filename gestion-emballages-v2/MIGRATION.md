@@ -1,4 +1,4 @@
-**Migration Strategy: Gestion-Emballages to NestJS + PostgreSQL + Angular + TailwindCSS**
+**Migration Strategy: Blue Whale Portal to NestJS + PostgreSQL + Angular + TailwindCSS**
 
 Overview
 

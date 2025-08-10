@@ -122,6 +122,6 @@ export class HeaderComponent {
       }
     }
 
-    return 'Gestion Emballages';
+    return 'Blue Whale Portal';
   }
 }

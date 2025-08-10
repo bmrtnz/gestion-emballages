@@ -1,6 +1,6 @@
-# Development Guide - Gestion Emballages V2
+# Development Guide - Blue Whale Portal V2
 
-This guide provides detailed information for developers working on the Gestion Emballages V2 project.
+This guide provides detailed information for developers working on the Blue Whale Portal V2 project.
 
 ## 🏗️ Project Architecture
 
@@ -792,4 +792,4 @@ JWT_SECRET=super_secure_jwt_secret
 LOG_LEVEL=warn
 ```
 
-This development guide provides comprehensive information for developers working on the Gestion Emballages V2 project. Follow these guidelines to maintain code quality, consistency, and performance across the application.
+This development guide provides comprehensive information for developers working on the Blue Whale Portal V2 project. Follow these guidelines to maintain code quality, consistency, and performance across the application.

@@ -1,8 +1,8 @@
 {
-  "name": "gestion-emballages-v2-backend",
+  "name": "blue-whale-portal-backend",
   "version": "0.0.1",
-  "description": "Gestion Emballages V2 - NestJS Backend",
-  "author": "Gestion Emballages Team",
+  "description": "Blue Whale Portal - NestJS Backend",
+  "author": "Blue Whale Team",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
