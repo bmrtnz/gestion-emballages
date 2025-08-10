@@ -117,7 +117,7 @@ export class MasterContract extends BaseEntity {
       renewedBy: string;
       previousValidUntil: string;
       newValidUntil: string;
-      adjustments?: any;
+      adjustments?: unknown;
     }>;
 
     // Special clauses
@@ -135,7 +135,7 @@ export class MasterContract extends BaseEntity {
     }>;
 
     // Custom fields
-    customClauses?: Record<string, any>;
+    customClauses?: Record<string, unknown>;
   };
 
   // Audit fields

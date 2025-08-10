@@ -252,7 +252,7 @@ export class TransfersService {
     }
   }
 
-  async rejectTransfer(id: string, reason?: string): Promise<TransferRequest> {
+  async rejectTransfer(id: string, _reason?: string): Promise<TransferRequest> {
     const transferRequest = await this.findOne(id);
 
     if (transferRequest.status !== TransferStatus.ENREGISTREE) {

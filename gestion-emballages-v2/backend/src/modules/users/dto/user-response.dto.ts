@@ -1,4 +1,4 @@
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { EntityType, UserRole } from '@common/enums/user-role.enum';
 
 export class UserResponseDto {

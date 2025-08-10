@@ -31,67 +31,67 @@ import { UserRole } from '@common/enums/user-role.enum';
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProductsController {
-  constructor(private readonly ProductsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get('categories')
   @ApiOperation({ summary: 'Get Product categories' })
   @ApiResponse({ status: 200, description: 'Categories retrieved successfully' })
   getCategories() {
-    return { categories: this.ProductsService.getCategories() };
+    return { categories: this.productsService.getCategories() };
   }
 
   @Get('conditioning-units')
   @ApiOperation({ summary: 'Get conditioning units' })
   @ApiResponse({ status: 200, description: 'Conditioning units retrieved successfully' })
   getConditioningUnits() {
-    return { conditioningUnits: this.ProductsService.getConditioningUnits() };
+    return { conditioningUnits: this.productsService.getConditioningUnits() };
   }
 
   @Get('search')
   @ApiOperation({ summary: 'Search products for autocomplete' })
   @ApiResponse({ status: 200, description: 'Products found' })
   async searchProducts(@Query('q') query: string, @Query('limit') limit?: number) {
-    return this.ProductsService.searchProducts(query, limit);
+    return this.productsService.searchProducts(query, limit);
   }
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Create a new Product' })
   @ApiResponse({ status: 201, description: 'Product created successfully' })
-  async create(@Body() CreateProductDto: CreateProductDto, @Request() req) {
+  async create(@Body() createProductDto: CreateProductDto, @Request() req) {
     // Add created by user ID
     const productData = {
-      ...CreateProductDto,
+      ...createProductDto,
       createdById: req.user.id,
     };
-    return this.ProductsService.create(productData);
+    return this.productsService.create(productData);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all products with pagination' })
   @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
   async findAll(@Query() paginationDto: PaginationDto) {
-    return this.ProductsService.findAll(paginationDto);
+    return this.productsService.findAll(paginationDto);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get Product by ID' })
   @ApiResponse({ status: 200, description: 'Product retrieved successfully' })
   async findOne(@Param('id') id: string) {
-    return this.ProductsService.findOne(id);
+    return this.productsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update Product' })
   @ApiResponse({ status: 200, description: 'Product updated successfully' })
-  async update(@Param('id') id: string, @Body() UpdateProductDto: UpdateProductDto, @Request() req) {
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @Request() req) {
     // Add updated by user ID
     const productData = {
-      ...UpdateProductDto,
+      ...updateProductDto,
       updatedById: req.user.id,
     };
-    return this.ProductsService.update(id, productData);
+    return this.productsService.update(id, productData);
   }
 
   @Delete(':id')
@@ -99,7 +99,7 @@ export class ProductsController {
   @ApiOperation({ summary: 'Deactivate Product' })
   @ApiResponse({ status: 200, description: 'Product deactivated successfully' })
   async remove(@Param('id') id: string) {
-    return this.ProductsService.remove(id);
+    return this.productsService.remove(id);
   }
 
   @Patch(':id/reactivate')
@@ -107,7 +107,7 @@ export class ProductsController {
   @ApiOperation({ summary: 'Reactivate Product' })
   @ApiResponse({ status: 200, description: 'Product reactivated successfully' })
   async reactivate(@Param('id') id: string) {
-    return this.ProductsService.reactivate(id);
+    return this.productsService.reactivate(id);
   }
 
   // Product-Supplier relationship endpoints
@@ -115,8 +115,8 @@ export class ProductsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Add supplier to Product' })
   @ApiResponse({ status: 201, description: 'Supplier added to Product successfully' })
-  async addSupplier(@Param('id') productId: string, @Body() CreateProductSupplierDto: CreateProductSupplierDto) {
-    return this.ProductsService.addSupplier(productId, CreateProductSupplierDto);
+  async addSupplier(@Param('id') productId: string, @Body() createProductSupplierDto: CreateProductSupplierDto) {
+    return this.productsService.addSupplier(productId, createProductSupplierDto);
   }
 
   @Patch(':id/suppliers/:supplierInfoId')
@@ -128,7 +128,7 @@ export class ProductsController {
     @Param('supplierInfoId') supplierInfoId: string,
     @Body() updateData: UpdateProductSupplierDto
   ) {
-    return this.ProductsService.updateSupplier(productId, supplierInfoId, updateData);
+    return this.productsService.updateSupplier(productId, supplierInfoId, updateData);
   }
 
   @Delete(':id/suppliers/:supplierInfoId')
@@ -136,6 +136,6 @@ export class ProductsController {
   @ApiOperation({ summary: 'Remove supplier from Product' })
   @ApiResponse({ status: 200, description: 'Supplier removed from Product successfully' })
   async removeSupplier(@Param('id') productId: string, @Param('supplierInfoId') supplierInfoId: string) {
-    return this.ProductsService.removeSupplier(productId, supplierInfoId);
+    return this.productsService.removeSupplier(productId, supplierInfoId);
   }
 }

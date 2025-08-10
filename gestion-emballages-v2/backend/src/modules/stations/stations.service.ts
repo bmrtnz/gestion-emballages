@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,7 +8,7 @@ import { StationContact } from './entities/station-contact.entity';
 import { CreateStationDto } from './dto/create-station.dto';
 import { UpdateStationDto } from './dto/update-station.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
+import { PaginationService } from '@common/services/pagination.service';
 
 @Injectable()
 export class StationsService {

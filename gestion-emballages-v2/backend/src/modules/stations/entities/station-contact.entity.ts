@@ -1,6 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '@common/entities/base.entity';
-import { User } from '@modules/users/entities/user.entity';
 import { Station } from './station.entity';
 
 @Entity('station_contacts')

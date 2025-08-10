@@ -9,8 +9,8 @@ export class EntityEventService {
   emitEntityChange(
     entityType: string,
     entityId: string,
-    oldValues: any,
-    newValues: any,
+    oldValues: Record<string, unknown>,
+    newValues: Record<string, unknown>,
     changedBy: string,
     options?: {
       reason?: string;

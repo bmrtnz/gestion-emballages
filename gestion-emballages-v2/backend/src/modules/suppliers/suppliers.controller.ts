@@ -29,25 +29,25 @@ import { UserRole } from '@common/enums/user-role.enum';
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class SuppliersController {
-  constructor(private readonly SuppliersService: SuppliersService) {}
+  constructor(private readonly suppliersService: SuppliersService) {}
 
   @Get('active')
   @ApiOperation({ summary: 'Get all active suppliers for selection' })
   @ApiResponse({ status: 200, description: 'Active suppliers retrieved successfully' })
   async findActiveFournisseurs() {
-    return this.SuppliersService.findActiveFournisseurs();
+    return this.suppliersService.findActiveFournisseurs();
   }
 
   @Post()
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Create a new supplier' })
   @ApiResponse({ status: 201, description: 'Supplier created successfully' })
-  async create(@Body() CreateSupplierDto: CreateSupplierDto, @Request() req) {
+  async create(@Body() createSupplierDto: CreateSupplierDto, @Request() req) {
     const fournisseurData = {
-      ...CreateSupplierDto,
+      ...createSupplierDto,
       createdById: req.user.id,
     };
-    return this.SuppliersService.create(fournisseurData);
+    return this.suppliersService.create(fournisseurData);
   }
 
   @Get()
@@ -55,7 +55,7 @@ export class SuppliersController {
   @ApiOperation({ summary: 'Get all suppliers with pagination' })
   @ApiResponse({ status: 200, description: 'Suppliers retrieved successfully' })
   async findAll(@Query() paginationDto: PaginationDto) {
-    return this.SuppliersService.findAll(paginationDto);
+    return this.suppliersService.findAll(paginationDto);
   }
 
   @Get(':id')
@@ -63,19 +63,19 @@ export class SuppliersController {
   @ApiOperation({ summary: 'Get supplier by ID' })
   @ApiResponse({ status: 200, description: 'Supplier retrieved successfully' })
   async findOne(@Param('id') id: string) {
-    return this.SuppliersService.findOne(id);
+    return this.suppliersService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Update supplier' })
   @ApiResponse({ status: 200, description: 'Supplier updated successfully' })
-  async update(@Param('id') id: string, @Body() UpdateSupplierDto: UpdateSupplierDto, @Request() req) {
+  async update(@Param('id') id: string, @Body() updateSupplierDto: UpdateSupplierDto, @Request() req) {
     const fournisseurData = {
-      ...UpdateSupplierDto,
+      ...updateSupplierDto,
       updatedById: req.user.id,
     };
-    return this.SuppliersService.update(id, fournisseurData);
+    return this.suppliersService.update(id, fournisseurData);
   }
 
   @Delete(':id')
@@ -83,7 +83,7 @@ export class SuppliersController {
   @ApiOperation({ summary: 'Deactivate supplier' })
   @ApiResponse({ status: 200, description: 'Supplier deactivated successfully' })
   async remove(@Param('id') id: string) {
-    return this.SuppliersService.remove(id);
+    return this.suppliersService.remove(id);
   }
 
   @Patch(':id/reactivate')
@@ -91,6 +91,6 @@ export class SuppliersController {
   @ApiOperation({ summary: 'Reactivate supplier' })
   @ApiResponse({ status: 200, description: 'Supplier reactivated successfully' })
   async reactivate(@Param('id') id: string) {
-    return this.SuppliersService.reactivate(id);
+    return this.suppliersService.reactivate(id);
   }
 }

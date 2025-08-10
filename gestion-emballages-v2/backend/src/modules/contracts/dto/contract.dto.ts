@@ -8,9 +8,8 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  ValidateNested,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { ContractStatus, ContractType } from '../entities/master-contract.entity';
@@ -127,7 +126,7 @@ export class CreateContractDto {
     forceMAjeureClause?: boolean;
     qualityGuarantee?: boolean;
     exclusiveSupplier?: boolean;
-    customClauses?: Record<string, any>;
+    customClauses?: Record<string, unknown>;
   };
 
   @ApiProperty({ description: 'Next review date', required: false })
@@ -308,7 +307,7 @@ export class ContractValidationDto {
     code: string;
     message: string;
     field?: string;
-    value?: any;
+    value?: unknown;
     suggestion?: string;
   }>;
 

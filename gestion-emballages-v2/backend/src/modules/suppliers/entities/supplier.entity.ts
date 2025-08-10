@@ -57,7 +57,7 @@ export class Supplier extends BaseEntity {
   forecasts: Forecast[];
 
   // Master contract relations (added to fix import issues)
-  masterContracts?: any[]; // Will be properly typed when contracts module is fully implemented
+  masterContracts?: Record<string, unknown>[]; // Will be properly typed when contracts module is fully implemented
 
   // Virtual properties
   get principalContactFromContacts(): SupplierContact | undefined {

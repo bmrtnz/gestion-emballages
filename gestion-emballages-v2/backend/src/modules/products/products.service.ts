@@ -10,7 +10,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductSupplierDto } from './dto/create-product-supplier.dto';
 import { UpdateProductSupplierDto } from './dto/update-product-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
+import { PaginationService } from '@common/services/pagination.service';
 import { ProductCategory } from '@common/enums/product-category.enum';
 import { ConditioningUnit } from '@common/enums/conditioning-unit.enum';
 
@@ -124,7 +124,7 @@ export class ProductsService {
 
   // Product-Supplier relationship methods
   async addSupplier(productId: string, CreateProductSupplierDto: CreateProductSupplierDto): Promise<ProductSupplier> {
-    const product = await this.findOne(productId);
+    await this.findOne(productId);
     const supplier = await this.supplierRepository.findOne({
       where: { id: CreateProductSupplierDto.supplierId },
     });

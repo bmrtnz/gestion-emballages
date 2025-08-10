@@ -13,7 +13,7 @@ export class EntityHistory {
   entityId: string;
 
   @Column('json')
-  changes: Record<string, { old: any; new: any }>;
+  changes: Record<string, { old: unknown; new: unknown }>;
 
   @Column({ name: 'changed_by' })
   changedBy: string;

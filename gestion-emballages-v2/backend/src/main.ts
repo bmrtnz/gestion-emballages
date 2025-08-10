@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
@@ -46,8 +46,9 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 3001);
   await app.listen(port);
 
-  console.log(`Application is running on: http://localhost:${port}/${apiPrefix}/${apiVersion}`);
-  console.log(`Swagger documentation: http://localhost:${port}/${apiPrefix}/docs`);
+  const logger = new Logger('Bootstrap');
+  logger.log(`Application is running on: http://localhost:${port}/${apiPrefix}/${apiVersion}`);
+  logger.log(`Swagger documentation: http://localhost:${port}/${apiPrefix}/docs`);
 }
 
 bootstrap();

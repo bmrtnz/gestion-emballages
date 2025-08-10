@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
 
 @Injectable()
 export class MinioService {
+  private readonly logger = new Logger(MinioService.name);
   private minioClient: Minio.Client;
   private bucketName: string;
 
@@ -16,7 +17,9 @@ export class MinioService {
       const accessKey = this.configService.get<string>('MINIO_ACCESS_KEY') || 'devuser';
       const secretKey = this.configService.get<string>('MINIO_SECRET_KEY') || 'devpassword123';
 
-      console.log('MinIO Config:', { endpoint, port, useSSL, accessKey: accessKey.substring(0, 3) + '***' });
+      this.logger.log(
+        `MinIO Config: endpoint=${endpoint}, port=${port}, useSSL=${useSSL}, accessKey=${accessKey.substring(0, 3)}***`
+      );
 
       this.minioClient = new Minio.Client({
         endPoint: endpoint,
@@ -27,9 +30,9 @@ export class MinioService {
       });
 
       this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME') || 'gestion-emballages-dev';
-      console.log('MinIO service initialized successfully');
+      this.logger.log('MinIO service initialized successfully');
     } catch (error) {
-      console.error('MinIO service initialization failed:', error.message);
+      this.logger.error(`MinIO service initialization failed: ${error.message}`, error.stack);
       // Create a dummy client to prevent app crashes
       this.minioClient = null;
       this.bucketName = 'default';
@@ -38,7 +41,7 @@ export class MinioService {
 
   private async ensureBucket() {
     if (!this.minioClient) {
-      console.warn('MinIO client not available');
+      this.logger.warn('MinIO client not available');
       return;
     }
 
@@ -48,14 +51,14 @@ export class MinioService {
         await this.minioClient.makeBucket(this.bucketName, 'us-east-1');
       }
     } catch (error) {
-      console.warn('MinIO bucket initialization failed:', error.message);
+      this.logger.warn(`MinIO bucket initialization failed: ${error.message}`);
       // Don't throw error, allow service to start without MinIO
     }
   }
 
   async uploadFile(objectName: string, buffer: Buffer, contentType: string): Promise<string> {
     if (!this.minioClient) {
-      console.warn('MinIO not available, file upload skipped');
+      this.logger.warn('MinIO not available, file upload skipped');
       throw new Error('File storage service not available');
     }
 
@@ -67,14 +70,14 @@ export class MinioService {
 
       return objectName;
     } catch (error) {
-      console.error('MinIO upload failed:', error.message);
+      this.logger.error(`MinIO upload failed: ${error.message}`, error.stack);
       throw new Error('File upload failed');
     }
   }
 
   async getFileUrl(objectName: string): Promise<string> {
     if (!this.minioClient) {
-      console.warn('MinIO not available, returning placeholder URL');
+      this.logger.warn('MinIO not available, returning placeholder URL');
       return `/placeholder/${objectName}`;
     }
 
@@ -85,27 +88,27 @@ export class MinioService {
         24 * 60 * 60 // 24 hours
       );
     } catch (error) {
-      console.error('MinIO getFileUrl failed:', error.message);
+      this.logger.error(`MinIO getFileUrl failed: ${error.message}`, error.stack);
       return `/placeholder/${objectName}`;
     }
   }
 
   async deleteFile(objectName: string): Promise<void> {
     if (!this.minioClient) {
-      console.warn('MinIO not available, file deletion skipped');
+      this.logger.warn('MinIO not available, file deletion skipped');
       return;
     }
 
     try {
       await this.minioClient.removeObject(this.bucketName, objectName);
     } catch (error) {
-      console.error('MinIO delete failed:', error.message);
+      this.logger.error(`MinIO delete failed: ${error.message}`, error.stack);
     }
   }
 
   async listFiles(prefix: string): Promise<Minio.BucketItem[]> {
     if (!this.minioClient) {
-      console.warn('MinIO not available, returning empty file list');
+      this.logger.warn('MinIO not available, returning empty file list');
       return [];
     }
 
@@ -119,7 +122,7 @@ export class MinioService {
         stream.on('end', () => resolve(objectsList));
       });
     } catch (error) {
-      console.error('MinIO listFiles failed:', error.message);
+      this.logger.error('MinIO listFiles failed:', error.message);
       return [];
     }
   }

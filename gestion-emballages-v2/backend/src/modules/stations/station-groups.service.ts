@@ -7,7 +7,7 @@ import { Station } from './entities/station.entity';
 import { CreateStationGroupDto } from './dto/create-station-group.dto';
 import { UpdateStationGroupDto } from './dto/update-station-group.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
+import { PaginationService } from '@common/services/pagination.service';
 
 @Injectable()
 export class StationGroupsService {

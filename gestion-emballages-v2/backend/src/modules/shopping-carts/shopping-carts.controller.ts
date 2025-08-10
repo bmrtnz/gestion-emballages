@@ -33,14 +33,14 @@ import { UserRole } from '@common/enums/user-role.enum';
 @ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class ShoppingCartsController {
-  constructor(private readonly ShoppingCartsService: ShoppingCartsService) {}
+  constructor(private readonly shoppingCartsService: ShoppingCartsService) {}
 
   @Post()
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Create a new shopping list' })
   @ApiResponse({ status: 201, description: 'Shopping list created successfully' })
-  async create(@Body() CreateShoppingCartDto: CreateShoppingCartDto, @Request() req) {
-    return this.ShoppingCartsService.create(CreateShoppingCartDto, req.user.id);
+  async create(@Body() createShoppingCartDto: CreateShoppingCartDto, @Request() req) {
+    return this.shoppingCartsService.create(createShoppingCartDto, req.user.id);
   }
 
   @Get()
@@ -52,7 +52,7 @@ export class ShoppingCartsController {
       paginationDto['stationId'] = req.user.entiteId;
     }
 
-    return this.ShoppingCartsService.findAll(paginationDto);
+    return this.shoppingCartsService.findAll(paginationDto);
   }
 
   @Get('active/:stationId')
@@ -65,7 +65,7 @@ export class ShoppingCartsController {
       throw new Error('Accès non autorisé');
     }
 
-    return this.ShoppingCartsService.findActiveByStation(stationId);
+    return this.shoppingCartsService.findActiveByStation(stationId);
   }
 
   @Get('analytics')
@@ -75,22 +75,22 @@ export class ShoppingCartsController {
   async getAnalytics(@Query('stationId') stationId?: string, @Request() req?) {
     // For station users, limit to their station
     const effectiveStationId = req.user.role === UserRole.STATION ? req.user.entiteId : stationId;
-    return this.ShoppingCartsService.getListeAchatAnalytics(effectiveStationId);
+    return this.shoppingCartsService.getListeAchatAnalytics(effectiveStationId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get shopping list by ID' })
   @ApiResponse({ status: 200, description: 'Shopping list retrieved successfully' })
   async findOne(@Param('id') id: string) {
-    return this.ShoppingCartsService.findOne(id);
+    return this.shoppingCartsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update shopping list' })
   @ApiResponse({ status: 200, description: 'Shopping list updated successfully' })
-  async update(@Param('id') id: string, @Body() UpdateShoppingCartDto: UpdateShoppingCartDto) {
-    return this.ShoppingCartsService.update(id, UpdateShoppingCartDto);
+  async update(@Param('id') id: string, @Body() updateShoppingCartDto: UpdateShoppingCartDto) {
+    return this.shoppingCartsService.update(id, updateShoppingCartDto);
   }
 
   @Post(':id/items')
@@ -98,7 +98,7 @@ export class ShoppingCartsController {
   @ApiOperation({ summary: 'Add item to shopping list' })
   @ApiResponse({ status: 200, description: 'Item added successfully' })
   async addItem(@Param('id') id: string, @Body() addItemDto: AddItemToShoppingCartDto) {
-    return this.ShoppingCartsService.addItem(id, addItemDto);
+    return this.shoppingCartsService.addItem(id, addItemDto);
   }
 
   @Delete(':id/items/:itemId')
@@ -106,7 +106,7 @@ export class ShoppingCartsController {
   @ApiOperation({ summary: 'Remove item from shopping list' })
   @ApiResponse({ status: 200, description: 'Item removed successfully' })
   async removeItem(@Param('id') id: string, @Param('itemId') itemId: string) {
-    return this.ShoppingCartsService.removeItem(id, itemId);
+    return this.shoppingCartsService.removeItem(id, itemId);
   }
 
   @Post(':id/validate')
@@ -114,7 +114,7 @@ export class ShoppingCartsController {
   @ApiOperation({ summary: 'Validate shopping list and convert to orders' })
   @ApiResponse({ status: 200, description: 'Shopping list validated and orders created' })
   async validateAndConvertToOrders(@Param('id') id: string, @Body() validateDto: ValidateShoppingCartDto) {
-    return this.ShoppingCartsService.validateAndConvertToOrders(id, validateDto);
+    return this.shoppingCartsService.validateAndConvertToOrders(id, validateDto);
   }
 
   @Delete(':id')
@@ -122,6 +122,6 @@ export class ShoppingCartsController {
   @ApiOperation({ summary: 'Delete shopping list' })
   @ApiResponse({ status: 200, description: 'Shopping list deleted successfully' })
   async remove(@Param('id') id: string) {
-    return this.ShoppingCartsService.delete(id);
+    return this.shoppingCartsService.delete(id);
   }
 }

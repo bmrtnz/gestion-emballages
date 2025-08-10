@@ -325,7 +325,7 @@ export class ContractPerformanceMetric extends BaseEntity {
   }
 
   // Helper methods
-  calculateFinancialImpact(baseOrderValue: number): void {
+  calculateFinancialImpact(_baseOrderValue: number): void {
     // This would be called to update financial impact based on performance
     this.netFinancialImpact = this.bonusesEarned - this.penaltiesApplied;
   }

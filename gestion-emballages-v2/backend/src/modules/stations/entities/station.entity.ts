@@ -1,6 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { SoftDeletableEntity } from '@common/entities/base.entity';
-import { User } from '@modules/users/entities/user.entity';
 import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
 import { MasterOrder } from '@modules/orders/entities/master-order.entity';
 import { StockStation } from '@modules/stocks/entities/stock-station.entity';

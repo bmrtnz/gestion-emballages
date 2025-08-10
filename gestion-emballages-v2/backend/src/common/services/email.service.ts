@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter;
 
   constructor(private configService: ConfigService) {
@@ -23,7 +24,7 @@ export class EmailService {
         tls: {
           rejectUnauthorized: false,
         },
-      } as any); // Type assertion to bypass TypeScript strict checking
+      } as nodemailer.TransporterOptions); // Type assertion for MailHog configuration
     } else {
       // Production email service configuration
       this.transporter = nodemailer.createTransport({
@@ -49,9 +50,9 @@ export class EmailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('Password reset email sent:', info.messageId);
+      this.logger.log(`Password reset email sent: ${info.messageId}`);
     } catch (error) {
-      console.error('Error sending password reset email:', error);
+      this.logger.error('Error sending password reset email:', error.stack);
       throw error;
     }
   }
@@ -69,9 +70,9 @@ export class EmailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      console.log('Welcome email sent:', info.messageId);
+      this.logger.log(`Welcome email sent: ${info.messageId}`);
     } catch (error) {
-      console.error('Error sending welcome email:', error);
+      this.logger.error('Error sending welcome email:', error.stack);
       throw error;
     }
   }

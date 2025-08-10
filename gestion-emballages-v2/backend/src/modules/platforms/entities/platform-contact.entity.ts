@@ -84,7 +84,7 @@ export class PlatformContact extends BaseEntity implements IBusinessContact {
   validateContact() {
     if (!this.phone && !this.email) {
       // At least one contact method should be provided
-      console.warn(`Contact ${this.fullName} has no contact information`);
+      // Validation warning: contact has no contact information
     }
 
     if (this.email && !this.isValidEmail(this.email)) {
@@ -92,7 +92,7 @@ export class PlatformContact extends BaseEntity implements IBusinessContact {
     }
 
     if (this.phone && !this.isValidPhone(this.phone)) {
-      console.warn(`Contact ${this.fullName} has potentially invalid phone format`);
+      // Validation warning: contact has potentially invalid phone format
     }
   }
 

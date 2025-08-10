@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -25,10 +26,22 @@ import { Roles } from '@modules/auth/decorators/roles.decorator';
 import { UserRole } from '@common/enums/user-role.enum';
 import { DataIntegrityService } from '@common/services/data-integrity.service';
 
+// Interface for user with populated relationships
+interface UserWithRelations {
+  id: string;
+  email: string;
+  fullName: string;
+  role: UserRole;
+  station?: { id: string; name: string };
+  supplier?: { id: string; name: string };
+}
+
 @ApiTags('Users')
 @Controller('users')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
@@ -57,32 +70,24 @@ export class UsersController {
       });
 
       // Return simplified user data for login selector
-      // The service already populates station and Supplier data dynamically
-      const simplifiedUsers = result.data.map(user => ({
-        id: user.id,
-        email: user.email,
-        fullName: user.fullName,
-        role: user.role,
-        station: (user as any).station
-          ? {
-              id: (user as any).station.id,
-              name: (user as any).station.name,
-            }
-          : null,
-        supplier: (user as any).Supplier
-          ? {
-              id: (user as any).Supplier.id,
-              name: (user as any).Supplier.name,
-            }
-          : null,
-      }));
+      // The service already populates station and supplier data dynamically
+      const simplifiedUsers = result.data.map(
+        (user): UserWithRelations => ({
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          station: (user as UserWithRelations).station || undefined,
+          supplier: (user as UserWithRelations).supplier || undefined,
+        })
+      );
 
       return {
         ...result,
         data: simplifiedUsers,
       };
     } catch (error) {
-      console.error('Dev users endpoint error:', error.message);
+      this.logger.error(`Dev users endpoint error: ${error.message}`, error.stack);
       throw error;
     }
   }
@@ -115,7 +120,7 @@ export class UsersController {
       const result = await this.usersService.findAll(paginationDto);
       return result;
     } catch (error) {
-      console.error('Users findAll error:', error.message);
+      this.logger.error(`Users findAll error: ${error.message}`, error.stack);
       throw error;
     }
   }

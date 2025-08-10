@@ -17,8 +17,6 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { StocksService } from './stocks.service';
 import { CreateStockStationDto } from './dto/create-stock-station.dto';
 import { AdjustStockDto, UpdateStockStationDto } from './dto/update-stock-station.dto';
-import { CreateStockSupplierDto } from './dto/create-stock-Supplier.dto';
-import { UpdateStockSupplierDto } from './dto/update-stock-Supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';

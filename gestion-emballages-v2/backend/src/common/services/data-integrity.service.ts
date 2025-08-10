@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -17,6 +17,8 @@ export interface DataIntegrityReport {
 
 @Injectable()
 export class DataIntegrityService {
+  private readonly logger = new Logger(DataIntegrityService.name);
+
   constructor(
     @InjectDataSource()
     private dataSource: DataSource
@@ -262,10 +264,10 @@ export class DataIntegrityService {
       const unionQuery = auditQueries.join(' UNION ALL ');
       const results = await this.dataSource.query(unionQuery, [userId]);
 
-      const totalCount = results.reduce((sum: number, row: any) => sum + parseInt(row.count), 0);
+      const totalCount = results.reduce((sum: number, row: { count: string }) => sum + parseInt(row.count), 0);
       const referencingTables = results
-        .filter((row: any) => parseInt(row.count) > 0)
-        .map((row: any) => `${row.table_name}: ${row.count} records`);
+        .filter((row: { count: string }) => parseInt(row.count) > 0)
+        .map((row: { table_name: string; count: string }) => `${row.table_name}: ${row.count} records`);
 
       checks.push({
         entity: 'audit_trails',
@@ -277,7 +279,7 @@ export class DataIntegrityService {
       });
     } catch (error) {
       // If audit trail check fails, skip it but don't block deletion
-      console.warn('Could not check audit trails for user references:', error.message);
+      this.logger.warn(`Could not check audit trails for user references: ${error.message}`);
       checks.push({
         entity: 'audit_trails',
         count: 0,
@@ -356,7 +358,11 @@ export class DataIntegrityService {
     }
   }
 
-  private async performCascadeDelete(entityType: string, entityId: string, queryRunner: any): Promise<number> {
+  private async performCascadeDelete(
+    entityType: string,
+    entityId: string,
+    queryRunner: { manager: { query: (sql: string, params?: unknown[]) => Promise<unknown[]> } }
+  ): Promise<number> {
     const deleteCount = 0;
 
     switch (entityType.toLowerCase()) {
@@ -386,7 +392,11 @@ export class DataIntegrityService {
     return deleteCount;
   }
 
-  private async deleteMainEntity(entityType: string, entityId: string, queryRunner: any): Promise<void> {
+  private async deleteMainEntity(
+    entityType: string,
+    entityId: string,
+    queryRunner: { manager: { query: (sql: string, params?: unknown[]) => Promise<void> } }
+  ): Promise<void> {
     const tableMap = {
       station: 'stations',
       Supplier: 'fournisseurs',

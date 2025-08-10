@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -26,6 +26,7 @@ import { ConditioningUnit } from '@common/enums/conditioning-unit.enum';
 
 @Injectable()
 export class DatabaseSeeder {
+  private readonly logger = new Logger(DatabaseSeeder.name);
   private readonly dataPath = path.join(__dirname, 'data');
 
   constructor(
@@ -34,11 +35,11 @@ export class DatabaseSeeder {
   ) {}
 
   async run(): Promise<void> {
-    console.log('🌱 Starting database seeding...');
+    this.logger.log('Starting database seeding...');
 
     try {
       // 1. Clear existing data first (without transaction)
-      console.log('🧹 Clearing existing data...');
+      this.logger.log('Clearing existing data...');
       await this.clearDatabaseDirectly();
 
       // 2. Wait a moment for cleanup to complete
@@ -46,38 +47,38 @@ export class DatabaseSeeder {
 
       // 3. Seed data step by step (each in its own transaction)
       const stationGroups = await this.seedStationGroups();
-      console.log(`✅ Created ${stationGroups.length} station groups`);
+      this.logger.log(`Created ${stationGroups.length} station groups`);
 
       const stations = await this.seedStations(stationGroups);
-      console.log(`✅ Created ${stations.length} stations`);
+      this.logger.log(`Created ${stations.length} stations`);
 
       await this.seedStationContacts(stations);
-      console.log(`✅ Created station contacts`);
+      this.logger.log('Created station contacts');
 
       const fournisseurs = await this.seedFournisseurs();
-      console.log(`✅ Created ${fournisseurs.length} suppliers`);
+      this.logger.log(`Created ${fournisseurs.length} suppliers`);
 
       const platforms = await this.seedPlatforms();
-      console.log(`✅ Created ${platforms.length} platforms`);
+      this.logger.log(`Created ${platforms.length} platforms`);
 
       const users = await this.seedUsers(stations, fournisseurs);
-      console.log(`✅ Created ${users.length} users`);
+      this.logger.log(`Created ${users.length} users`);
 
       const articles = await this.seedArticles();
-      console.log(`✅ Created ${articles.length} articles`);
+      this.logger.log(`Created ${articles.length} articles`);
 
       await this.seedArticleFournisseurs(articles, fournisseurs);
-      console.log(`✅ Created Product-supplier relationships`);
+      this.logger.log('Created Product-supplier relationships');
 
       await this.seedInitialStock(articles, stations);
-      console.log(`✅ Created initial station stock data`);
+      this.logger.log('Created initial station stock data');
 
       await this.seedPlatformStock(articles, platforms);
-      console.log(`✅ Created initial platform stock data`);
+      this.logger.log('Created initial platform stock data');
 
-      console.log('🎉 Database seeding completed successfully!');
+      this.logger.log('Database seeding completed successfully!');
     } catch (error) {
-      console.error('❌ Database seeding failed:', error);
+      this.logger.error('Database seeding failed:', error);
       throw error;
     }
   }
@@ -110,13 +111,13 @@ export class DatabaseSeeder {
             END IF;
           END $$;
         `);
-        console.log(`✅ Cleared table: ${tableName}`);
+        this.logger.log(`Cleared table: ${tableName}`);
       } catch (error) {
-        console.log(`⚠️  Skipped table ${tableName}: ${error.message}`);
+        this.logger.warn(`Skipped table ${tableName}: ${error.message}`);
       }
     }
 
-    console.log('🧹 Database cleanup completed');
+    this.logger.log('Database cleanup completed');
   }
 
   private async seedStationGroups(): Promise<StationGroup[]> {
@@ -232,7 +233,7 @@ export class DatabaseSeeder {
           stationId: station.id,
         });
       } else {
-        console.warn(`⚠️  Station not found for contact: ${stationIdentifiant}`);
+        this.logger.warn(`Station not found for contact: ${stationIdentifiant}`);
       }
     }
 
@@ -559,13 +560,13 @@ export class DatabaseSeeder {
     return quantites[categorie] || 1;
   }
 
-  private loadJsonData(filename: string): any[] {
+  private loadJsonData(filename: string): unknown[] {
     try {
       const filePath = path.join(this.dataPath, filename);
       const fileContent = fs.readFileSync(filePath, 'utf8');
       return JSON.parse(fileContent);
     } catch (error) {
-      console.error(`Error loading ${filename}:`, error);
+      this.logger.error(`Error loading ${filename}:`, error);
       throw new Error(`Failed to load seeding data from ${filename}`);
     }
   }

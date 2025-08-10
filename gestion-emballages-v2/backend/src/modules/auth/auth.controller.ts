@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Logger,
   Post,
   Request,
   UseGuards,
@@ -19,6 +20,8 @@ import { UserResponseDto } from '@modules/users/dto/user-response.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(private readonly authService: AuthService) {}
 
   @Get('test')
@@ -40,12 +43,12 @@ export class AuthController {
   })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     try {
-      console.log('Login attempt:', loginDto.email);
+      this.logger.log(`Login attempt: ${loginDto.email}`);
       const result = await this.authService.login(loginDto);
-      console.log('Login successful for:', loginDto.email);
+      this.logger.log(`Login successful for: ${loginDto.email}`);
       return result;
     } catch (error) {
-      console.error('Login error:', error);
+      this.logger.error(`Login error: ${error.message}`, error.stack);
       throw error;
     }
   }

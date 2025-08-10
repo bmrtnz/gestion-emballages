@@ -1,9 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { SoftDeletableEntity } from '@common/entities/base.entity';
 import { EntityType, UserRole } from '@common/enums/user-role.enum';
-import { Station } from '@modules/stations/entities/station.entity';
-import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 
 @Entity('users')
 export class User extends SoftDeletableEntity {

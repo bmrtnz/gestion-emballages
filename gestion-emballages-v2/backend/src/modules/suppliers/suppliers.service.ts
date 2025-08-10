@@ -7,7 +7,7 @@ import { SupplierSite } from './entities/supplier-site.entity';
 import { CreateSupplierDto } from './dto/create-Supplier.dto';
 import { UpdateSupplierDto } from './dto/update-Supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
+import { PaginationService } from '@common/services/pagination.service';
 
 @Injectable()
 export class SuppliersService {

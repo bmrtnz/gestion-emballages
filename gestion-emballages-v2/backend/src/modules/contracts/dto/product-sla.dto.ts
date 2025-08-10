@@ -1,15 +1,5 @@
-import {
-  IsBoolean,
-  IsDateString,
-  IsDecimal,
-  IsEnum,
-  IsInt,
-  IsObject,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsDateString, IsDecimal, IsInt, IsObject, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateProductSLADto {

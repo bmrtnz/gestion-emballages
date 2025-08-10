@@ -1,19 +1,22 @@
 import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
 import { AppModule } from '../../app.module';
 import { DatabaseSeeder } from './database.seeder';
 
+const logger = new Logger('DatabaseSeeder');
+
 async function runSeeder() {
-  console.log('🚀 Starting NestJS application for seeding...');
+  logger.log('Starting NestJS application for seeding...');
 
   const app = await NestFactory.createApplicationContext(AppModule);
   const seeder = app.get(DatabaseSeeder);
 
   try {
-    console.log('🌱 Running database seeder...');
+    logger.log('Running database seeder...');
     await seeder.run();
-    console.log('✅ Seeding completed successfully!');
+    logger.log('Seeding completed successfully!');
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
+    logger.error('Seeding failed:', error);
     process.exit(1);
   } finally {
     await app.close();
@@ -25,7 +28,7 @@ async function runSeeder() {
 const command = process.argv[2];
 
 if (command === '--help' || command === '-h') {
-  console.log(`
+  logger.log(`
 🌱 Database Seeder Commands:
 
   npm run seed                Run the database seeder

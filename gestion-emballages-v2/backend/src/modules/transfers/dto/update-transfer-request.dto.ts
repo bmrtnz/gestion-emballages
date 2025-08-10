@@ -1,5 +1,3 @@
-import { OmitType, PartialType } from '@nestjs/swagger';
-import { CreateDemandeTransfertArticleDto, CreateTransferRequestDto } from './create-transfer-request.dto';
 import { IsArray, IsEnum, IsNumber, IsOptional, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';

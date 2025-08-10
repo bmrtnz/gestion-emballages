@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { SalesOrder } from './entities/sales-order.entity';
 import { SalesOrderProduct } from './entities/sales-order-product.entity';
 import { CreateSalesOrderDto } from './dto/create-sales-order.dto';
@@ -183,22 +183,22 @@ export class SalesOrdersService {
     // Convert date strings to Date objects
     const updateData = { ...updateSalesOrderDto };
     if (updateData.actualShipDate) {
-      updateData.actualShipDate = new Date(updateSalesOrderDto.actualShipDate) as any;
+      updateData.actualShipDate = new Date(updateSalesOrderDto.actualShipDate);
     }
     if (updateData.actualDeliveryDate) {
-      updateData.actualDeliveryDate = new Date(updateSalesOrderDto.actualDeliveryDate) as any;
+      updateData.actualDeliveryDate = new Date(updateSalesOrderDto.actualDeliveryDate);
     }
     if (updateData.invoiceDate) {
-      updateData.invoiceDate = new Date(updateSalesOrderDto.invoiceDate) as any;
+      updateData.invoiceDate = new Date(updateSalesOrderDto.invoiceDate);
     }
     if (updateData.paymentDueDate) {
-      updateData.paymentDueDate = new Date(updateSalesOrderDto.paymentDueDate) as any;
+      updateData.paymentDueDate = new Date(updateSalesOrderDto.paymentDueDate);
     }
     if (updateData.paymentReceivedDate) {
-      updateData.paymentReceivedDate = new Date(updateSalesOrderDto.paymentReceivedDate) as any;
+      updateData.paymentReceivedDate = new Date(updateSalesOrderDto.paymentReceivedDate);
     }
     if (updateData.fulfilledAt) {
-      updateData.fulfilledAt = new Date(updateSalesOrderDto.fulfilledAt) as any;
+      updateData.fulfilledAt = new Date(updateSalesOrderDto.fulfilledAt);
     }
 
     Object.assign(salesOrder, updateData);
@@ -294,7 +294,14 @@ export class SalesOrdersService {
   }
 
   // Utility methods
-  private calculateOrderTotals(products: any[]): { subtotal: number; totalTax: number; total: number } {
+  private calculateOrderTotals(
+    products: Array<{
+      quantity: number;
+      unitPrice: number;
+      discountAmount?: number;
+      taxRate?: number;
+    }>
+  ): { subtotal: number; totalTax: number; total: number } {
     let subtotal = 0;
     let totalTax = 0;
 
@@ -321,7 +328,7 @@ export class SalesOrdersService {
         soNumber: this.salesOrderRepository
           .createQueryBuilder()
           .select()
-          .where('so_number LIKE :pattern', { pattern: `SO-${year}-%` }) as any,
+          .where('so_number LIKE :pattern', { pattern: `SO-${year}-%` }),
       },
     });
     return `SO-${year}-${(count + 1).toString().padStart(6, '0')}`;
@@ -334,7 +341,7 @@ export class SalesOrdersService {
         invoiceNumber: this.salesOrderRepository
           .createQueryBuilder()
           .select()
-          .where('invoice_number LIKE :pattern', { pattern: `INV-${year}-%` }) as any,
+          .where('invoice_number LIKE :pattern', { pattern: `INV-${year}-%` }),
       },
     });
     return `INV-${year}-${(count + 1).toString().padStart(6, '0')}`;

@@ -284,7 +284,7 @@ export class ShoppingCartsService {
     return this.findOne(id);
   }
 
-  async validateAndConvertToOrders(id: string, validateDto: ValidateShoppingCartDto): Promise<PurchaseOrder[]> {
+  async validateAndConvertToOrders(id: string, _validateDto: ValidateShoppingCartDto): Promise<PurchaseOrder[]> {
     const ShoppingCart = await this.findOne(id);
 
     if (ShoppingCart.status !== 'active') {
@@ -369,7 +369,13 @@ export class ShoppingCartsService {
   }
 
   // Utility methods
-  private async validateItems(items: any[]) {
+  private async validateItems(
+    items: Array<{
+      articleId: string;
+      supplierId: string;
+      quantite: number;
+    }>
+  ) {
     for (const item of items) {
       // Validate Product exists
       const Product = await this.articleRepository.findOne({
@@ -402,7 +408,7 @@ export class ShoppingCartsService {
           .createQueryBuilder()
           .select()
           .where('numeroCommande LIKE :pattern', { pattern: `CMD-${year}-%` }),
-      } as any,
+      },
     });
     return `CMD-${year}-${(count + 1).toString().padStart(6, '0')}`;
   }

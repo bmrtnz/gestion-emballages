@@ -1,6 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { SoftDeletableEntity } from '@common/entities/base.entity';
-import { User } from '@modules/users/entities/user.entity';
 import { Station } from './station.entity';
 
 @Entity('station_groups')

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -9,13 +9,21 @@ import { EntityType, UserRole } from '@common/enums/user-role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { PaginationOptions, PaginationService } from '@common/services/pagination.service';
+import { PaginationService } from '@common/services/pagination.service';
 import { EmailService } from '@common/services/email.service';
 import { Station } from '@modules/stations/entities/station.entity';
 import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 
+// Interface for user with populated relationships
+interface UserWithRelations extends User {
+  station?: { id: string; name: string; internalIdentifier?: string };
+  supplier?: { id: string; name: string; siret?: string };
+}
+
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
+
   constructor(
     @InjectRepository(User)
     public userRepository: Repository<User>,
@@ -105,12 +113,12 @@ export class UsersService {
             select: ['id', 'name', 'internalId'],
           });
           if (station) {
-            (user as any).station = {
+            (user as UserWithRelations).station = {
               id: station.id,
               name: station.name,
               internalIdentifier: station.internalId,
             };
-            console.log('Added station to user:', user.email, (user as any).station);
+            this.logger.debug(`Added station to user: ${user.email}`);
           }
         } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
           const supplier = await this.supplierRepository.findOne({
@@ -118,13 +126,12 @@ export class UsersService {
             select: ['id', 'name', 'siret', 'specialties'],
           });
           if (supplier) {
-            (user as any).supplier = {
+            (user as UserWithRelations).supplier = {
               id: supplier.id,
               name: supplier.name,
               siret: supplier.siret,
-              specialties: supplier.specialties,
             };
-            console.log('Added supplier to user:', user.email, (user as any).supplier);
+            this.logger.debug(`Added supplier to user: ${user.email}`);
           }
         }
         return user;
@@ -150,7 +157,7 @@ export class UsersService {
         select: ['id', 'name', 'internalId'],
       });
       if (station) {
-        (user as any).station = {
+        (user as User & { station: { id: string; name: string; internalIdentifier: string } }).station = {
           id: station.id,
           name: station.name,
           internalIdentifier: station.internalId,
@@ -162,7 +169,7 @@ export class UsersService {
         select: ['id', 'name', 'siret', 'specialties'],
       });
       if (supplier) {
-        (user as any).supplier = {
+        (user as User & { supplier: { id: string; name: string; siret?: string; specialties?: string } }).supplier = {
           id: supplier.id,
           name: supplier.name,
           siret: supplier.siret,
@@ -266,7 +273,7 @@ export class UsersService {
     try {
       await this.emailService.sendPasswordResetEmail(user.email, resetToken, user.fullName);
     } catch (error) {
-      console.error('Error sending password reset email:', error);
+      this.logger.error('Error sending password reset email:', error.stack);
       // Don't expose email sending errors to client for security
     }
 

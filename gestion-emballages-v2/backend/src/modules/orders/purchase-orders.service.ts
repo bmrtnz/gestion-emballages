@@ -182,16 +182,16 @@ export class PurchaseOrdersService {
     // Handle date conversions
     const updateData = { ...updatePurchaseOrderDto };
     if (updateData.requestedDeliveryDate) {
-      updateData.requestedDeliveryDate = new Date(updateData.requestedDeliveryDate) as any;
+      updateData.requestedDeliveryDate = new Date(updateData.requestedDeliveryDate);
     }
     if (updateData.confirmedDeliveryDate) {
-      updateData.confirmedDeliveryDate = new Date(updateData.confirmedDeliveryDate) as any;
+      updateData.confirmedDeliveryDate = new Date(updateData.confirmedDeliveryDate);
     }
     if (updateData.actualDeliveryDate) {
-      updateData.actualDeliveryDate = new Date(updateData.actualDeliveryDate) as any;
+      updateData.actualDeliveryDate = new Date(updateData.actualDeliveryDate);
     }
     if (updateData.approvedAt) {
-      updateData.approvedAt = new Date(updateData.approvedAt) as any;
+      updateData.approvedAt = new Date(updateData.approvedAt);
     }
 
     Object.assign(purchaseOrder, updateData);

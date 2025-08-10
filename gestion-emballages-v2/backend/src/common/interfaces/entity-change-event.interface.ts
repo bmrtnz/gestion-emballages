@@ -1,8 +1,8 @@
 export interface EntityChangeEvent {
   entityType: string;
   entityId: string;
-  oldValues: any;
-  newValues: any;
+  oldValues: Record<string, unknown>;
+  newValues: Record<string, unknown>;
   changedBy: string;
   reason?: string;
   ipAddress?: string;

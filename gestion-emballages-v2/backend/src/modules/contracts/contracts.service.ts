@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In, LessThan, MoreThan, Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import { ContractStatus, ContractType, MasterContract } from './entities/master-contract.entity';
 import { ContractProductSLA } from './entities/contract-product-sla.entity';
 import { ContractPerformanceMetric } from './entities/contract-performance-metric.entity';
@@ -198,7 +198,7 @@ export class ContractsService {
     return contract;
   }
 
-  async update(id: string, updateContractDto: UpdateContractDto, updatedById: string): Promise<MasterContract> {
+  async update(id: string, updateContractDto: UpdateContractDto, _updatedById: string): Promise<MasterContract> {
     const contract = await this.findOne(id);
 
     // Validate status transitions
@@ -265,7 +265,7 @@ export class ContractsService {
     renewalData: {
       validUntil: string;
       contractName?: string;
-      adjustments?: Record<string, any>;
+      adjustments?: Record<string, unknown>;
     },
     renewedById: string
   ): Promise<MasterContract> {
@@ -354,7 +354,7 @@ export class ContractsService {
     createProductSLADto: CreateProductSLADto,
     createdById: string
   ): Promise<ContractProductSLA> {
-    const contract = await this.findOne(contractId);
+    await this.findOne(contractId);
 
     // Validate product exists
     const product = await this.productRepository.findOne({
@@ -632,8 +632,22 @@ export class ContractsService {
 
   async validateSLAs(id: string): Promise<ContractValidationDto> {
     const contract = await this.findOne(id);
-    const issues: any[] = [];
-    const slaConflicts: any[] = [];
+    const issues: Array<{
+      type: 'ERROR' | 'WARNING' | 'INFO';
+      code: string;
+      message: string;
+      field?: string;
+      value?: unknown;
+      suggestion?: string;
+    }> = [];
+    const slaConflicts: Array<{
+      productId: string;
+      productName: string;
+      conflictType: 'OVERLAPPING_PERIODS' | 'CONTRADICTORY_TERMS' | 'MISSING_REQUIREMENTS';
+      description: string;
+      affectedSLAs: string[];
+      resolution: string;
+    }> = [];
     const recommendations: string[] = [];
 
     // Validate contract dates
@@ -822,7 +836,7 @@ export class ContractsService {
       validFrom: string;
       validUntil: string;
       includeSLAs?: boolean;
-      adjustments?: Record<string, any>;
+      adjustments?: Record<string, unknown>;
     },
     duplicatedById: string
   ): Promise<MasterContract> {

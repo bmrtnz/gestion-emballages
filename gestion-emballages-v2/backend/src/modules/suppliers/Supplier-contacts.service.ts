@@ -177,8 +177,6 @@ export class SupplierContactsService {
       // Create default contact if needed
       // This is a placeholder - actual migration logic would depend on data structure
       if (supplier.sites && supplier.sites.length > 0) {
-        const principalSite = supplier.sites.find(s => s.isPrincipal) || supplier.sites[0];
-
         // Create a default contact based on available data
         await this.create(supplier.id, {
           fullName: `Contact ${supplier.name}`,

@@ -70,7 +70,7 @@ export class MasterOrder extends BaseEntity {
   purchaseOrders: PurchaseOrder[];
 
   // Backward compatibility for old Order entity
-  get commandes(): any[] {
+  get commandes(): PurchaseOrder[] {
     return this.purchaseOrders || [];
   }
 

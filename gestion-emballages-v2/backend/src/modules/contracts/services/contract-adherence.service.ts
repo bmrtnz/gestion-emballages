@@ -140,7 +140,7 @@ export class ContractAdherenceService {
     contract: MasterContract,
     startDate: Date,
     endDate: Date,
-    measurementPeriod: MeasurementPeriod
+    _measurementPeriod: MeasurementPeriod
   ): Promise<PerformanceCalculationResult[]> {
     const results: PerformanceCalculationResult[] = [];
 
@@ -176,7 +176,7 @@ export class ContractAdherenceService {
     productSLA: ContractProductSLA,
     startDate: Date,
     endDate: Date,
-    measurementPeriod: MeasurementPeriod
+    _measurementPeriod: MeasurementPeriod
   ): Promise<PerformanceCalculationResult[]> {
     const results: PerformanceCalculationResult[] = [];
 
@@ -235,8 +235,8 @@ export class ContractAdherenceService {
   private async calculateDeliveryPerformance(
     contract: MasterContract,
     orders: PurchaseOrder[],
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     const deliveredOrders = orders.filter(
       order => order.status === OrderStatus.RECEPTIONNEE && order.actualDeliveryDate
@@ -245,14 +245,12 @@ export class ContractAdherenceService {
     if (deliveredOrders.length === 0) return null;
 
     let onTimeDeliveries = 0;
-    let totalDeliveryDays = 0;
     const targetSLA = contract.defaultDeliverySLADays;
 
     for (const order of deliveredOrders) {
       const deliveryTime = Math.ceil(
         (order.actualDeliveryDate.getTime() - order.createdAt.getTime()) / (1000 * 60 * 60 * 24)
       );
-      totalDeliveryDays += deliveryTime;
 
       if (deliveryTime <= targetSLA) {
         onTimeDeliveries++;
@@ -311,8 +309,8 @@ export class ContractAdherenceService {
   private async calculateQualityPerformance(
     contract: MasterContract,
     orders: PurchaseOrder[],
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     // This would integrate with the document management system to count quality issues
     // For now, we'll simulate based on order status
@@ -322,7 +320,7 @@ export class ContractAdherenceService {
 
     // Count orders with quality issues (this would be determined by discrepancy photos/reports)
     const ordersWithIssues = deliveredOrders.filter(
-      order =>
+      _order =>
         // This is a placeholder - in reality, you'd check for quality discrepancy documents
         Math.random() < 0.05 // Simulate 5% quality issue rate for demo
     ).length;
@@ -373,8 +371,8 @@ export class ContractAdherenceService {
   private async calculateOrderFulfillmentRate(
     contract: MasterContract,
     orders: PurchaseOrder[],
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     if (orders.length === 0) return null;
 
@@ -416,8 +414,8 @@ export class ContractAdherenceService {
     contract: MasterContract,
     productSLA: ContractProductSLA,
     purchaseOrderProducts: PurchaseOrderProduct[],
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     const deliveredProducts = purchaseOrderProducts.filter(
       pop => pop.purchaseOrder.status === OrderStatus.RECEPTIONNEE && pop.purchaseOrder.actualDeliveryDate
@@ -475,8 +473,8 @@ export class ContractAdherenceService {
     contract: MasterContract,
     productSLA: ContractProductSLA,
     purchaseOrderProducts: PurchaseOrderProduct[],
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     // Similar implementation to contract-level quality, but product-specific
     const deliveredProducts = purchaseOrderProducts.filter(
@@ -487,7 +485,7 @@ export class ContractAdherenceService {
 
     // Placeholder for quality issues detection
     const productsWithIssues = deliveredProducts.filter(
-      pop => Math.random() < 0.03 // Simulate 3% quality issue rate for specific products
+      _pop => Math.random() < 0.03 // Simulate 3% quality issue rate for specific products
     ).length;
 
     const productsWithoutIssues = deliveredProducts.length - productsWithIssues;
@@ -526,8 +524,8 @@ export class ContractAdherenceService {
     contract: MasterContract,
     productSLA: ContractProductSLA,
     purchaseOrderProducts: PurchaseOrderProduct[],
-    startDate: Date,
-    endDate: Date
+    _startDate: Date,
+    _endDate: Date
   ): Promise<PerformanceCalculationResult | null> {
     const deliveredProducts = purchaseOrderProducts.filter(
       pop => pop.purchaseOrder.status === OrderStatus.RECEPTIONNEE && pop.orderedQuantity !== undefined
@@ -538,7 +536,8 @@ export class ContractAdherenceService {
     let accurateDeliveries = 0;
     const threshold = productSLA.quantityAccuracyThreshold || 98; // 98% accuracy threshold
 
-    for (const purchaseOrderProduct of deliveredProducts) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const _ of deliveredProducts) {
       // TODO: Add deliveredQuantity field to PurchaseOrderProduct entity
       const accuracy = 100; // Placeholder - assuming accurate delivery until deliveredQuantity is available
       if (accuracy >= threshold && accuracy <= 102) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -7,6 +7,8 @@ import { EntityChangeEvent } from '../interfaces/entity-change-event.interface';
 
 @Injectable()
 export class HistoryService {
+  private readonly logger = new Logger(HistoryService.name);
+
   constructor(
     @InjectRepository(EntityHistory)
     private historyRepository: Repository<EntityHistory>
@@ -31,7 +33,7 @@ export class HistoryService {
         userAgent: payload.userAgent,
       });
     } catch (error) {
-      console.error('Failed to save entity history:', error);
+      this.logger.error('Failed to save entity history:', error.stack);
       // Don't throw - history failure shouldn't break main operations
     }
   }
@@ -59,8 +61,11 @@ export class HistoryService {
     });
   }
 
-  private calculateDiff(oldValues: any, newValues: any): Record<string, { old: any; new: any }> {
-    const changes: Record<string, { old: any; new: any }> = {};
+  private calculateDiff(
+    oldValues: Record<string, unknown>,
+    newValues: Record<string, unknown>
+  ): Record<string, { old: unknown; new: unknown }> {
+    const changes: Record<string, { old: unknown; new: unknown }> = {};
 
     // Skip system fields that change automatically
     const skipFields = ['updatedAt', 'created_at', 'updated_at'];
@@ -84,7 +89,7 @@ export class HistoryService {
     return changes;
   }
 
-  private hasValueChanged(oldValue: any, newValue: any): boolean {
+  private hasValueChanged(oldValue: unknown, newValue: unknown): boolean {
     // Handle null/undefined cases
     if (oldValue == null && newValue == null) {
       return false;

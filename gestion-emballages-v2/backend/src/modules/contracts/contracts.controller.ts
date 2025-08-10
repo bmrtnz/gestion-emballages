@@ -11,6 +11,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+
+// Authentication request interface
+interface AuthenticatedRequest {
+  user: {
+    id: string;
+    role: string;
+    entityId?: string;
+    entityType?: string;
+  };
+}
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -33,7 +43,10 @@ export class ContractsController {
   @ApiOperation({ summary: 'Create a new master contract' })
   @ApiResponse({ status: 201, description: 'Contract created successfully', type: MasterContract })
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
-  async createContract(@Body() createContractDto: CreateContractDto, @Request() req: any): Promise<MasterContract> {
+  async createContract(
+    @Body() createContractDto: CreateContractDto,
+    @Request() req: AuthenticatedRequest
+  ): Promise<MasterContract> {
     return this.contractsService.create(createContractDto, req.user.id);
   }
 
@@ -61,7 +74,7 @@ export class ContractsController {
   async updateContract(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateContractDto: UpdateContractDto,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<MasterContract> {
     return this.contractsService.update(id, updateContractDto, req.user.id);
   }
@@ -111,7 +124,7 @@ export class ContractsController {
         qualityIssuePenaltyPercent?: number;
       };
     },
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<MasterContract> {
     return this.contractsService.renew(id, renewalData, req.user.id);
   }
@@ -125,7 +138,7 @@ export class ContractsController {
   async addProductSLA(
     @Param('id', ParseUUIDPipe) contractId: string,
     @Body() createProductSLADto: CreateProductSLADto,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<ContractProductSLA> {
     return this.contractsService.addProductSLA(contractId, createProductSLADto, req.user.id);
   }
@@ -146,7 +159,7 @@ export class ContractsController {
     @Param('id', ParseUUIDPipe) contractId: string,
     @Param('slaId', ParseUUIDPipe) slaId: string,
     @Body() updateProductSLADto: UpdateProductSLADto,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<ContractProductSLA> {
     return this.contractsService.updateProductSLA(contractId, slaId, updateProductSLADto, req.user.id);
   }
@@ -205,7 +218,7 @@ export class ContractsController {
   @Roles(UserRole.ADMIN)
   async approveContract(
     @Param('id', ParseUUIDPipe) id: string,
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body('approvalNotes') approvalNotes?: string
   ): Promise<MasterContract> {
     return this.contractsService.approve(id, req.user.id, approvalNotes);
@@ -218,7 +231,7 @@ export class ContractsController {
   async rejectContract(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('rejectionReason') rejectionReason: string,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<MasterContract> {
     return this.contractsService.reject(id, req.user.id, rejectionReason);
   }
@@ -293,9 +306,9 @@ export class ContractsController {
       validFrom: string;
       validUntil: string;
       includeSLAs?: boolean;
-      adjustments?: Record<string, any>;
+      adjustments?: Record<string, unknown>;
     },
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<MasterContract> {
     return this.contractsService.duplicate(id, duplicationOptions, req.user.id);
   }

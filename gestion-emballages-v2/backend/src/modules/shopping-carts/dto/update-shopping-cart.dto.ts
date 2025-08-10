@@ -1,7 +1,6 @@
-import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsArray, IsDateString, IsInt, IsOptional, IsUUID, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateShoppingCartDto, CreateShoppingCartItemDto } from './create-shopping-cart.dto';
 
 export class UpdateShoppingCartItemDto {
   @ApiPropertyOptional({ description: "ID de l'item (pour les mises à jour)" })

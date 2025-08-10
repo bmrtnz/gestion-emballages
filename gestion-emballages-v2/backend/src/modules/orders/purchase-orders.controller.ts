@@ -12,6 +12,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+
+// Authentication request interface
+interface AuthenticatedRequest {
+  user: {
+    id: string;
+    role: string;
+    entityId?: string;
+    entityType?: string;
+  };
+}
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
@@ -38,7 +48,10 @@ export class PurchaseOrdersController {
   @ApiResponse({ status: 201, description: 'Purchase order created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions' })
-  async create(@Body() createPurchaseOrderDto: CreatePurchaseOrderDto, @Request() req: any): Promise<PurchaseOrder> {
+  async create(
+    @Body() createPurchaseOrderDto: CreatePurchaseOrderDto,
+    @Request() req: AuthenticatedRequest
+  ): Promise<PurchaseOrder> {
     return this.purchaseOrdersService.create(createPurchaseOrderDto, req.user.id);
   }
 
@@ -138,7 +151,7 @@ export class PurchaseOrdersController {
   async updateStatus(
     @Param('id', ParseUUIDPipe) id: string,
     @Body('status', new ParseEnumPipe(OrderStatus)) status: OrderStatus,
-    @Request() req: any
+    @Request() req: AuthenticatedRequest
   ): Promise<PurchaseOrder> {
     return this.purchaseOrdersService.updateStatus(id, status, req.user.id);
   }
@@ -150,7 +163,7 @@ export class PurchaseOrdersController {
   @ApiResponse({ status: 200, description: 'Purchase order approved successfully' })
   @ApiResponse({ status: 400, description: 'Purchase order cannot be approved' })
   @ApiResponse({ status: 404, description: 'Purchase order not found' })
-  async approve(@Param('id', ParseUUIDPipe) id: string, @Request() req: any): Promise<PurchaseOrder> {
+  async approve(@Param('id', ParseUUIDPipe) id: string, @Request() req: AuthenticatedRequest): Promise<PurchaseOrder> {
     return this.purchaseOrdersService.approve(id, req.user.id);
   }
 
