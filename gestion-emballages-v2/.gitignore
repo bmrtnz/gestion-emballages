@@ -29,8 +29,6 @@ docker-compose.override.yml
 uploads/
 storage/
 files/
-# Only ignore documents folder at root level, not in source code
-/documents/
 
 # Backups
 backups/
