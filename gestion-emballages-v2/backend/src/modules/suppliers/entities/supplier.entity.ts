@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { BaseEntity } from '@common/entities/base.entity';
+import { SoftDeletableEntity } from '@common/entities/base.entity';
 import { SupplierSite } from './supplier-site.entity';
 import { SupplierContact } from './supplier-contact.entity';
 import { ProductSupplier } from '@modules/products/entities/product-supplier.entity';
@@ -7,7 +7,7 @@ import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
 import { Forecast } from '@modules/forecasts/entities/forecast.entity';
 
 @Entity('suppliers')
-export class Supplier extends BaseEntity {
+export class Supplier extends SoftDeletableEntity {
   @Column()
   name: string;
 

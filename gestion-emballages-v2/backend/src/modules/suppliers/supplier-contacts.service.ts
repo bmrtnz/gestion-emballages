@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SupplierContact } from './entities/supplier-contact.entity';
 import { Supplier } from './entities/supplier.entity';
-import { CreateSupplierContactDto } from './dto/create-Supplier-contact.dto';
-import { UpdateSupplierContactDto } from './dto/update-Supplier-contact.dto';
+import { CreateSupplierContactDto } from './dto/create-supplier-contact.dto';
+import { UpdateSupplierContactDto } from './dto/update-supplier-contact.dto';
 
 @Injectable()
 export class SupplierContactsService {

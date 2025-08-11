@@ -1,7 +1,6 @@
 # Fichiers système
 .DS_Store
 npm-debug.log
-.claude
 .vscode
 /frontend/.vscode
 

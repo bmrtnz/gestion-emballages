@@ -48,8 +48,8 @@ export class PaginationService {
 
   async paginate<T>(
     queryBuilder: {
-      skip(skip: number): unknown;
-      take(limit: number): unknown;
+      skip(skip: number): any;
+      take(limit: number): any;
       getManyAndCount(): Promise<[T[], number]>;
     },
     page: number = 1,

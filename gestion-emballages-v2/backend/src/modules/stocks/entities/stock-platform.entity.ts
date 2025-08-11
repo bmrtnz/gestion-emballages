@@ -5,8 +5,8 @@ import { Platform } from '@modules/platforms/entities/platform.entity';
 import { PlatformSite } from '@modules/platforms/entities/platform-site.entity';
 import { User } from '@modules/users/entities/user.entity';
 
-@Entity('stocks_platform')
-@Index(['platformId', 'articleId', 'platformSiteId'], { unique: true })
+@Entity('stock_platforms')
+@Index(['platformId', 'articleId'], { unique: true })
 export class StockPlatform extends BaseEntity {
   @Column({ name: 'platform_id' })
   platformId: string;
@@ -14,8 +14,7 @@ export class StockPlatform extends BaseEntity {
   @Column({ name: 'product_id' })
   articleId: string;
 
-  @Column({ name: 'platform_site_id', nullable: true })
-  platformSiteId?: string;
+  // platform_site_id column doesn't exist in actual database table
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   quantite: number;
@@ -44,9 +43,8 @@ export class StockPlatform extends BaseEntity {
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
-  @ManyToOne(() => PlatformSite, site => site.stocks, { nullable: true })
-  @JoinColumn({ name: 'platform_site_id' })
-  platformSite?: PlatformSite;
+  // Temporary property for TypeScript compatibility (actual column doesn't exist)
+  platformSite?: any;
 
   @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'updated_by' })

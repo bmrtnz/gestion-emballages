@@ -23,8 +23,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate",
-    "migration:run": "npm run typeorm -- migration:run",
-    "migration:revert": "npm run typeorm -- migration:revert",
+    "migration:run": "npm run typeorm -- migration:run -d migration-cli-datasource.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d migration-cli-datasource.ts",
+    "migration:reset": "npm run typeorm -- schema:drop -d migration-cli-datasource.ts && npm run migration:run",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeders/seeder.command.ts",
     "seed:help": "ts-node -r tsconfig-paths/register src/database/seeders/seeder.command.ts --help"
   },

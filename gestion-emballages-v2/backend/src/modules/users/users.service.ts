@@ -81,9 +81,9 @@ export class UsersService {
 
     // Add status filter
     if (paginationDto.status === 'active') {
-      queryBuilder.andWhere('user.isActive = :isActive', { isActive: true });
+      queryBuilder.andWhere('user.is_active = :isActive', { isActive: true });
     } else if (paginationDto.status === 'inactive') {
-      queryBuilder.andWhere('user.isActive = :isActive', { isActive: false });
+      queryBuilder.andWhere('user.is_active = :isActive', { isActive: false });
     }
 
     // Add role filter
@@ -93,52 +93,28 @@ export class UsersService {
 
     // Add entity type filter
     if (paginationDto['entityType']) {
-      queryBuilder.andWhere('user.entityType = :entityType', { entityType: paginationDto['entityType'] });
+      queryBuilder.andWhere('user.entity_type = :entityType', { entityType: paginationDto['entityType'] });
     }
 
-    // Add sorting and pagination
+    // Add sorting and pagination - use database column names directly
+    let sortColumn = 'created_at'; // default
+    if (paginationOptions.sortBy === 'fullName') sortColumn = 'full_name';
+    else if (paginationOptions.sortBy === 'updatedAt') sortColumn = 'updated_at';
+    else if (paginationOptions.sortBy === 'entityType') sortColumn = 'entity_type';
+    else if (paginationOptions.sortBy === 'entityId') sortColumn = 'entity_id';
+    else if (paginationOptions.sortBy === 'isActive') sortColumn = 'is_active';
+    else if (paginationOptions.sortBy === 'email') sortColumn = 'email';
+    else if (paginationOptions.sortBy === 'role') sortColumn = 'role';
+    
     queryBuilder
-      .orderBy(`user.${paginationOptions.sortBy}`, paginationOptions.sortOrder)
+      .orderBy(`user.${sortColumn}`, paginationOptions.sortOrder)
       .skip(this.paginationService.getSkip(paginationOptions.page, paginationOptions.limit))
       .take(paginationOptions.limit);
 
     const [users, total] = await queryBuilder.getManyAndCount();
 
-    // Populate entity details for each user
-    const data = await Promise.all(
-      users.map(async user => {
-        if (user.entityType === EntityType.STATION && user.entityId) {
-          const station = await this.stationRepository.findOne({
-            where: { id: user.entityId },
-            select: ['id', 'name', 'internalId'],
-          });
-          if (station) {
-            (user as UserWithRelations).station = {
-              id: station.id,
-              name: station.name,
-              internalIdentifier: station.internalId,
-            };
-            this.logger.debug(`Added station to user: ${user.email}`);
-          }
-        } else if (user.entityType === EntityType.SUPPLIER && user.entityId) {
-          const supplier = await this.supplierRepository.findOne({
-            where: { id: user.entityId },
-            select: ['id', 'name', 'siret', 'specialties'],
-          });
-          if (supplier) {
-            (user as UserWithRelations).supplier = {
-              id: supplier.id,
-              name: supplier.name,
-              siret: supplier.siret,
-            };
-            this.logger.debug(`Added supplier to user: ${user.email}`);
-          }
-        }
-        return user;
-      })
-    );
-
-    return this.paginationService.createPaginatedResponse(data, total, paginationOptions);
+    // Return users without complex relationship loading for now
+    return this.paginationService.createPaginatedResponse(users, total, paginationOptions);
   }
 
   async findOne(id: string): Promise<User> {

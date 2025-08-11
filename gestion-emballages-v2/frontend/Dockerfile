@@ -36,7 +36,7 @@ ARG PRODUCTION=true
 RUN echo "export const environment = { \
     production: ${PRODUCTION}, \
     apiUrl: '${API_URL}', \
-    appName: 'Gestion Emballages', \
+    appName: 'Blue Whale Portal', \
     version: '2.0.0' \
 };" > src/environments/environment.prod.ts
 
@@ -50,7 +50,7 @@ FROM nginx:alpine AS production
 COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built application
-COPY --from=build /app/dist/gestion-emballages /usr/share/nginx/html
+COPY --from=build /app/dist/blue-whale-portal-frontend /usr/share/nginx/html
 
 # Copy health check script
 COPY docker/nginx/health-check.sh /usr/local/bin/health-check.sh

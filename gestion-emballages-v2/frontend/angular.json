@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "gestion-emballages-frontend": {
+    "blue-whale-portal-frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -24,7 +24,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/gestion-emballages-frontend",
+            "outputPath": "dist/blue-whale-portal-frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -33,7 +33,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
+              "src/favicon.png",
               "src/assets"
             ],
             "styles": [
@@ -72,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "gestion-emballages-frontend:build:production"
+              "buildTarget": "blue-whale-portal-frontend:build:production"
             },
             "development": {
-              "buildTarget": "gestion-emballages-frontend:build:development"
+              "buildTarget": "blue-whale-portal-frontend:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -87,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "gestion-emballages-frontend:build"
+            "buildTarget": "blue-whale-portal-frontend:build"
           }
         },
         "test": {
@@ -100,7 +100,7 @@
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
+              "src/favicon.png",
               "src/assets"
             ],
             "styles": [

@@ -239,19 +239,34 @@ export class EditUserFormComponent implements OnInit, OnChanges {
   private async loadEntities(): Promise<void> {
     try {
       // Load active stations
-      const activeStations = await this.stationService.getActiveStations();
-      this.stations.set(activeStations);
+      this.stationService.getActiveStations().subscribe({
+        next: (activeStations) => {
+          this.stations.set(activeStations);
+          // Populate form after entities are loaded
+          if (this.user) {
+            this.populateForm();
+          }
+        },
+        error: (error) => {
+          console.error('Error loading stations:', error);
+          this.notificationService.showError('Erreur lors du chargement des stations');
+        }
+      });
       
       // Load active suppliers
-      const suppliersResponse = await this.supplierService.getSuppliers({
-        status: 'active',
-        limit: 1000
-      });
-      this.suppliers.set(suppliersResponse.data);
-      
-      // Populate form after entities are loaded
-      if (this.user) {
-        this.populateForm();
+      try {
+        const suppliersResponse = await this.supplierService.getSuppliers({
+          status: 'active',
+          limit: 1000
+        });
+        this.suppliers.set(suppliersResponse.data);
+        // Populate form after entities are loaded
+        if (this.user) {
+          this.populateForm();
+        }
+      } catch (error) {
+        console.error('Error loading suppliers:', error);
+        this.notificationService.showError('Erreur lors du chargement des fournisseurs');
       }
       
     } catch (error) {

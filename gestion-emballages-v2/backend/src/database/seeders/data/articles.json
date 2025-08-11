@@ -1,112 +1,232 @@
 [
     {
-        "codeArticle": "BAR001",
-        "designation": "Barquette plastique transparente 250g - Tomates cerises",
-        "categorie": "Barquette",
+        "codeArticle": "TRA001",
+        "designation": "Barquette PET transparente 250g - Tomates cerises",
+        "categorie": "Tray",
         "dimensions": "17x12x4.5cm",
         "description": "Barquette transparente PET recyclable pour tomates cerises et petits fruits",
         "isActive": true
     },
     {
-        "codeArticle": "BAR002",
-        "designation": "Barquette plastique transparente 500g - Fruits rouges",
-        "categorie": "Barquette",
+        "codeArticle": "TRA002",
+        "designation": "Barquette PET 500g avec couvercle - Fruits rouges",
+        "categorie": "Tray",
         "dimensions": "18x13x5cm",
         "description": "Barquette transparente avec couvercle intégré pour fraises, framboises",
         "isActive": true
     },
     {
-        "codeArticle": "BAR003",
-        "designation": "Barquette plastique 1kg - Raisins",
-        "categorie": "Barquette",
+        "codeArticle": "TRA003",
+        "designation": "Barquette ventilée 1kg - Raisins",
+        "categorie": "Tray",
         "dimensions": "22x15x6cm",
         "description": "Barquette ventilée pour raisins avec perforations latérales",
         "isActive": true
     },
     {
-        "codeArticle": "BAR004",
-        "designation": "Barquette carton alimentaire 300g - Bio",
-        "categorie": "Barquette",
+        "codeArticle": "TRA004",
+        "designation": "Barquette carton kraft 300g - Bio certifiée",
+        "categorie": "Tray",
         "dimensions": "16x11x5cm",
         "description": "Barquette carton recyclé certifiée bio pour produits biologiques",
         "isActive": true
     },
     {
-        "codeArticle": "BAR005",
+        "codeArticle": "TRA005",
         "designation": "Barquette bois lamellé 500g - Premium",
-        "categorie": "Barquette",
+        "categorie": "Tray",
         "dimensions": "19x14x5.5cm",
         "description": "Barquette en bois de peuplier pour présentation haut de gamme",
         "isActive": true
     },
     {
-        "codeArticle": "CAG001",
-        "designation": "Cagette bois 2kg - Pommes/Poires",
-        "categorie": "Cagette",
+        "codeArticle": "TRA006",
+        "designation": "Barquette PP micro-ondable 400g - Plats cuisinés",
+        "categorie": "Tray",
+        "dimensions": "18x14x4cm",
+        "description": "Barquette polypropylène adaptée micro-ondes pour plats cuisinés",
+        "isActive": true
+    },
+    {
+        "codeArticle": "TRA007",
+        "designation": "Barquette alvéolée 6 œufs - Carton recyclé",
+        "categorie": "Tray",
+        "dimensions": "18x12x4cm",
+        "description": "Barquette carton moulé avec alvéoles pour 6 œufs",
+        "isActive": true
+    },
+    {
+        "codeArticle": "TRA008",
+        "designation": "Barquette biodégradable 200g - Amidon de maïs",
+        "categorie": "Tray",
+        "dimensions": "15x11x3.5cm",
+        "description": "Barquette compostable en amidon de maïs pour emballage éco-responsable",
+        "isActive": true
+    },
+    {
+        "codeArticle": "TRA009",
+        "designation": "Barquette compartimentée 750g - Plateaux repas",
+        "categorie": "Tray",
+        "dimensions": "24x18x4cm",
+        "description": "Barquette avec 3 compartiments pour plateaux repas équilibrés",
+        "isActive": true
+    },
+    {
+        "codeArticle": "TRA010",
+        "designation": "Barquette operculable 350g - Conservation longue",
+        "categorie": "Tray",
+        "dimensions": "17x13x4.5cm",
+        "description": "Barquette plastique avec opercule soudable pour longue conservation",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CRA001",
+        "designation": "Cagette bois résineux 2kg - Pommes/Poires",
+        "categorie": "Crate",
         "dimensions": "30x20x10cm",
         "description": "Cagette traditionnelle en bois naturel pour fruits à pépins",
         "isActive": true
     },
     {
-        "codeArticle": "CAG002",
+        "codeArticle": "CRA002",
         "designation": "Cagette carton ondulé 1kg - Légumes",
-        "categorie": "Cagette",
+        "categorie": "Crate",
         "dimensions": "25x18x8cm",
         "description": "Cagette carton ondulé résistant à l'humidité pour légumes",
         "isActive": true
     },
     {
-        "codeArticle": "CAG003",
+        "codeArticle": "CRA003",
         "designation": "Cagette plastique alvéolée 5kg - Tomates",
-        "categorie": "Cagette",
+        "categorie": "Crate",
         "dimensions": "40x30x12cm",
         "description": "Cagette plastique réutilisable avec alvéoles pour tomates",
         "isActive": true
     },
     {
-        "codeArticle": "CAG004",
-        "designation": "Cagette carton 3kg - Agrumes",
-        "categorie": "Cagette",
+        "codeArticle": "CRA004",
+        "designation": "Cagette carton renforcée 3kg - Agrumes",
+        "categorie": "Crate",
         "dimensions": "35x25x10cm",
         "description": "Cagette carton renforcée spéciale agrumes avec traitement anti-humidité",
         "isActive": true
     },
     {
-        "codeArticle": "PLT001",
+        "codeArticle": "CRA005",
+        "designation": "Caisse bois empilable 10kg - Pommes de terre",
+        "categorie": "Crate",
+        "dimensions": "50x35x20cm",
+        "description": "Caisse bois avec claire-voie pour aération pommes de terre",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CRA006",
+        "designation": "Cagette plastique Euro 15kg - Multi-usage",
+        "categorie": "Crate",
+        "dimensions": "60x40x15cm",
+        "description": "Cagette plastique format Euro pour transport et stockage",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CRA007",
+        "designation": "Cagette carton américaine 2,5kg - Export",
+        "categorie": "Crate",
+        "dimensions": "28x20x12cm",
+        "description": "Cagette format américain pour exportation fruits",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CRA008",
+        "designation": "Caisse isotherme polystyrène 8kg - Poissons",
+        "categorie": "Crate",
+        "dimensions": "45x30x18cm",
+        "description": "Caisse polystyrène avec couvercle pour transport poissons",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CRA009",
+        "designation": "Cagette bambou tressé 1,5kg - Produits d'Asie",
+        "categorie": "Crate",
+        "dimensions": "25x20x8cm",
+        "description": "Cagette traditionnelle bambou pour présentation authentique",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CRA010",
+        "designation": "Caisse carton cannelée 20kg - Vrac",
+        "categorie": "Crate",
+        "dimensions": "60x40x25cm",
+        "description": "Grande caisse carton pour conditionnement vrac et transport",
+        "isActive": true
+    },
+    {
+        "codeArticle": "PLA001",
         "designation": "Plateau carton kraft 30x40cm - Fruits",
-        "categorie": "Plateau",
+        "categorie": "Platter",
         "dimensions": "40x30x2cm",
         "description": "Plateau carton kraft alimentaire pour présentation fruits",
         "isActive": true
     },
     {
-        "codeArticle": "PLT002",
+        "codeArticle": "PLA002",
         "designation": "Plateau polystyrène blanc 25x35cm - Viande",
-        "categorie": "Plateau",
+        "categorie": "Platter",
         "dimensions": "35x25x1.5cm",
         "description": "Plateau polystyrène alimentaire pour produits carnés",
         "isActive": true
     },
     {
-        "codeArticle": "PLT003",
+        "codeArticle": "PLA003",
         "designation": "Plateau bambou 20x30cm - Bio Premium",
-        "categorie": "Plateau",
+        "categorie": "Platter",
         "dimensions": "30x20x1cm",
         "description": "Plateau bambou biodégradable pour gamme bio premium",
         "isActive": true
     },
     {
-        "codeArticle": "PLT004",
+        "codeArticle": "PLA004",
         "designation": "Plateau plastique noir 28x38cm - Traiteur",
-        "categorie": "Plateau",
+        "categorie": "Platter",
         "dimensions": "38x28x2.5cm",
         "description": "Plateau plastique noir micro-ondable pour plats traiteur",
         "isActive": true
     },
     {
+        "codeArticle": "PLA005",
+        "designation": "Plateau carton rainuré 32x24cm - Pâtisseries",
+        "categorie": "Platter",
+        "dimensions": "32x24x2cm",
+        "description": "Plateau carton avec rainures anti-dérapantes pour pâtisseries",
+        "isActive": true
+    },
+    {
+        "codeArticle": "PLA006",
+        "designation": "Plateau bois contreplaqué 40x30cm - Fromages",
+        "categorie": "Platter",
+        "dimensions": "40x30x1.5cm",
+        "description": "Plateau bois naturel pour présentation plateau fromages",
+        "isActive": true
+    },
+    {
+        "codeArticle": "PLA007",
+        "designation": "Plateau inox 35x25cm - Professionnel",
+        "categorie": "Platter",
+        "dimensions": "35x25x1cm",
+        "description": "Plateau inox alimentaire pour usage professionnel intensif",
+        "isActive": true
+    },
+    {
+        "codeArticle": "PLA008",
+        "designation": "Plateau plastique transparent 30x22cm - Libre service",
+        "categorie": "Platter",
+        "dimensions": "30x22x1.5cm",
+        "description": "Plateau transparent pour présentation libre service",
+        "isActive": true
+    },
+    {
         "codeArticle": "FIL001",
         "designation": "Film plastique alimentaire PVC 30cm x 300m",
-        "categorie": "Film Plastique",
+        "categorie": "Plastic Film",
         "dimensions": "30cm x 300m",
         "description": "Film alimentaire transparent adhérent pour emballage produits frais",
         "isActive": true
@@ -114,7 +234,7 @@
     {
         "codeArticle": "FIL002",
         "designation": "Film étirable PE 50cm x 300m - Palettisation",
-        "categorie": "Film Plastique",
+        "categorie": "Plastic Film",
         "dimensions": "50cm x 300m",
         "description": "Film étirable haute résistance pour palettisation et transport",
         "isActive": true
@@ -122,7 +242,7 @@
     {
         "codeArticle": "FIL003",
         "designation": "Film plastique perforé 40cm x 200m - Légumes",
-        "categorie": "Film Plastique",
+        "categorie": "Plastic Film",
         "dimensions": "40cm x 200m",
         "description": "Film perforé pour respiration des légumes sous emballage",
         "isActive": true
@@ -130,15 +250,63 @@
     {
         "codeArticle": "FIL004",
         "designation": "Film plastique biodégradable 35cm x 250m - Bio",
-        "categorie": "Film Plastique",
+        "categorie": "Plastic Film",
         "dimensions": "35cm x 250m",
         "description": "Film compostable certifié pour emballage bio",
         "isActive": true
     },
     {
+        "codeArticle": "FIL005",
+        "designation": "Film rétractable PVC 45cm x 500m - Conditionnement",
+        "categorie": "Plastic Film",
+        "dimensions": "45cm x 500m",
+        "description": "Film rétractable pour regroupement et protection produits",
+        "isActive": true
+    },
+    {
+        "codeArticle": "FIL006",
+        "designation": "Film plastique micro-perforé 25cm x 150m - Champignons",
+        "categorie": "Plastic Film",
+        "dimensions": "25cm x 150m",
+        "description": "Film avec micro-perforations pour respiration champignons",
+        "isActive": true
+    },
+    {
+        "codeArticle": "FIL007",
+        "designation": "Film barrière multicouche 35cm x 200m - Longue conservation",
+        "categorie": "Plastic Film",
+        "dimensions": "35cm x 200m",
+        "description": "Film barrière O2/CO2 pour prolonger durée de vie",
+        "isActive": true
+    },
+    {
+        "codeArticle": "FIL008",
+        "designation": "Film plastique anti-buée 30cm x 300m - Surgelés",
+        "categorie": "Plastic Film",
+        "dimensions": "30cm x 300m",
+        "description": "Film spécialisé anti-condensation pour produits surgelés",
+        "isActive": true
+    },
+    {
+        "codeArticle": "FIL009",
+        "designation": "Film compostable PLA 40cm x 250m - Écologique",
+        "categorie": "Plastic Film",
+        "dimensions": "40cm x 250m",
+        "description": "Film 100% compostable en PLA pour emballage écologique",
+        "isActive": true
+    },
+    {
+        "codeArticle": "FIL010",
+        "designation": "Film sous-vide PA/PE 20cm x 100m - Conservation",
+        "categorie": "Plastic Film",
+        "dimensions": "20cm x 100m",
+        "description": "Film spécialisé mise sous-vide pour conservation optimale",
+        "isActive": true
+    },
+    {
         "codeArticle": "CAR001",
         "designation": "Carton expédition 40x30x20cm - Standard",
-        "categorie": "Carton",
+        "categorie": "Cardboard",
         "dimensions": "40x30x20cm",
         "description": "Carton ondulé simple cannelure pour expédition standard",
         "isActive": true
@@ -146,7 +314,7 @@
     {
         "codeArticle": "CAR002",
         "designation": "Carton présentoir fruits 50x35x15cm",
-        "categorie": "Carton",
+        "categorie": "Cardboard",
         "dimensions": "50x35x15cm",
         "description": "Carton présentoir avec découpe pour mise en rayon fruits",
         "isActive": true
@@ -154,7 +322,7 @@
     {
         "codeArticle": "CAR003",
         "designation": "Carton isotherme 35x25x25cm - Produits frais",
-        "categorie": "Carton",
+        "categorie": "Cardboard",
         "dimensions": "35x25x25cm",
         "description": "Carton avec isolation thermique pour transport produits frais",
         "isActive": true
@@ -162,63 +330,183 @@
     {
         "codeArticle": "CAR004",
         "designation": "Carton renforcé 60x40x30cm - Lourds",
-        "categorie": "Carton",
+        "categorie": "Cardboard",
         "dimensions": "60x40x30cm",
         "description": "Carton double cannelure haute résistance pour produits lourds",
         "isActive": true
     },
     {
-        "codeArticle": "SAC001",
+        "codeArticle": "CAR005",
+        "designation": "Carton archive 33x25x12cm - Documents",
+        "categorie": "Cardboard",
+        "dimensions": "33x25x12cm",
+        "description": "Carton kraft pour archivage documents et factures",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CAR006",
+        "designation": "Carton postal 22x16x10cm - Petits colis",
+        "categorie": "Cardboard",
+        "dimensions": "22x16x10cm",
+        "description": "Carton postal standard pour expédition petits colis",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CAR007",
+        "designation": "Carton ondulé triple épaisseur 50x40x40cm - Export",
+        "categorie": "Cardboard",
+        "dimensions": "50x40x40cm",
+        "description": "Carton haute résistance pour export international",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CAR008",
+        "designation": "Carton alimentaire kraft 30x20x15cm - Contact direct",
+        "categorie": "Cardboard",
+        "dimensions": "30x20x15cm",
+        "description": "Carton kraft alimentaire pour contact direct aliments",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CAR009",
+        "designation": "Carton télescopique 45x35x20cm - Variable",
+        "categorie": "Cardboard",
+        "dimensions": "45x35x20cm",
+        "description": "Carton ajustable en hauteur pour différentes épaisseurs",
+        "isActive": true
+    },
+    {
+        "codeArticle": "CAR010",
+        "designation": "Carton plateau 60x40x8cm - Base palette",
+        "categorie": "Cardboard",
+        "dimensions": "60x40x8cm",
+        "description": "Plateau carton renforcé pour base de palettisation",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAP001",
         "designation": "Sac plastique PEHD 5kg - Pommes de terre",
-        "categorie": "Sac Plastique",
+        "categorie": "Plastic Bag",
         "dimensions": "30x50cm",
         "description": "Sac plastique micro-perforé pour pommes de terre et légumes racines",
         "isActive": true
     },
     {
-        "codeArticle": "SAC002",
+        "codeArticle": "SAP002",
         "designation": "Sac plastique transparent 2kg - Légumes",
-        "categorie": "Sac Plastique",
+        "categorie": "Plastic Bag",
         "dimensions": "25x35cm",
         "description": "Sac plastique transparent pour légumes vrac",
         "isActive": true
     },
     {
-        "codeArticle": "SAC003",
+        "codeArticle": "SAP003",
         "designation": "Sac plastique biodégradable 1kg - Bio",
-        "categorie": "Sac Plastique",
+        "categorie": "Plastic Bag",
         "dimensions": "20x30cm",
         "description": "Sac compostable certifié pour fruits et légumes bio",
         "isActive": true
     },
     {
-        "codeArticle": "SAP001",
+        "codeArticle": "SAP004",
+        "designation": "Sac plastique zip 1kg - Conservation",
+        "categorie": "Plastic Bag",
+        "dimensions": "22x28cm",
+        "description": "Sac plastique refermable avec zip pour conservation",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAP005",
+        "designation": "Sac plastique haute densité 10kg - Céréales",
+        "categorie": "Plastic Bag",
+        "dimensions": "40x60cm",
+        "description": "Sac plastique renforcé pour céréales et graines",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAP006",
+        "designation": "Sac plastique alimentaire 500g - Viennoiseries",
+        "categorie": "Plastic Bag",
+        "dimensions": "18x25cm",
+        "description": "Sac alimentaire transparent pour viennoiseries",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAP007",
+        "designation": "Sac plastique anti-statique 3kg - Électronique",
+        "categorie": "Plastic Bag",
+        "dimensions": "25x35cm",
+        "description": "Sac spécialisé anti-statique pour composants sensibles",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAP008",
+        "designation": "Sac plastique isotherme 2kg - Surgelés",
+        "categorie": "Plastic Bag",
+        "dimensions": "24x32cm",
+        "description": "Sac avec isolation pour maintien chaîne du froid",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAK001",
         "designation": "Sac papier kraft brun 2kg - Fruits",
-        "categorie": "Sac Papier",
+        "categorie": "Paper Bag",
         "dimensions": "22x32cm",
         "description": "Sac papier kraft naturel avec soufflets pour fruits",
         "isActive": true
     },
     {
-        "codeArticle": "SAP002",
+        "codeArticle": "SAK002",
         "designation": "Sac papier blanc 1kg - Champignons",
-        "categorie": "Sac Papier",
+        "categorie": "Paper Bag",
         "dimensions": "18x25cm",
         "description": "Sac papier blanc alimentaire micro-perforé pour champignons",
         "isActive": true
     },
     {
-        "codeArticle": "SAP003",
+        "codeArticle": "SAK003",
         "designation": "Sac papier kraft fenêtre 500g - Premium",
-        "categorie": "Sac Papier",
+        "categorie": "Paper Bag",
         "dimensions": "16x24cm",
         "description": "Sac kraft avec fenêtre transparente pour présentation premium",
         "isActive": true
     },
     {
+        "codeArticle": "SAK004",
+        "designation": "Sac papier recyclé 3kg - Légumes bio",
+        "categorie": "Paper Bag",
+        "dimensions": "26x35cm",
+        "description": "Sac papier 100% recyclé certifié pour légumes biologiques",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAK005",
+        "designation": "Sac papier cuisson 1kg - Pommes de terre",
+        "categorie": "Paper Bag",
+        "dimensions": "20x30cm",
+        "description": "Sac papier spécial cuisson micro-ondes pour pommes de terre",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAK006",
+        "designation": "Sac papier kraft armé 5kg - Usage intensif",
+        "categorie": "Paper Bag",
+        "dimensions": "30x40cm",
+        "description": "Sac kraft renforcé pour usage professionnel intensif",
+        "isActive": true
+    },
+    {
+        "codeArticle": "SAK007",
+        "designation": "Sac papier alimentaire graissé 750g - Charcuterie",
+        "categorie": "Paper Bag",
+        "dimensions": "20x28cm",
+        "description": "Sac papier traité contre les graisses pour charcuterie",
+        "isActive": true
+    },
+    {
         "codeArticle": "ISO001",
         "designation": "Caisse isotherme polystyrène 10L - Produits frais",
-        "categorie": "Emballage Isotherme",
+        "categorie": "Isothermal Packaging",
         "dimensions": "30x20x17cm",
         "description": "Caisse polystyrène expansé pour transport produits frais",
         "isActive": true
@@ -226,7 +514,7 @@
     {
         "codeArticle": "ISO002",
         "designation": "Sac isotherme 15L - Surgelés",
-        "categorie": "Emballage Isotherme",
+        "categorie": "Isothermal Packaging",
         "dimensions": "35x25x20cm",
         "description": "Sac isotherme métallisé pour transport surgelés",
         "isActive": true
@@ -234,89 +522,177 @@
     {
         "codeArticle": "ISO003",
         "designation": "Boîte isotherme carton 5L - Fromages",
-        "categorie": "Emballage Isotherme",
+        "categorie": "Isothermal Packaging",
         "dimensions": "25x15x13cm",
         "description": "Boîte carton avec isolation pour fromages à température contrôlée",
         "isActive": true
     },
     {
-        "codeArticle": "ETI001",
+        "codeArticle": "ISO004",
+        "designation": "Conteneur isotherme 25L - Livraisons",
+        "categorie": "Isothermal Packaging",
+        "dimensions": "45x35x25cm",
+        "description": "Grand conteneur isotherme pour livraisons restaurant",
+        "isActive": true
+    },
+    {
+        "codeArticle": "ISO005",
+        "designation": "Boîte isotherme réutilisable 8L - Écologique",
+        "categorie": "Isothermal Packaging",
+        "dimensions": "32x24x18cm",
+        "description": "Boîte isotherme réutilisable avec isolation naturelle",
+        "isActive": true
+    },
+    {
+        "codeArticle": "ISO006",
+        "designation": "Sac isotherme pliable 20L - Transport",
+        "categorie": "Isothermal Packaging",
+        "dimensions": "40x30x22cm",
+        "description": "Sac isotherme pliable avec bandoulière pour transport",
+        "isActive": true
+    },
+    {
+        "codeArticle": "LAB001",
         "designation": "Étiquettes adhésives blanches 70x35mm (x1000)",
-        "categorie": "Etiquette",
+        "categorie": "Label",
         "dimensions": "70x35mm",
         "description": "Étiquettes blanches repositionnables pour marquage prix/poids",
         "isActive": true
     },
     {
-        "codeArticle": "ETI002",
+        "codeArticle": "LAB002",
         "designation": "Étiquettes code-barres thermiques 50x25mm (x2000)",
-        "categorie": "Etiquette",
+        "categorie": "Label",
         "dimensions": "50x25mm",
         "description": "Étiquettes thermiques pour impression code-barres",
         "isActive": true
     },
     {
-        "codeArticle": "ETI003",
+        "codeArticle": "LAB003",
         "designation": "Étiquettes origine bio 40x20mm (x500)",
-        "categorie": "Etiquette",
+        "categorie": "Label",
         "dimensions": "40x20mm",
         "description": "Étiquettes certification bio avec logo AB",
         "isActive": true
     },
     {
-        "codeArticle": "ETI004",
+        "codeArticle": "LAB004",
         "designation": "Étiquettes traçabilité résistantes 60x40mm (x1000)",
-        "categorie": "Etiquette",
+        "categorie": "Label",
         "dimensions": "60x40mm",
         "description": "Étiquettes résistantes eau/froid pour traçabilité produits",
         "isActive": true
     },
     {
-        "codeArticle": "AUT001",
+        "codeArticle": "LAB005",
+        "designation": "Étiquettes prix fluorescentes 35x25mm (x1500)",
+        "categorie": "Label",
+        "dimensions": "35x25mm",
+        "description": "Étiquettes colorées haute visibilité pour promotions",
+        "isActive": true
+    },
+    {
+        "codeArticle": "LAB006",
+        "designation": "Étiquettes RFID 80x50mm (x100)",
+        "categorie": "Label",
+        "dimensions": "80x50mm",
+        "description": "Étiquettes avec puce RFID pour traçabilité avancée",
+        "isActive": true
+    },
+    {
+        "codeArticle": "LAB007",
+        "designation": "Étiquettes sécurisées void 60x30mm (x500)",
+        "categorie": "Label",
+        "dimensions": "60x30mm",
+        "description": "Étiquettes anti-fraude qui se détruisent au décollement",
+        "isActive": true
+    },
+    {
+        "codeArticle": "LAB008",
+        "designation": "Étiquettes congélation -40°C 45x25mm (x1000)",
+        "categorie": "Label",
+        "dimensions": "45x25mm",
+        "description": "Étiquettes spécialisées résistantes aux très basses températures",
+        "isActive": true
+    },
+    {
+        "codeArticle": "OTH001",
         "designation": "Attaches plastique transparentes 100mm (x1000)",
-        "categorie": "Autre",
+        "categorie": "Other",
         "dimensions": "100mm",
         "description": "Attaches plastique pour fermeture sacs et emballages",
         "isActive": true
     },
     {
-        "codeArticle": "AUT002",
+        "codeArticle": "OTH002",
         "designation": "Adhésif transparent 50mm x 66m - Emballage",
-        "categorie": "Autre",
+        "categorie": "Other",
         "dimensions": "50mm x 66m",
         "description": "Ruban adhésif transparent pour fermeture cartons",
         "isActive": true
     },
     {
-        "codeArticle": "AUT003",
+        "codeArticle": "OTH003",
         "designation": "Papier de soie blanc 50x75cm (x250)",
-        "categorie": "Autre",
+        "categorie": "Other",
         "dimensions": "50x75cm",
         "description": "Papier de soie alimentaire pour protection fruits délicats",
         "isActive": true
     },
     {
-        "codeArticle": "AUT004",
+        "codeArticle": "OTH004",
         "designation": "Ficelle alimentaire coton 2mm x 100m",
-        "categorie": "Autre",
+        "categorie": "Other",
         "dimensions": "2mm x 100m",
         "description": "Ficelle coton naturelle pour ficelage produits traditionnels",
         "isActive": true
     },
     {
-        "codeArticle": "AUT005",
+        "codeArticle": "OTH005",
         "designation": "Coussinets absorbants 15x20cm (x200)",
-        "categorie": "Autre",
+        "categorie": "Other",
         "dimensions": "15x20cm",
         "description": "Coussinets absorbants pour viandes et produits humides",
         "isActive": true
     },
     {
-        "codeArticle": "AUT006",
+        "codeArticle": "OTH006",
         "designation": "Gel réfrigérant alimentaire 200g (x50)",
-        "categorie": "Autre",
+        "categorie": "Other",
         "dimensions": "15x10x2cm",
         "description": "Pains de glace réutilisables pour maintien chaîne du froid",
+        "isActive": true
+    },
+    {
+        "codeArticle": "OTH007",
+        "designation": "Papier bulle 50cm x 100m - Protection",
+        "categorie": "Other",
+        "dimensions": "50cm x 100m",
+        "description": "Papier bulle pour protection transport objets fragiles",
+        "isActive": true
+    },
+    {
+        "codeArticle": "OTH008",
+        "designation": "Sangles textiles 25mm x 5m - Arrimage",
+        "categorie": "Other",
+        "dimensions": "25mm x 5m",
+        "description": "Sangles textiles avec boucles pour arrimage palettes",
+        "isActive": true
+    },
+    {
+        "codeArticle": "OTH009",
+        "designation": "Coins carton de protection 50x50x3mm (x100)",
+        "categorie": "Other",
+        "dimensions": "50x50x3mm",
+        "description": "Coins carton pour protection angles lors transport",
+        "isActive": true
+    },
+    {
+        "codeArticle": "OTH010",
+        "designation": "Marqueurs alimentaires permanents (x10)",
+        "categorie": "Other",
+        "dimensions": "15cm",
+        "description": "Marqueurs permanents conformes contact alimentaire",
         "isActive": true
     }
 ]

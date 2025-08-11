@@ -328,7 +328,17 @@ export class DocumentStorageService {
       const stream = this.minioClient.listObjects(bucketName, prefix, true);
 
       return new Promise((resolve, reject) => {
-        stream.on('data', obj => files.push(obj));
+        stream.on('data', (obj: any) => {
+          // Only push objects that have the required properties for FileItem
+          if (obj.name && obj.lastModified && obj.size !== undefined && obj.etag) {
+            files.push({
+              name: obj.name,
+              lastModified: obj.lastModified,
+              size: obj.size,
+              etag: obj.etag,
+            });
+          }
+        });
         stream.on('error', reject);
         stream.on('end', () => resolve(files));
       });

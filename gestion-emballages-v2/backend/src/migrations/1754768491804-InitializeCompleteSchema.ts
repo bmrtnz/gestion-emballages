@@ -72,12 +72,12 @@ export class InitializeCompleteSchema1754768491804 implements MigrationInterface
         }
 
         // Now create all enums
-        await queryRunner.query(`CREATE TYPE "user_role" AS ENUM('admin', 'manager', 'user', 'viewer')`);
-        await queryRunner.query(`CREATE TYPE "entity_type" AS ENUM('platform', 'station', 'supplier')`);
-        await queryRunner.query(`CREATE TYPE "product_category" AS ENUM('boxes', 'trays', 'films', 'bags', 'labels', 'other')`);
+        await queryRunner.query(`CREATE TYPE "user_role" AS ENUM('ADMIN', 'MANAGER', 'HANDLER', 'STATION', 'SUPPLIER')`);
+        await queryRunner.query(`CREATE TYPE "entity_type" AS ENUM('STATION', 'SUPPLIER')`);
+        await queryRunner.query(`CREATE TYPE "product_category" AS ENUM('Tray', 'Crate', 'Platter', 'Plastic Film', 'Cardboard', 'Plastic Bag', 'Paper Bag', 'Isothermal Packaging', 'Label', 'Other')`);
         await queryRunner.query(`CREATE TYPE "conditioning_unit" AS ENUM('piece', 'unit', 'box_of_25', 'box_of_50', 'box_of_100', 'box_of_200', 'box_of_250', 'box_of_500', 'box_of_1000', 'pallet_of_20', 'pallet_of_25', 'pallet_of_50', 'pallet_of_100', 'roll', 'roll_of_100m', 'roll_of_200m', 'roll_of_500m', 'bundle', 'bundle_of_10', 'bundle_of_25', 'bundle_of_50', 'kg', 'bag_of_5kg', 'bag_of_10kg', 'bag_of_25kg', 'set', 'pair', 'dozen')`);
         await queryRunner.query(`CREATE TYPE "order_status" AS ENUM('Enregistrée', 'Confirmée', 'Expédiée', 'Réceptionnée', 'Clôturée', 'Facturée', 'Archivée')`);
-        await queryRunner.query(`CREATE TYPE "transfer_status" AS ENUM('draft', 'submitted', 'approved', 'rejected', 'in_transit', 'delivered', 'cancelled')`);
+        await queryRunner.query(`CREATE TYPE "transfer_status" AS ENUM('Enregistrée', 'Confirmée', 'Rejetée', 'Traitée logistique', 'Expédiée', 'Réceptionnée', 'Clôturée', 'Traitée comptabilité', 'Archivée')`);
         
         // Contract management enums
         await queryRunner.query(`CREATE TYPE "contract_type" AS ENUM('ANNUAL', 'MULTI_YEAR', 'SEASONAL', 'SPOT')`);
@@ -102,7 +102,7 @@ export class InitializeCompleteSchema1754768491804 implements MigrationInterface
             'PRODUCT_SUPPLIER', 'PLATFORM', 'SUPPLIER', 'STATION', 'PURCHASE_ORDER', 'SALES_ORDER', 'MASTER_ORDER', 
             'USER', 'DELIVERY', 'PURCHASE_ORDER_PRODUCT', 'SALES_ORDER_PRODUCT', 'TRANSFER_REQUEST', 'STOCK_MOVEMENT'
         )`);
-        await queryRunner.query(`CREATE TYPE "access_type" AS ENUM('read', 'write', 'delete', 'admin')`);
+        await queryRunner.query(`CREATE TYPE "access_type" AS ENUM('READ', 'WRITE', 'DELETE', 'ADMIN')`);
         await queryRunner.query(`CREATE TYPE "access_entity_type" AS ENUM('USER', 'STATION', 'SUPPLIER', 'PLATFORM', 'ROLE')`);
 
         // Create base tables in dependency order
@@ -262,7 +262,7 @@ export class InitializeCompleteSchema1754768491804 implements MigrationInterface
             "hashed_password" character varying NOT NULL,
             "full_name" character varying NOT NULL,
             "phone" character varying,
-            "role" "user_role" NOT NULL DEFAULT 'user',
+            "role" "user_role" NOT NULL DEFAULT 'HANDLER',
             "entity_type" "entity_type",
             "entity_id" uuid,
             "reset_token" character varying,
@@ -504,7 +504,7 @@ export class InitializeCompleteSchema1754768491804 implements MigrationInterface
             "request_number" character varying NOT NULL,
             "from_station_id" uuid NOT NULL,
             "to_station_id" uuid NOT NULL,
-            "status" "transfer_status" NOT NULL DEFAULT 'draft',
+            "status" "transfer_status" NOT NULL DEFAULT 'Enregistrée',
             "reason" text,
             "requested_by" uuid NOT NULL,
             "approved_by" uuid,

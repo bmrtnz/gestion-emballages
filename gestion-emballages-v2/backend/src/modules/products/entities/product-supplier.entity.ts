@@ -5,7 +5,7 @@ import { Supplier } from '@modules/suppliers/entities/supplier.entity';
 import { PurchaseOrderProduct } from '@modules/orders/entities/purchase-order-product.entity';
 import { ConditioningUnit } from '@common/enums/conditioning-unit.enum';
 
-@Entity('article_fournisseurs')
+@Entity('product_suppliers')
 @Unique(['productId', 'supplierId'])
 export class ProductSupplier extends BaseEntity {
   @Column({ name: 'product_id' })

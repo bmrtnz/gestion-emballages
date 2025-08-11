@@ -14,9 +14,9 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { SupplierContactsService } from './Supplier-contacts.service';
-import { CreateSupplierContactDto } from './dto/create-Supplier-contact.dto';
-import { UpdateSupplierContactDto } from './dto/update-Supplier-contact.dto';
+import { SupplierContactsService } from './supplier-contacts.service';
+import { CreateSupplierContactDto } from './dto/create-supplier-contact.dto';
+import { UpdateSupplierContactDto } from './dto/update-supplier-contact.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from '@modules/auth/decorators/roles.decorator';

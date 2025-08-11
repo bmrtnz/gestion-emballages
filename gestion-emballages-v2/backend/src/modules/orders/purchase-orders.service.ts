@@ -47,7 +47,7 @@ export class PurchaseOrdersService {
         requestedDeliveryDate: createPurchaseOrderDto.requestedDeliveryDate
           ? new Date(createPurchaseOrderDto.requestedDeliveryDate)
           : undefined,
-        status: createPurchaseOrderDto.status || OrderStatus.ENREGISTREE,
+        status: OrderStatus.ENREGISTREE,
         createdById,
       });
 
@@ -179,22 +179,22 @@ export class PurchaseOrdersService {
   async update(id: string, updatePurchaseOrderDto: UpdatePurchaseOrderDto): Promise<PurchaseOrder> {
     const purchaseOrder = await this.findOne(id);
 
-    // Handle date conversions
-    const updateData = { ...updatePurchaseOrderDto };
-    if (updateData.requestedDeliveryDate) {
-      updateData.requestedDeliveryDate = new Date(updateData.requestedDeliveryDate);
+    // Handle date conversions and create entity update data
+    const entityUpdateData: any = { ...updatePurchaseOrderDto };
+    if (updatePurchaseOrderDto.requestedDeliveryDate) {
+      entityUpdateData.requestedDeliveryDate = new Date(updatePurchaseOrderDto.requestedDeliveryDate);
     }
-    if (updateData.confirmedDeliveryDate) {
-      updateData.confirmedDeliveryDate = new Date(updateData.confirmedDeliveryDate);
+    if (updatePurchaseOrderDto.confirmedDeliveryDate) {
+      entityUpdateData.confirmedDeliveryDate = new Date(updatePurchaseOrderDto.confirmedDeliveryDate);
     }
-    if (updateData.actualDeliveryDate) {
-      updateData.actualDeliveryDate = new Date(updateData.actualDeliveryDate);
+    if (updatePurchaseOrderDto.actualDeliveryDate) {
+      entityUpdateData.actualDeliveryDate = new Date(updatePurchaseOrderDto.actualDeliveryDate);
     }
-    if (updateData.approvedAt) {
-      updateData.approvedAt = new Date(updateData.approvedAt);
+    if (updatePurchaseOrderDto.approvedAt) {
+      entityUpdateData.approvedAt = new Date(updatePurchaseOrderDto.approvedAt);
     }
 
-    Object.assign(purchaseOrder, updateData);
+    Object.assign(purchaseOrder, entityUpdateData);
     return this.purchaseOrderRepository.save(purchaseOrder);
   }
 

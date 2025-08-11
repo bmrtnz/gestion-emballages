@@ -13,20 +13,19 @@ export class StockStation extends BaseEntity {
   @Column({ name: 'product_id' })
   articleId: string;
 
-  @Column({ name: 'quantite_actuelle', default: 0 })
+  @Column({ name: 'quantity', default: 0 })
   quantiteActuelle: number;
 
-  @Column({ name: 'seuil_alerte', nullable: true })
+  @Column({ name: 'minimum_stock', nullable: true })
   seuilAlerte?: number;
 
-  @Column({ name: 'seuil_critique', nullable: true })
+  @Column({ name: 'maximum_stock', nullable: true })
   seuilCritique?: number;
 
-  @Column({ name: 'derniere_mise_a_jour', default: () => 'CURRENT_TIMESTAMP' })
-  derniereMiseAJour: Date;
-
-  @Column({ name: 'updated_by', nullable: true })
+  @Column({ name: 'last_updated_by', nullable: true })
   updatedById?: string;
+
+  // Note: derniereMiseAJour uses the inherited updatedAt from BaseEntity
 
   // Relations
   @ManyToOne(() => Station, station => station.stocks)
@@ -38,6 +37,15 @@ export class StockStation extends BaseEntity {
   product: Product;
 
   @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'updated_by' })
-  updatedBy?: User;
+  @JoinColumn({ name: 'last_updated_by' })
+  lastUpdatedByUser?: User;
+
+  // Backward compatibility getter/setter
+  get derniereMiseAJour(): Date {
+    return this.updatedAt;
+  }
+
+  set derniereMiseAJour(value: Date) {
+    this.updatedAt = value;
+  }
 }

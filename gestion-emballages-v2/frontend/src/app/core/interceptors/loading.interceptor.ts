@@ -9,7 +9,21 @@ export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   // Skip loading indicator for specific endpoints
   const skipLoading = req.headers.has('X-Skip-Loading') || 
                       req.url.includes('/auth/refresh') ||
-                      req.method === 'GET' && req.url.includes('/profile');
+                      req.url.includes('/assets/') ||
+                      req.url.includes('/i18n/') ||
+                      req.url.includes('.json') ||
+                      req.url.includes('.css') ||
+                      req.url.includes('.js') ||
+                      req.url.includes('.png') ||
+                      req.url.includes('.jpg') ||
+                      req.url.includes('.jpeg') ||
+                      req.url.includes('.gif') ||
+                      req.url.includes('.svg') ||
+                      req.url.includes('.ico') ||
+                      req.url.includes('.woff') ||
+                      req.url.includes('.woff2') ||
+                      req.url.includes('.ttf') ||
+                      (req.method === 'GET' && req.url.includes('/profile'));
 
   if (!skipLoading) {
     loadingService.show();

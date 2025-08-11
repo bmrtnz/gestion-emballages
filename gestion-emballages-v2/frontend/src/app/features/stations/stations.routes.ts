@@ -5,6 +5,6 @@ export const stationsRoutes: Routes = [
   {
     path: '',
     canActivate: [adminGuard],
-    loadComponent: () => import('./station-list/station-list.component').then(c => c.StationListComponent)
+    loadComponent: () => import('./station-page.component').then(c => c.StationPageComponent)
   }
 ];

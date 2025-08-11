@@ -1,11 +1,11 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { BaseEntity } from '@common/entities/base.entity';
+import { SoftDeletableEntity } from '@common/entities/base.entity';
 import { PlatformContact } from './platform-contact.entity';
 import { PurchaseOrder } from '@modules/orders/entities/purchase-order.entity';
 import { StockPlatform } from '@modules/stocks/entities/stock-platform.entity';
 
 @Entity('platforms')
-export class Platform extends BaseEntity {
+export class Platform extends SoftDeletableEntity {
   @Column()
   name: string;
 

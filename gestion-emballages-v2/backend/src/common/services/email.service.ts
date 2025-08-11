@@ -24,7 +24,7 @@ export class EmailService {
         tls: {
           rejectUnauthorized: false,
         },
-      } as nodemailer.TransporterOptions); // Type assertion for MailHog configuration
+      } as nodemailer.TransportOptions); // Type assertion for MailHog configuration
     } else {
       // Production email service configuration
       this.transporter = nodemailer.createTransport({

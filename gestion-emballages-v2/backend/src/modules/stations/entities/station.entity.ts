@@ -36,6 +36,11 @@ export class Station extends SoftDeletableEntity {
   coordinates?: {
     lat?: number;
     lng?: number;
+    // Additional metadata can be stored here
+    specialization?: string;
+    productionVolume?: string;
+    peakSeason?: string;
+    [key: string]: any;
   };
 
   // Relations

@@ -36,8 +36,8 @@ import {
     Truck,
     X,
     SquareX,
-    SquarePauseIcon,
-    SquarePlayIcon,
+    Pause,
+    Play,
 } from "lucide-angular";
 
 import { AppComponent } from "./app/app.component";
@@ -86,8 +86,8 @@ bootstrapApplication(AppComponent, {
                 Truck,
                 X,
                 SquareX,
-                SquarePauseIcon,
-                SquarePlayIcon,
+                Pause,
+                Play,
             })
         ),
     ],

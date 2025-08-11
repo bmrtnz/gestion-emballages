@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 
 export interface DataIntegrityCheck {
   entity: string;
@@ -361,15 +361,15 @@ export class DataIntegrityService {
   private async performCascadeDelete(
     entityType: string,
     entityId: string,
-    queryRunner: { manager: { query: (sql: string, params?: unknown[]) => Promise<unknown[]> } }
+    queryRunner: QueryRunner
   ): Promise<number> {
     const deleteCount = 0;
 
     switch (entityType.toLowerCase()) {
       case 'station':
         // Delete station-related data
-        await queryRunner.query('DELETE FROM stock_stations WHERE "stationId" = $1', [entityId]);
-        await queryRunner.query(
+        await queryRunner.manager.query('DELETE FROM stock_stations WHERE "stationId" = $1', [entityId]);
+        await queryRunner.manager.query(
           'DELETE FROM demandes_transfert WHERE "stationSourceId" = $1 OR "stationDestinationId" = $1',
           [entityId]
         );
@@ -377,15 +377,15 @@ export class DataIntegrityService {
 
       case 'Supplier':
         // Delete supplier-related data (but keep historical orders)
-        await queryRunner.query('DELETE FROM article_fournisseurs WHERE "fournisseurId" = $1', [entityId]);
-        await queryRunner.query('DELETE FROM fournisseur_sites WHERE "fournisseurId" = $1', [entityId]);
+        await queryRunner.manager.query('DELETE FROM article_fournisseurs WHERE "fournisseurId" = $1', [entityId]);
+        await queryRunner.manager.query('DELETE FROM fournisseur_sites WHERE "fournisseurId" = $1', [entityId]);
         break;
 
       case 'Product':
         // Delete Product-related data (but keep historical order items)
-        await queryRunner.query('DELETE FROM article_fournisseurs WHERE "articleId" = $1', [entityId]);
-        await queryRunner.query('DELETE FROM stock_stations WHERE "articleId" = $1', [entityId]);
-        await queryRunner.query('DELETE FROM stocks_platform WHERE "articleId" = $1', [entityId]);
+        await queryRunner.manager.query('DELETE FROM article_fournisseurs WHERE "articleId" = $1', [entityId]);
+        await queryRunner.manager.query('DELETE FROM stock_stations WHERE "articleId" = $1', [entityId]);
+        await queryRunner.manager.query('DELETE FROM stocks_platform WHERE "articleId" = $1', [entityId]);
         break;
     }
 
@@ -395,7 +395,7 @@ export class DataIntegrityService {
   private async deleteMainEntity(
     entityType: string,
     entityId: string,
-    queryRunner: { manager: { query: (sql: string, params?: unknown[]) => Promise<void> } }
+    queryRunner: QueryRunner
   ): Promise<void> {
     const tableMap = {
       station: 'stations',
@@ -409,6 +409,6 @@ export class DataIntegrityService {
       throw new BadRequestException(`Unknown entity type: ${entityType}`);
     }
 
-    await queryRunner.query(`DELETE FROM ${tableName} WHERE id = $1`, [entityId]);
+    await queryRunner.manager.query(`DELETE FROM ${tableName} WHERE id = $1`, [entityId]);
   }
 }

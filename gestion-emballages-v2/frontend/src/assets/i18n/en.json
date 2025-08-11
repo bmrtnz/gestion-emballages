@@ -18,6 +18,7 @@
     "reset": "Reset",
     "close": "Close",
     "loading": "Loading...",
+    "loadingUsers": "Loading users...",
     "error": "Error",
     "success": "Success",
     "confirm": "Confirm",

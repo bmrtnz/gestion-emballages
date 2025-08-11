@@ -15,8 +15,8 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { SuppliersService } from './suppliers.service';
-import { CreateSupplierDto } from './dto/create-Supplier.dto';
-import { UpdateSupplierDto } from './dto/update-Supplier.dto';
+import { CreateSupplierDto } from './dto/create-supplier.dto';
+import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';

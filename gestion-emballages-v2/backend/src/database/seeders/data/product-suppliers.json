@@ -1,0 +1,471 @@
+[
+    {
+        "productCode": "TRA001",
+        "supplierName": "PackagingTech Solutions",
+        "supplierProductCode": "PTS-TRA001-250G",
+        "conditioningPrice": 18.50,
+        "conditioningUnit": "box_of_100",
+        "quantityPerConditioning": 100,
+        "indicativeSupplyDelay": 7,
+        "minimumOrderQuantity": 5,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 5},
+            {"minQuantity": 50, "priceReduction": 12},
+            {"minQuantity": 100, "priceReduction": 20}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "TRA001",
+        "supplierName": "Emballages Méditerranéens",
+        "supplierProductCode": "EM-BAR250-TOMATE",
+        "conditioningPrice": 17.80,
+        "conditioningUnit": "box_of_100",
+        "quantityPerConditioning": 100,
+        "indicativeSupplyDelay": 5,
+        "minimumOrderQuantity": 10,
+        "priceBreaks": [
+            {"minQuantity": 20, "priceReduction": 8},
+            {"minQuantity": 100, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "TRA002",
+        "supplierName": "PackagingTech Solutions",
+        "supplierProductCode": "PTS-TRA002-500G",
+        "conditioningPrice": 22.30,
+        "conditioningUnit": "box_of_100",
+        "quantityPerConditioning": 100,
+        "indicativeSupplyDelay": 7,
+        "minimumOrderQuantity": 5,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 5},
+            {"minQuantity": 25, "priceReduction": 10}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "TRA003",
+        "supplierName": "Emballages Méditerranéens",
+        "supplierProductCode": "EM-RAISIN-1KG",
+        "conditioningPrice": 28.75,
+        "conditioningUnit": "box_of_100",
+        "quantityPerConditioning": 100,
+        "indicativeSupplyDelay": 6,
+        "minimumOrderQuantity": 5,
+        "priceBreaks": [
+            {"minQuantity": 20, "priceReduction": 7},
+            {"minQuantity": 50, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "TRA004",
+        "supplierName": "EcoPack Solutions",
+        "supplierProductCode": "ECO-BIO-KRAFT300",
+        "conditioningPrice": 19.90,
+        "conditioningUnit": "box_of_100",
+        "quantityPerConditioning": 100,
+        "indicativeSupplyDelay": 8,
+        "minimumOrderQuantity": 10,
+        "priceBreaks": [
+            {"minQuantity": 25, "priceReduction": 10},
+            {"minQuantity": 100, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "TRA004",
+        "supplierName": "Emballages Bio Sud-Ouest",
+        "supplierProductCode": "EBSO-KRAFT-BIO-300",
+        "conditioningPrice": 18.95,
+        "conditioningUnit": "box_of_100",
+        "quantityPerConditioning": 100,
+        "indicativeSupplyDelay": 9,
+        "minimumOrderQuantity": 15,
+        "priceBreaks": [
+            {"minQuantity": 30, "priceReduction": 12},
+            {"minQuantity": 75, "priceReduction": 20}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "TRA005",
+        "supplierName": "Franche-Comté Emballages",
+        "supplierProductCode": "FCE-BOIS-PREMIUM-500",
+        "conditioningPrice": 45.20,
+        "conditioningUnit": "box_of_50",
+        "quantityPerConditioning": 50,
+        "indicativeSupplyDelay": 12,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 8},
+            {"minQuantity": 25, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "CRA001",
+        "supplierName": "Franche-Comté Emballages",
+        "supplierProductCode": "FCE-CAGETTE-BOIS-2KG",
+        "conditioningPrice": 52.80,
+        "conditioningUnit": "pallet_of_50",
+        "quantityPerConditioning": 50,
+        "indicativeSupplyDelay": 10,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 5, "priceReduction": 10},
+            {"minQuantity": 15, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "CRA002",
+        "supplierName": "AgroPackaging Nord",
+        "supplierProductCode": "AGN-CARTON-LEG-1KG",
+        "conditioningPrice": 38.50,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 25,
+        "indicativeSupplyDelay": 5,
+        "minimumOrderQuantity": 8,
+        "priceBreaks": [
+            {"minQuantity": 20, "priceReduction": 8},
+            {"minQuantity": 50, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "CRA003",
+        "supplierName": "Emballages Méditerranéens",
+        "supplierProductCode": "EM-PLASTIQUE-TOMATE-5KG",
+        "conditioningPrice": 62.40,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 20,
+        "indicativeSupplyDelay": 6,
+        "minimumOrderQuantity": 5,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 5},
+            {"minQuantity": 25, "priceReduction": 12}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "FIL001",
+        "supplierName": "PackagingTech Solutions",
+        "supplierProductCode": "PTS-FILM-PVC-30X300",
+        "conditioningPrice": 125.60,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1,
+        "indicativeSupplyDelay": 4,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 8},
+            {"minQuantity": 25, "priceReduction": 15},
+            {"minQuantity": 100, "priceReduction": 25}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "FIL001",
+        "supplierName": "Conditionnements du Centre",
+        "supplierProductCode": "CDC-FILM-ALIM-30X300",
+        "conditioningPrice": 118.90,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1,
+        "indicativeSupplyDelay": 6,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 15, "priceReduction": 10},
+            {"minQuantity": 50, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "FIL002",
+        "supplierName": "Plastiques de l'Ouest",
+        "supplierProductCode": "PO-ETIRABLE-50X300",
+        "conditioningPrice": 89.75,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1,
+        "indicativeSupplyDelay": 7,
+        "minimumOrderQuantity": 4,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 6},
+            {"minQuantity": 30, "priceReduction": 12},
+            {"minQuantity": 100, "priceReduction": 20}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "FIL003",
+        "supplierName": "Plastiques de l'Ouest",
+        "supplierProductCode": "PO-PERFORE-LEG-40X200",
+        "conditioningPrice": 95.30,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1,
+        "indicativeSupplyDelay": 8,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 12, "priceReduction": 8},
+            {"minQuantity": 25, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "FIL004",
+        "supplierName": "BioGreen Packaging",
+        "supplierProductCode": "BGP-BIO-DEGRADABLE-35X250",
+        "conditioningPrice": 156.80,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1,
+        "indicativeSupplyDelay": 10,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 8, "priceReduction": 5},
+            {"minQuantity": 20, "priceReduction": 12}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "FIL004",
+        "supplierName": "EcoPack Solutions",
+        "supplierProductCode": "ECO-COMPOSTABLE-35X250",
+        "conditioningPrice": 148.95,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1,
+        "indicativeSupplyDelay": 9,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 8},
+            {"minQuantity": 25, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "SAP001",
+        "supplierName": "Plastiques de l'Ouest",
+        "supplierProductCode": "PO-PEHD-PATATE-5KG",
+        "conditioningPrice": 67.50,
+        "conditioningUnit": "box_of_500",
+        "quantityPerConditioning": 500,
+        "indicativeSupplyDelay": 5,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 10},
+            {"minQuantity": 25, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "SAP002",
+        "supplierName": "Plastiques de l'Ouest",
+        "supplierProductCode": "PO-TRANSPARENT-LEG-2KG",
+        "conditioningPrice": 45.20,
+        "conditioningUnit": "box_of_500",
+        "quantityPerConditioning": 500,
+        "indicativeSupplyDelay": 4,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 15, "priceReduction": 12},
+            {"minQuantity": 50, "priceReduction": 20}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "SAP003",
+        "supplierName": "BioGreen Packaging",
+        "supplierProductCode": "BGP-BIO-SAC-1KG",
+        "conditioningPrice": 89.60,
+        "conditioningUnit": "box_of_500",
+        "quantityPerConditioning": 500,
+        "indicativeSupplyDelay": 8,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 8, "priceReduction": 8},
+            {"minQuantity": 20, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "SAK001",
+        "supplierName": "Emballages Bio Sud-Ouest",
+        "supplierProductCode": "EBSO-KRAFT-FRUIT-2KG",
+        "conditioningPrice": 72.30,
+        "conditioningUnit": "box_of_250",
+        "quantityPerConditioning": 250,
+        "indicativeSupplyDelay": 6,
+        "minimumOrderQuantity": 4,
+        "priceBreaks": [
+            {"minQuantity": 12, "priceReduction": 10},
+            {"minQuantity": 30, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "SAK001",
+        "supplierName": "Emballages Écologiques Limousin",
+        "supplierProductCode": "EEL-KRAFT-NATUREL-2KG",
+        "conditioningPrice": 69.80,
+        "conditioningUnit": "box_of_250",
+        "quantityPerConditioning": 250,
+        "indicativeSupplyDelay": 8,
+        "minimumOrderQuantity": 5,
+        "priceBreaks": [
+            {"minQuantity": 15, "priceReduction": 8},
+            {"minQuantity": 40, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "ISO001",
+        "supplierName": "ThermoFresh Packaging",
+        "supplierProductCode": "TFP-POLYSTYR-10L-FRAIS",
+        "conditioningPrice": 185.40,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 25,
+        "indicativeSupplyDelay": 5,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 8, "priceReduction": 8},
+            {"minQuantity": 20, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "ISO001",
+        "supplierName": "Emballages Alpins",
+        "supplierProductCode": "EA-ISOTHERME-MONT-10L",
+        "conditioningPrice": 192.60,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 25,
+        "indicativeSupplyDelay": 7,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 5},
+            {"minQuantity": 25, "priceReduction": 12}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "ISO002",
+        "supplierName": "ThermoFresh Packaging",
+        "supplierProductCode": "TFP-SAC-ISO-15L-SURGELE",
+        "conditioningPrice": 158.90,
+        "conditioningUnit": "box_of_50",
+        "quantityPerConditioning": 50,
+        "indicativeSupplyDelay": 4,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 8, "priceReduction": 10},
+            {"minQuantity": 20, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "LAB001",
+        "supplierName": "Labels & Étiquettes Pro",
+        "supplierProductCode": "LEP-ADHESIVE-70X35-1000",
+        "conditioningPrice": 89.20,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1000,
+        "indicativeSupplyDelay": 3,
+        "minimumOrderQuantity": 5,
+        "priceBreaks": [
+            {"minQuantity": 20, "priceReduction": 12},
+            {"minQuantity": 50, "priceReduction": 20},
+            {"minQuantity": 100, "priceReduction": 30}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "LAB001",
+        "supplierName": "Conditionnements du Centre",
+        "supplierProductCode": "CDC-ETIQ-BLANC-70X35",
+        "conditioningPrice": 85.70,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 1000,
+        "indicativeSupplyDelay": 4,
+        "minimumOrderQuantity": 8,
+        "priceBreaks": [
+            {"minQuantity": 25, "priceReduction": 10},
+            {"minQuantity": 75, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "LAB002",
+        "supplierName": "Labels & Étiquettes Pro",
+        "supplierProductCode": "LEP-THERMIQUE-50X25-2000",
+        "conditioningPrice": 125.80,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 2000,
+        "indicativeSupplyDelay": 2,
+        "minimumOrderQuantity": 3,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 8},
+            {"minQuantity": 30, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "LAB003",
+        "supplierName": "Labels & Étiquettes Pro",
+        "supplierProductCode": "LEP-BIO-AB-40X20-500",
+        "conditioningPrice": 156.30,
+        "conditioningUnit": "roll",
+        "quantityPerConditioning": 500,
+        "indicativeSupplyDelay": 5,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 10, "priceReduction": 10},
+            {"minQuantity": 25, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "CAR001",
+        "supplierName": "AgroPackaging Nord",
+        "supplierProductCode": "AGN-CARTON-STD-40X30X20",
+        "conditioningPrice": 68.40,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 25,
+        "indicativeSupplyDelay": 6,
+        "minimumOrderQuantity": 4,
+        "priceBreaks": [
+            {"minQuantity": 15, "priceReduction": 8},
+            {"minQuantity": 40, "priceReduction": 15}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "CAR001",
+        "supplierName": "Alpha Packaging France",
+        "supplierProductCode": "APF-EXPEDITION-STANDARD",
+        "conditioningPrice": 65.90,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 25,
+        "indicativeSupplyDelay": 4,
+        "minimumOrderQuantity": 6,
+        "priceBreaks": [
+            {"minQuantity": 20, "priceReduction": 10},
+            {"minQuantity": 50, "priceReduction": 18}
+        ],
+        "isActive": true
+    },
+    {
+        "productCode": "CAR002",
+        "supplierName": "Cartons Maître Artisan",
+        "supplierProductCode": "CMA-PRESENTOIR-50X35X15",
+        "conditioningPrice": 125.60,
+        "conditioningUnit": "box_of_25",
+        "quantityPerConditioning": 10,
+        "indicativeSupplyDelay": 10,
+        "minimumOrderQuantity": 2,
+        "priceBreaks": [
+            {"minQuantity": 8, "priceReduction": 12},
+            {"minQuantity": 20, "priceReduction": 20}
+        ],
+        "isActive": true
+    }
+]

@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 
 import { Supplier } from './entities/supplier.entity';
 import { SupplierSite } from './entities/supplier-site.entity';
-import { CreateSupplierDto } from './dto/create-Supplier.dto';
-import { UpdateSupplierDto } from './dto/update-Supplier.dto';
+import { CreateSupplierDto } from './dto/create-supplier.dto';
+import { UpdateSupplierDto } from './dto/update-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginationService } from '@common/services/pagination.service';
 

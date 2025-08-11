@@ -17,6 +17,8 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { StocksService } from './stocks.service';
 import { CreateStockStationDto } from './dto/create-stock-station.dto';
 import { AdjustStockDto, UpdateStockStationDto } from './dto/update-stock-station.dto';
+import { CreateStockSupplierDto } from './dto/create-stock-supplier.dto';
+import { UpdateStockSupplierDto } from './dto/update-stock-supplier.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
@@ -99,8 +101,8 @@ export class StocksController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.SUPPLIER)
   @ApiOperation({ summary: 'Create supplier stock entry' })
   @ApiResponse({ status: 201, description: 'Supplier stock created successfully' })
-  async createStockFournisseur(@Body() CreateStockSupplierDto: CreateStockSupplierDto) {
-    return this.stocksService.createStockFournisseur(CreateStockSupplierDto);
+  async createStockFournisseur(@Body() createStockSupplierDto: CreateStockSupplierDto) {
+    return this.stocksService.createStockFournisseur(createStockSupplierDto);
   }
 
   @Get('fournisseurs')
@@ -136,8 +138,8 @@ export class StocksController {
   @Roles(UserRole.MANAGER, UserRole.HANDLER, UserRole.SUPPLIER)
   @ApiOperation({ summary: 'Update supplier stock' })
   @ApiResponse({ status: 200, description: 'Supplier stock updated successfully' })
-  async updateStockFournisseur(@Param('id') id: string, @Body() UpdateStockSupplierDto: UpdateStockSupplierDto) {
-    return this.stocksService.updateStockFournisseur(id, UpdateStockSupplierDto);
+  async updateStockFournisseur(@Param('id') id: string, @Body() updateStockSupplierDto: UpdateStockSupplierDto) {
+    return this.stocksService.updateStockFournisseur(id, updateStockSupplierDto);
   }
 
   @Delete('fournisseurs/:id')

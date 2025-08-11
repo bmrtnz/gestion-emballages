@@ -5,7 +5,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { OrderStatus } from '@common/enums/order-status.enum';
 
 export class UpdateMasterOrderDto extends PartialType(
-  OmitType(CreateMasterOrderDto, ['stationId', 'orders'] as const)
+  OmitType(CreateMasterOrderDto, ['stationId', 'purchaseOrders'] as const)
 ) {
   @ApiPropertyOptional({
     description: 'General status of the master order',

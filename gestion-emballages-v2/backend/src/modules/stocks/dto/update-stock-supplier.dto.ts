@@ -1,5 +1,5 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
-import { CreateStockSupplierDto } from './create-stock-Supplier.dto';
+import { CreateStockSupplierDto } from './create-stock-supplier.dto';
 import { IsNumber, IsOptional, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 

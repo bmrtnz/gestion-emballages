@@ -235,15 +235,27 @@ export class AddUserFormComponent {
   private async loadEntities(): Promise<void> {
     try {
       // Load active stations
-      const activeStations = await this.stationService.getActiveStations();
-      this.stations.set(activeStations);
+      this.stationService.getActiveStations().subscribe({
+        next: (activeStations) => {
+          this.stations.set(activeStations);
+        },
+        error: (error) => {
+          console.error('Error loading stations:', error);
+          this.notificationService.showError('Erreur lors du chargement des stations');
+        }
+      });
       
       // Load active suppliers
-      const suppliersResponse = await this.supplierService.getSuppliers({
-        status: 'active',
-        limit: 1000 // Get all active suppliers
-      });
-      this.suppliers.set(suppliersResponse.data);
+      try {
+        const suppliersResponse = await this.supplierService.getSuppliers({
+          status: 'active',
+          limit: 1000 // Get all active suppliers
+        });
+        this.suppliers.set(suppliersResponse.data);
+      } catch (error) {
+        console.error('Error loading suppliers:', error);
+        this.notificationService.showError('Erreur lors du chargement des fournisseurs');
+      }
       
     } catch (error) {
       console.error('Error loading entities:', error);

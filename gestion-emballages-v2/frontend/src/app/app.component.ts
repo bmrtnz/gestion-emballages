@@ -4,9 +4,7 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 import { AuthService } from './core/services/auth.service';
-import { LoadingService } from './core/services/loading.service';
 import { NotificationService } from './core/services/notification.service';
-import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
 import { NotificationComponent } from './shared/components/notification/notification.component';
 
 @Component({
@@ -15,7 +13,6 @@ import { NotificationComponent } from './shared/components/notification/notifica
   imports: [
     CommonModule,
     RouterOutlet,
-    LoadingSpinnerComponent,
     NotificationComponent
   ],
   template: `
@@ -24,12 +21,6 @@ import { NotificationComponent } from './shared/components/notification/notifica
     
     <!-- Main app container -->
     <div class="relative min-h-screen">
-      <!-- Global Loading Spinner -->
-      <app-loading-spinner 
-        *ngIf="isLoading"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      </app-loading-spinner>
-
       <!-- Main Application -->
       <router-outlet></router-outlet>
 
@@ -42,13 +33,7 @@ import { NotificationComponent } from './shared/components/notification/notifica
 export class AppComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
-  private loadingService = inject(LoadingService);
   public notificationService = inject(NotificationService);
-
-  // Use signal for reactive loading state to avoid expression changed error
-  get isLoading() {
-    return this.loadingService.isLoading();
-  }
 
   ngOnInit() {
     // Initialize authentication

@@ -24,7 +24,10 @@ import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from '@modules/auth/decorators/roles.decorator';
 import { UserRole } from '@common/enums/user-role.enum';
-import { DataIntegrityService } from '@common/services/data-integrity.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+// import { DataIntegrityService } from '@common/services/data-integrity.service';
 
 // Interface for user with populated relationships
 interface UserWithRelations {
@@ -45,7 +48,8 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
-    private readonly dataIntegrityService: DataIntegrityService
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   // Development-only endpoint (no authentication required)
@@ -63,28 +67,23 @@ export class UsersController {
     }
 
     try {
-      const result = await this.usersService.findAll({
-        ...paginationDto,
-        limit: 100,
-        status: 'active',
-      });
-
-      // Return simplified user data for login selector
-      // The service already populates station and supplier data dynamically
-      const simplifiedUsers = result.data.map(
-        (user): UserWithRelations => ({
-          id: user.id,
-          email: user.email,
-          fullName: user.fullName,
-          role: user.role,
-          station: (user as UserWithRelations).station || undefined,
-          supplier: (user as UserWithRelations).supplier || undefined,
-        })
-      );
+      // Simplified approach: get users with minimal processing
+      const users = await this.userRepository
+        .createQueryBuilder('user')
+        .select(['user.id', 'user.email', 'user.fullName', 'user.role'])
+        .where('user.isActive = :isActive', { isActive: true })
+        .orderBy('user.createdAt', 'DESC')
+        .limit(100)
+        .getMany();
 
       return {
-        ...result,
-        data: simplifiedUsers,
+        data: users,
+        total: users.length,
+        page: 1,
+        limit: 100,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
       };
     } catch (error) {
       this.logger.error(`Dev users endpoint error: ${error.message}`, error.stack);
@@ -180,7 +179,8 @@ export class UsersController {
     return this.usersService.reactivate(id);
   }
 
-  // Admin-only hard delete operations
+  // Admin-only hard delete operations - TEMPORARILY DISABLED
+  /*
   @Get(':id/integrity-check')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -213,6 +213,7 @@ export class UsersController {
       confirmIntegrityCheck: confirmIntegrityCheck === true,
     });
   }
+  */
 
   @Post('password-reset-link')
   @ApiOperation({ summary: 'Send password reset link via email' })

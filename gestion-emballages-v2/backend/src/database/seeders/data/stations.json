@@ -14,6 +14,9 @@
             "email": "m.dauphine@dauphi.fr"
         },
         "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Fruits à noyaux, pommes, poires",
+        "productionVolume": "8500 tonnes/an",
+        "peakSeason": "Juillet-Octobre",
         "isActive": true
     },
     {
@@ -31,13 +34,16 @@
             "email": "e.montagnard@savmon.fr"
         },
         "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Produits de montagne, fromages, fruits alpins",
+        "productionVolume": "2800 tonnes/an",
+        "peakSeason": "Juin-Septembre",
         "isActive": true
     },
     {
         "name": "Coopérative Agricole de l'Ardèche",
         "internalId": "ARDECHE",
         "address": {
-            "street": "Quartier Saint-Jean, 156 Chemin des Vignes",
+            "street": "Quartier Saint-Julien, 89 Route des Châtaigniers",
             "city": "Privas",
             "postalCode": "07000",
             "country": "France"
@@ -48,13 +54,36 @@
             "email": "p.ardechois@ardeche.fr"
         },
         "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Châtaignes, fruits secs, légumes anciens",
+        "productionVolume": "3200 tonnes/an",
+        "peakSeason": "Septembre-Novembre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative de la Vallée du Rhône",
+        "internalId": "VARHONE",
+        "address": {
+            "street": "Zone Agricole du Rhône, 156 Chemin des Vignobles",
+            "city": "Valence",
+            "postalCode": "26000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Henri Valentinois",
+            "phone": "04 75 43 67 89",
+            "email": "h.valentinois@valrhone.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Abricots, pêches, raisins de table",
+        "productionVolume": "12500 tonnes/an",
+        "peakSeason": "Juin-Septembre",
         "isActive": true
     },
     {
         "name": "Fruits du Soleil Méditerranéen",
         "internalId": "SOLMED",
         "address": {
-            "street": "Zone d'Activité Méditerranée, 78 Avenue du Soleil",
+            "street": "Avenue de la Méditerranée, 78 Boulevard du Soleil",
             "city": "Montpellier",
             "postalCode": "34000",
             "country": "France"
@@ -65,13 +94,16 @@
             "email": "c.mediterranee@solmed.fr"
         },
         "groupeId": "groupe-languedoc-coop",
+        "specialization": "Agrumes, melons, tomates",
+        "productionVolume": "15800 tonnes/an",
+        "peakSeason": "Avril-Octobre",
         "isActive": true
     },
     {
         "name": "Coopérative des Cévennes",
         "internalId": "CEVENNES",
         "address": {
-            "street": "Mas des Châtaigniers, Route de la Montagne",
+            "street": "Hameau des Cévennes, Route des Châtaigniers",
             "city": "Alès",
             "postalCode": "30100",
             "country": "France"
@@ -82,13 +114,16 @@
             "email": "jl.cevenol@cevennes.fr"
         },
         "groupeId": "groupe-languedoc-coop",
+        "specialization": "Châtaignes, miel, produits forestiers",
+        "productionVolume": "1850 tonnes/an",
+        "peakSeason": "Septembre-Décembre",
         "isActive": true
     },
     {
         "name": "Vignobles et Primeurs du Gard",
         "internalId": "VIGPRI",
         "address": {
-            "street": "Domaine de la Costière, 234 Route des Vignes",
+            "street": "Domaine des Costières, 234 Route des Vignes",
             "city": "Nîmes",
             "postalCode": "30000",
             "country": "France"
@@ -99,13 +134,36 @@
             "email": "p.gardois@vigpri.fr"
         },
         "groupeId": "groupe-languedoc-coop",
+        "specialization": "Raisins de cuve, primeurs, olives",
+        "productionVolume": "22000 tonnes/an",
+        "peakSeason": "Août-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Languedocienne",
+        "internalId": "LANGCOOP",
+        "address": {
+            "street": "Zone Viticole de l'Hérault, 89 Avenue des Vignerons",
+            "city": "Béziers",
+            "postalCode": "34500",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Marie-Rose Héraultaise",
+            "phone": "04 67 78 45 23",
+            "email": "mr.heraultaise@langcoop.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "specialization": "Vins, fruits méditerranéens, légumes du soleil",
+        "productionVolume": "18500 tonnes/an",
+        "peakSeason": "Juillet-Novembre",
         "isActive": true
     },
     {
         "name": "Loire Valley Organics",
         "internalId": "LOIREORG",
         "address": {
-            "street": "Château de la Vallée, 45 Route des Châteaux",
+            "street": "Domaine des Châteaux, 67 Route de la Loire",
             "city": "Nantes",
             "postalCode": "44000",
             "country": "France"
@@ -116,13 +174,16 @@
             "email": "a.loire@loireorg.fr"
         },
         "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Légumes bio, aromates, légumes de saison",
+        "productionVolume": "6800 tonnes/an",
+        "peakSeason": "Mai-Octobre",
         "isActive": true
     },
     {
         "name": "Maraîchers de l'Anjou",
         "internalId": "MARANJOU",
         "address": {
-            "street": "Ferme Collective des Prairies, 67 Chemin Rural",
+            "street": "Plaine de l'Anjou, 145 Chemin des Maraîchers",
             "city": "Angers",
             "postalCode": "49000",
             "country": "France"
@@ -133,13 +194,16 @@
             "email": "s.angevin@maranjou.fr"
         },
         "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Légumes primeurs, radis, carottes, navets",
+        "productionVolume": "9200 tonnes/an",
+        "peakSeason": "Mars-Juillet",
         "isActive": true
     },
     {
         "name": "Producteurs de la Vendée",
         "internalId": "VENDEE",
         "address": {
-            "street": "Zone Agricole des Marais, 123 Route de l'Océan",
+            "street": "Bocage Vendéen, 78 Route des Producteurs",
             "city": "La Roche-sur-Yon",
             "postalCode": "85000",
             "country": "France"
@@ -150,13 +214,36 @@
             "email": "m.vendeenne@vendee.fr"
         },
         "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Pommes de terre, choux, légumes racines",
+        "productionVolume": "14500 tonnes/an",
+        "peakSeason": "Juin-Décembre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Maraîchère de Bretagne",
+        "internalId": "MARABRET",
+        "address": {
+            "street": "Zone Agricole de Cornouaille, 234 Chemin des Légumes",
+            "city": "Quimper",
+            "postalCode": "29000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Gwenaël Breton",
+            "phone": "02 98 67 45 23",
+            "email": "g.breton@marabret.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Choux-fleurs, artichauts, endives",
+        "productionVolume": "11800 tonnes/an",
+        "peakSeason": "Septembre-Mars",
         "isActive": true
     },
     {
         "name": "Bio Garonne Coopérative",
         "internalId": "BIOGAR",
         "address": {
-            "street": "Écoparc de la Garonne, 89 Avenue Verte",
+            "street": "Vallée de la Garonne, 89 Avenue Bio",
             "city": "Bordeaux",
             "postalCode": "33000",
             "country": "France"
@@ -167,13 +254,16 @@
             "email": "e.garonnaise@biogar.fr"
         },
         "groupeId": "groupe-aquitaine-bio",
+        "specialization": "Légumes bio, fruits biologiques, vins bio",
+        "productionVolume": "7200 tonnes/an",
+        "peakSeason": "Avril-Novembre",
         "isActive": true
     },
     {
         "name": "Fermes Bio du Périgord",
         "internalId": "BIOPERIG",
         "address": {
-            "street": "Domaine des Trufficulteurs, 156 Route de Périgueux",
+            "street": "Pays du Périgord, 156 Route des Noyers",
             "city": "Périgueux",
             "postalCode": "24000",
             "country": "France"
@@ -184,13 +274,36 @@
             "email": "a.perigourdin@bioperig.fr"
         },
         "groupeId": "groupe-aquitaine-bio",
+        "specialization": "Noix bio, truffes, produits du terroir bio",
+        "productionVolume": "2800 tonnes/an",
+        "peakSeason": "Octobre-Février",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Gascogne Bio",
+        "internalId": "GASCBIO",
+        "address": {
+            "street": "Coteaux de Gascogne, 67 Chemin des Bio-Producteurs",
+            "city": "Auch",
+            "postalCode": "32000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "François Gascon",
+            "phone": "05 62 34 56 78",
+            "email": "f.gascon@gascbio.fr"
+        },
+        "groupeId": "groupe-aquitaine-bio",
+        "specialization": "Céréales bio, légumineuses, canard bio",
+        "productionVolume": "4600 tonnes/an",
+        "peakSeason": "Juillet-Décembre",
         "isActive": true
     },
     {
         "name": "Légumes du Nord Coopératif",
         "internalId": "LEGNORD",
         "address": {
-            "street": "Parc Industriel du Nord, 234 Rue de l'Industrie",
+            "street": "Plaine du Nord, 234 Avenue des Maraîchers",
             "city": "Lille",
             "postalCode": "59000",
             "country": "France"
@@ -201,13 +314,16 @@
             "email": "f.nordiste@legnord.fr"
         },
         "groupeId": "groupe-nord-maraichage",
+        "specialization": "Endives, pommes de terre, betteraves",
+        "productionVolume": "18200 tonnes/an",
+        "peakSeason": "Septembre-Avril",
         "isActive": true
     },
     {
         "name": "Maraîchers Picards Unis",
         "internalId": "PICARD",
         "address": {
-            "street": "Zone Maraîchère de Picardie, 78 Route des Champs",
+            "street": "Terres de Picardie, 89 Route des Légumes",
             "city": "Amiens",
             "postalCode": "80000",
             "country": "France"
@@ -218,15 +334,38 @@
             "email": "i.picarde@picard.fr"
         },
         "groupeId": "groupe-nord-maraichage",
+        "specialization": "Poireaux, carottes, oignons",
+        "productionVolume": "12800 tonnes/an",
+        "peakSeason": "Août-Février",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Flamande",
+        "internalId": "FLAMANDE",
+        "address": {
+            "street": "Flandre Maritime, 156 Chemin des Polders",
+            "city": "Dunkerque",
+            "postalCode": "59140",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Jan Flamand",
+            "phone": "03 28 56 78 90",
+            "email": "j.flamand@flamande.fr"
+        },
+        "groupeId": "groupe-nord-maraichage",
+        "specialization": "Légumes de plein champ, chicorée",
+        "productionVolume": "8900 tonnes/an",
+        "peakSeason": "Juin-Décembre",
         "isActive": true
     },
     {
         "name": "Ferme Artisanale Bretonne",
         "internalId": "ARTBRET",
         "address": {
-            "street": "Kerléon, 23 Chemin du Bord de Mer",
-            "city": "Quimper",
-            "postalCode": "29000",
+            "street": "Landes de Bretagne, 67 Sentier des Artisans",
+            "city": "Rennes",
+            "postalCode": "35000",
             "country": "France"
         },
         "mainContact": {
@@ -234,14 +373,17 @@
             "phone": "02 98 34 56 78",
             "email": "y.lebreton@artbret.fr"
         },
-        "groupeId": null,
+        "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Légumes anciens, cidre artisanal, sarrasin",
+        "productionVolume": "3200 tonnes/an",
+        "peakSeason": "Août-Décembre",
         "isActive": true
     },
     {
         "name": "Domaine Familial Alsacien",
         "internalId": "ALSACE",
         "address": {
-            "street": "Route des Vignobles, 45 Rue Principale",
+            "street": "Route des Vins, 89 Chemin des Vignobles",
             "city": "Strasbourg",
             "postalCode": "67000",
             "country": "France"
@@ -251,14 +393,17 @@
             "phone": "03 88 23 45 67",
             "email": "h.alsacien@alsace.fr"
         },
-        "groupeId": null,
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Vins d'Alsace, mirabelles, choucroute",
+        "productionVolume": "5600 tonnes/an",
+        "peakSeason": "Juillet-Novembre",
         "isActive": true
     },
     {
         "name": "Producteurs Corses Indépendants",
         "internalId": "CORSE",
         "address": {
-            "street": "U Castellu, Route de la Montagne",
+            "street": "Maquis Corse, 23 Route du Maquis",
             "city": "Ajaccio",
             "postalCode": "20000",
             "country": "France"
@@ -268,14 +413,17 @@
             "phone": "04 95 56 78 90",
             "email": "a.corse@corse.fr"
         },
-        "groupeId": null,
+        "groupeId": "groupe-languedoc-coop",
+        "specialization": "Agrumes corses, châtaignes, miel de maquis",
+        "productionVolume": "1450 tonnes/an",
+        "peakSeason": "Octobre-Mars",
         "isActive": true
     },
     {
         "name": "Exploitation Savoyarde Traditionnelle",
         "internalId": "SAVOIE",
         "address": {
-            "street": "Chalet des Alpages, 12 Route de la Montagne",
+            "street": "Alpages de Savoie, 145 Route des Alpages",
             "city": "Chambéry",
             "postalCode": "73000",
             "country": "France"
@@ -285,14 +433,17 @@
             "phone": "04 79 23 45 67",
             "email": "mc.savoyarde@savoie.fr"
         },
-        "groupeId": null,
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Fromages de Savoie, pommes de terre de montagne",
+        "productionVolume": "2100 tonnes/an",
+        "peakSeason": "Juin-Octobre",
         "isActive": true
     },
     {
         "name": "Maraîchers de Champagne",
         "internalId": "CHAMPAG",
         "address": {
-            "street": "Domaine de la Bulle, 234 Avenue des Vignes",
+            "street": "Plaine de Champagne, 78 Avenue des Bulles",
             "city": "Reims",
             "postalCode": "51100",
             "country": "France"
@@ -302,7 +453,330 @@
             "phone": "03 26 78 90 12",
             "email": "t.champenois@champag.fr"
         },
-        "groupeId": null,
+        "groupeId": "groupe-nord-maraichage",
+        "specialization": "Raisins de Champagne, légumes de Champagne",
+        "productionVolume": "16500 tonnes/an",
+        "peakSeason": "Août-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Bourguignonne",
+        "internalId": "BOURGOGNE",
+        "address": {
+            "street": "Coteaux de Bourgogne, 156 Route des Grands Crus",
+            "city": "Dijon",
+            "postalCode": "21000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Philippe Bourguignon",
+            "phone": "03 80 45 67 89",
+            "email": "p.bourguignon@bourgogne.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Vins de Bourgogne, cassis, moutarde",
+        "productionVolume": "8700 tonnes/an",
+        "peakSeason": "Septembre-Novembre",
+        "isActive": true
+    },
+    {
+        "name": "Fermes Bio de Normandie",
+        "internalId": "BIONORM",
+        "address": {
+            "street": "Bocage Normand, 234 Chemin des Pommiers",
+            "city": "Caen",
+            "postalCode": "14000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Michel Normand",
+            "phone": "02 31 56 78 90",
+            "email": "m.normand@bionorm.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Pommes bio, cidre bio, produits laitiers bio",
+        "productionVolume": "6400 tonnes/an",
+        "peakSeason": "Septembre-Mars",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative des Causses",
+        "internalId": "CAUSSES",
+        "address": {
+            "street": "Plateau des Causses, 89 Route des Bergers",
+            "city": "Millau",
+            "postalCode": "12100",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Pierre Aveyronais",
+            "phone": "05 65 78 45 23",
+            "email": "p.aveyronais@causses.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "specialization": "Fromage de brebis, agneau des Causses",
+        "productionVolume": "1800 tonnes/an",
+        "peakSeason": "Avril-Août",
+        "isActive": true
+    },
+    {
+        "name": "Producteurs Jurassiens",
+        "internalId": "JURA",
+        "address": {
+            "street": "Montagnes du Jura, 67 Chemin des Sapins",
+            "city": "Lons-le-Saunier",
+            "postalCode": "39000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "François Jurassien",
+            "phone": "03 84 34 56 78",
+            "email": "f.jurassien@jura.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Fromages du Jura, vins jaunes, sapins de Noël",
+        "productionVolume": "3100 tonnes/an",
+        "peakSeason": "Mai-Décembre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Limousine",
+        "internalId": "LIMOUSIN",
+        "address": {
+            "street": "Plateau de Millevaches, 145 Route des Éleveurs",
+            "city": "Limoges",
+            "postalCode": "87000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Claude Limousin",
+            "phone": "05 55 67 89 01",
+            "email": "c.limousin@limousin.fr"
+        },
+        "groupeId": "groupe-aquitaine-bio",
+        "specialization": "Bœuf limousin, châtaignes du Limousin",
+        "productionVolume": "2400 tonnes/an",
+        "peakSeason": "Septembre-Janvier",
+        "isActive": true
+    },
+    {
+        "name": "Fermes d'Auvergne Volcaniques",
+        "internalId": "AUVERGNE",
+        "address": {
+            "street": "Chaîne des Puys, 78 Route des Volcans",
+            "city": "Clermont-Ferrand",
+            "postalCode": "63000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Marie Auvergnate",
+            "phone": "04 73 45 67 89",
+            "email": "m.auvergnate@auvergne.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Fromages d'Auvergne, lentilles vertes, eau minérale",
+        "productionVolume": "4200 tonnes/an",
+        "peakSeason": "Juin-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative des Deux-Sèvres",
+        "internalId": "DEUXSEVR",
+        "address": {
+            "street": "Bocage Deux-Sèvres, 234 Chemin des Chevriers",
+            "city": "Niort",
+            "postalCode": "79000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Sylvie Deux-Sèvres",
+            "phone": "05 49 78 90 12",
+            "email": "s.deuxsevres@deuxsevr.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Fromage de chèvre, mogettes, angélique",
+        "productionVolume": "3600 tonnes/an",
+        "peakSeason": "Avril-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Producteurs de Lorraine",
+        "internalId": "LORRAINE",
+        "address": {
+            "street": "Plateaux Lorrains, 156 Route des Mirabelles",
+            "city": "Nancy",
+            "postalCode": "54000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Jean-Pierre Lorrain",
+            "phone": "03 83 56 78 90",
+            "email": "jp.lorrain@lorraine.fr"
+        },
+        "groupeId": "groupe-nord-maraichage",
+        "specialization": "Mirabelles de Lorraine, quiche lorraine, saucisse de Morteau",
+        "productionVolume": "5800 tonnes/an",
+        "peakSeason": "Juillet-Septembre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative Ardennaise",
+        "internalId": "ARDENNES",
+        "address": {
+            "street": "Forêts des Ardennes, 89 Sentier des Chasseurs",
+            "city": "Charleville-Mézières",
+            "postalCode": "08000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Bernard Ardennais",
+            "phone": "03 24 67 89 01",
+            "email": "b.ardennais@ardennes.fr"
+        },
+        "groupeId": "groupe-nord-maraichage",
+        "specialization": "Gibier des Ardennes, champignons de forêt",
+        "productionVolume": "1900 tonnes/an",
+        "peakSeason": "Septembre-Février",
+        "isActive": true
+    },
+    {
+        "name": "Fermes Bio des Pyrénées",
+        "internalId": "PYRENEES",
+        "address": {
+            "street": "Haute Montagne Pyrénéenne, 67 Chemin des Bergers",
+            "city": "Tarbes",
+            "postalCode": "65000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Pascal Pyrénéen",
+            "phone": "05 62 34 56 78",
+            "email": "p.pyreneen@pyrenees.fr"
+        },
+        "groupeId": "groupe-aquitaine-bio",
+        "specialization": "Fromages de montagne bio, miel de montagne, haricots tarbais",
+        "productionVolume": "2700 tonnes/an",
+        "peakSeason": "Juin-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative du Roussillon",
+        "internalId": "ROUSSILL",
+        "address": {
+            "street": "Plaine du Roussillon, 145 Avenue des Primeurs",
+            "city": "Perpignan",
+            "postalCode": "66000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Carmen Catalane",
+            "phone": "04 68 78 90 12",
+            "email": "c.catalane@roussill.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "specialization": "Primeurs méditerranéens, abricots, pêches",
+        "productionVolume": "19200 tonnes/an",
+        "peakSeason": "Avril-Septembre",
+        "isActive": true
+    },
+    {
+        "name": "Producteurs des Vosges",
+        "internalId": "VOSGES",
+        "address": {
+            "street": "Hautes Vosges, 78 Route des Sapinières",
+            "city": "Épinal",
+            "postalCode": "88000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Thierry Vosgien",
+            "phone": "03 29 45 67 89",
+            "email": "t.vosgien@vosges.fr"
+        },
+        "groupeId": "groupe-nord-maraichage",
+        "specialization": "Fromages vosgiens, myrtilles, sapins de Noël",
+        "productionVolume": "3400 tonnes/an",
+        "peakSeason": "Juin-Décembre",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative de la Drôme Provençale",
+        "internalId": "DROMEPROV",
+        "address": {
+            "street": "Champs de Lavande, 234 Route des Oliviers",
+            "city": "Montélimar",
+            "postalCode": "26200",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Provence Drôme",
+            "phone": "04 75 89 01 23",
+            "email": "p.drome@dromeprov.fr"
+        },
+        "groupeId": "groupe-rhone-alpes-fruits",
+        "specialization": "Lavande, olives, nougat de Montélimar",
+        "productionVolume": "4800 tonnes/an",
+        "peakSeason": "Juin-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Fermes Bretonnes de l'Océan",
+        "internalId": "BRETOCEAN",
+        "address": {
+            "street": "Côte Bretonne, 89 Chemin des Embruns",
+            "city": "Brest",
+            "postalCode": "29200",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Morgane Océane",
+            "phone": "02 98 67 89 01",
+            "email": "m.oceane@bretocean.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Algues marines, sel de mer, crustacés",
+        "productionVolume": "2900 tonnes/an",
+        "peakSeason": "Toute l'année",
+        "isActive": true
+    },
+    {
+        "name": "Coopérative de Provence-Alpes-Côte d'Azur",
+        "internalId": "PACA",
+        "address": {
+            "street": "Garrigue Provençale, 156 Boulevard de la Méditerranée",
+            "city": "Nice",
+            "postalCode": "06000",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "Olivier Azuréen",
+            "phone": "04 93 78 90 12",
+            "email": "o.azureen@paca.fr"
+        },
+        "groupeId": "groupe-languedoc-coop",
+        "specialization": "Fleurs de Grasse, olives de Nice, herbes de Provence",
+        "productionVolume": "6700 tonnes/an",
+        "peakSeason": "Avril-Octobre",
+        "isActive": true
+    },
+    {
+        "name": "Fermes Bio d'Île-de-France",
+        "internalId": "BIOIDF",
+        "address": {
+            "street": "Plaine de France, 67 Avenue des Maraîchers Franciliens",
+            "city": "Meaux",
+            "postalCode": "77100",
+            "country": "France"
+        },
+        "mainContact": {
+            "name": "François Francilien",
+            "phone": "01 64 56 78 90",
+            "email": "f.francilien@bioidf.fr"
+        },
+        "groupeId": "groupe-pays-loire-primeurs",
+        "specialization": "Légumes de proximité bio, circuits courts, fromage de Brie",
+        "productionVolume": "5100 tonnes/an",
+        "peakSeason": "Mai-Novembre",
         "isActive": true
     }
 ]

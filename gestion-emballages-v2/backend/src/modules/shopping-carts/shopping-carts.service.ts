@@ -79,7 +79,11 @@ export class ShoppingCartsService {
 
       // Create items if provided
       if (CreateShoppingCartDto.items && CreateShoppingCartDto.items.length > 0) {
-        await this.validateItems(CreateShoppingCartDto.items);
+        await this.validateItems(CreateShoppingCartDto.items.map(item => ({
+          articleId: item.productId,
+          supplierId: item.supplierId,
+          quantite: item.quantity,
+        })));
 
         const items = CreateShoppingCartDto.items.map(itemDto =>
           queryRunner.manager.create(ShoppingCartItem, {
@@ -193,7 +197,13 @@ export class ShoppingCartsService {
 
       // Update items if provided
       if (UpdateShoppingCartDto.items) {
-        await this.validateItems(UpdateShoppingCartDto.items);
+        await this.validateItems(UpdateShoppingCartDto.items
+          .filter(item => item.productId && item.supplierId && item.quantity)
+          .map(item => ({
+            articleId: item.productId!,
+            supplierId: item.supplierId!,
+            quantite: item.quantity!,
+          })));
 
         // Delete existing items
         await queryRunner.manager.delete(ShoppingCartItem, {
@@ -231,7 +241,11 @@ export class ShoppingCartsService {
     }
 
     // Validate item
-    await this.validateItems([addItemDto]);
+    await this.validateItems([{
+      articleId: addItemDto.productId,
+      supplierId: addItemDto.supplierId,
+      quantite: addItemDto.quantity || 1,
+    }]);
 
     // Check if item already exists
     const existingItem = await this.listeAchatItemRepository.findOne({
@@ -390,7 +404,7 @@ export class ShoppingCartsService {
         where: { id: item.supplierId },
       });
       if (!Supplier) {
-        throw new BadRequestException(`Supplier ${item.fournisseurId} non trouvé`);
+        throw new BadRequestException(`Supplier ${item.supplierId} non trouvé`);
       }
 
       // Validate quantity
@@ -402,14 +416,10 @@ export class ShoppingCartsService {
 
   private async generateNumeroCommande(): Promise<string> {
     const year = new Date().getFullYear();
-    const count = await this.purchaseOrderRepository.count({
-      where: {
-        orderNumber: Repository.prototype
-          .createQueryBuilder()
-          .select()
-          .where('numeroCommande LIKE :pattern', { pattern: `CMD-${year}-%` }),
-      },
-    });
+    const count = await this.purchaseOrderRepository
+      .createQueryBuilder('order')
+      .where('order.orderNumber LIKE :pattern', { pattern: `CMD-${year}-%` })
+      .getCount();
     return `CMD-${year}-${(count + 1).toString().padStart(6, '0')}`;
   }
 

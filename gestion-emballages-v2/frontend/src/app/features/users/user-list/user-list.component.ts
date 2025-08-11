@@ -10,7 +10,6 @@ import { AuthService } from '@core/services/auth.service';
 import { NotificationService } from '@core/services/notification.service';
 import { LoadingService } from '@core/services/loading.service';
 import { LoadingSpinnerComponent } from '@shared/components/loading-spinner/loading-spinner.component';
-import { UserListSkeletonComponent } from '@shared/components/ui/user-list-skeleton.component';
 import { ButtonComponent } from '@shared/components/ui/button.component';
 import { SlidePanelComponent } from '@shared/components/ui/slide-panel.component';
 import { ToggleButtonComponent } from '@shared/components/ui/toggle-button.component';
@@ -28,7 +27,6 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
     LucideAngularModule,
     TranslocoModule,
     LoadingSpinnerComponent,
-    UserListSkeletonComponent,
     ButtonComponent,
     SlidePanelComponent,
     ToggleButtonComponent,
@@ -122,8 +120,8 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
         </div>
       </div>
 
-      <!-- Content with skeleton -->
-      <ng-container *ngIf="!initialLoading(); else skeleton">
+      <!-- Content -->
+      <ng-container *ngIf="!loading(); else loadingMessage">
         
         <!-- Users Table -->
         <div class="overflow-hidden">
@@ -299,8 +297,8 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                       [disabled]="!canDeactivateUser(user)"
                       (click)="canDeactivateUser(user) ? toggleUserStatus(user) : null"
                       [title]="canDeactivateUser(user) ? (user.isActive ? ('common.deactivate' | transloco) : ('common.activate' | transloco)) : ('Action non autorisée')">
-                      <lucide-icon *ngIf="user.isActive" name="square-pause-icon" class="h-4 w-4"></lucide-icon>
-                      <lucide-icon *ngIf="!user.isActive" name="square-play-icon" class="h-4 w-4"></lucide-icon>
+                      <lucide-angular *ngIf="user.isActive" name="pause" class="h-4 w-4" [size]="16"></lucide-angular>
+                      <lucide-angular *ngIf="!user.isActive" name="play" class="h-4 w-4" [size]="16"></lucide-angular>
                     </button>
 
                     <button
@@ -309,7 +307,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                       [disabled]="!canHardDeleteUser(user)"
                       (click)="canHardDeleteUser(user) ? hardDeleteUser(user) : null"
                       [title]="canHardDeleteUser(user) ? 'Supprimer définitivement' : 'Action non autorisée'">
-                      <lucide-icon name="square-x" class="h-4 w-4"></lucide-icon>
+                      <lucide-angular name="x" class="h-4 w-4" [size]="16"></lucide-angular>
                     </button>
                   </div>
                 </td>
@@ -367,7 +365,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                 [class]="canDeactivateUser(user) ? (user.isActive ? 'text-sm text-orange-600 hover:text-orange-900' : 'text-sm text-green-600 hover:text-green-900') : 'text-sm text-gray-300 cursor-not-allowed'"
                 [disabled]="!canDeactivateUser(user)"
                 (click)="canDeactivateUser(user) ? toggleUserStatus(user) : null">
-                <lucide-icon [name]="user.isActive ? 'square-pause-icon' : 'square-play-icon'" class="h-4 w-4 inline mr-1"></lucide-icon>
+                <lucide-angular [name]="user.isActive ? 'pause' : 'play'" class="h-4 w-4 inline mr-1" [size]="16"></lucide-angular>
                 {{ user.isActive ? ('common.deactivate' | transloco) : ('common.activate' | transloco) }}
               </button>
               <button
@@ -375,7 +373,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
                 [class]="canHardDeleteUser(user) ? 'text-sm text-red-600 hover:text-red-900' : 'text-sm text-gray-300 cursor-not-allowed'"
                 [disabled]="!canHardDeleteUser(user)"
                 (click)="canHardDeleteUser(user) ? hardDeleteUser(user) : null">
-                <lucide-icon name="square-x" class="h-4 w-4 inline mr-1"></lucide-icon>
+                <lucide-angular name="x" class="h-4 w-4 inline mr-1" [size]="16"></lucide-angular>
                 Supprimer
               </button>
             </div>
@@ -384,7 +382,7 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
 
         <!-- Empty State -->
         <div *ngIf="users().length === 0" class="text-center py-12">
-          <lucide-icon name="users" class="mx-auto h-12 w-12 text-gray-400"></lucide-icon>
+          <lucide-angular name="users" class="mx-auto h-12 w-12 text-gray-400" [size]="48"></lucide-angular>
           <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun utilisateur trouvé</h3>
           <p class="mt-1 text-sm text-gray-500">
             {{ searchForm.get('search')?.value ? 'Essayez de modifier vos critères de recherche.' : 'Commencez par créer un nouvel utilisateur.' }}
@@ -394,12 +392,14 @@ import { User, UserRole, EntityType } from '@core/models/user.model';
 
       </ng-container>
 
-      <!-- Skeleton Loading Template -->
-      <ng-template #skeleton>
-        <app-user-list-skeleton
-          [showFilters]="showFilters()"
-          [rowCount]="5">
-        </app-user-list-skeleton>
+      <!-- Simple Loading Message -->
+      <ng-template #loadingMessage>
+        <div class="flex items-center justify-center py-12">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p class="text-gray-500">{{ 'common.loadingUsers' | transloco }}</p>
+          </div>
+        </div>
       </ng-template>
 
     </div> <!-- Close space-y-6 wrapper -->
@@ -444,7 +444,6 @@ export class UserListComponent implements OnInit {
 
   // Reactive state
   public loading = signal(false);
-  public initialLoading = signal(true);
   public showFilters = signal(false);
   public showAddUserPanel = signal(false);
   public showEditUserPanel = signal(false);
@@ -503,15 +502,12 @@ export class UserListComponent implements OnInit {
       });
     });
 
-    // Initial load with skeleton loading
+    // Initial load
     this.loadUsers();
   }
 
   loadUsers() {
-    // Only show loading spinner on subsequent loads, not initial load
-    if (!this.initialLoading()) {
-      this.loading.set(true);
-    }
+    this.loading.set(true);
     
     const filters: UserFilters = {
       page: this.currentPage(),
@@ -527,21 +523,11 @@ export class UserListComponent implements OnInit {
         this.paginatedResponse.set(response);
         this.loading.set(false);
         
-        // Mark initial loading as complete
-        if (this.initialLoading()) {
-          this.loadingService.markInitialLoadComplete();
-          this.initialLoading.set(false);
-        }
       },
       error: (error) => {
         console.error('Error loading users:', error);
         this.loading.set(false);
         
-        // Mark initial loading as complete even on error
-        if (this.initialLoading()) {
-          this.loadingService.markInitialLoadComplete();
-          this.initialLoading.set(false);
-        }
       }
     });
   }

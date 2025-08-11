@@ -36,7 +36,7 @@ import { UserStatisticsComponent } from "./user-statistics/user-statistics.compo
                 <p class="text-sm text-gray-500">Gérez les utilisateurs du portail.</p>
 
                 <!-- Expandable Statistics Panel -->
-                <div *ngIf="showStatistics()" class="mt-6 bg-gray-100 rounded-lg p-4 border border-gray-200">
+                <div *ngIf="showStatistics()" [@slideDown] class="mt-6 bg-gray-100 rounded-lg p-4 border border-gray-200">
                     <app-user-statistics></app-user-statistics>
                 </div>
             </div>

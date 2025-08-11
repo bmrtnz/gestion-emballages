@@ -39,24 +39,9 @@ body {
   @apply bg-gray-50 text-gray-900;
 }
 
-/* Router outlet container fix - enhanced */
+/* Router outlet container fix */
 router-outlet {
   display: none;
-}
-
-/* Ensure immediate background for all routed components */
-router-outlet + * {
-  display: block;
-  min-height: 100vh;
-  background-color: #f9fafb !important;
-  animation: none !important;
-  transition: none !important;
-}
-
-/* Prevent any flicker during route changes */
-.ng-star-inserted {
-  animation: none !important;
-  transition: none !important;
 }
 
 /* Ensure main content area always has background */

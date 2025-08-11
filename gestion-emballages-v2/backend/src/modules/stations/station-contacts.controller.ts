@@ -28,7 +28,7 @@ export class StationContactsController {
   }
 
   @Get('station/:stationId')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.USER, UserRole.VIEWER)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get all contacts for a station' })
   @ApiParam({ name: 'stationId', description: 'Station ID', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'List of station contacts', type: [StationContact] })
@@ -37,7 +37,7 @@ export class StationContactsController {
   }
 
   @Get(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.USER, UserRole.VIEWER)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get a station contact by ID' })
   @ApiParam({ name: 'id', description: 'Contact ID', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Station contact details', type: StationContact })
@@ -81,7 +81,7 @@ export class StationContactsController {
   }
 
   @Get('station/:stationId/primary')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.USER, UserRole.VIEWER)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Get the primary contact for a station' })
   @ApiParam({ name: 'stationId', description: 'Station ID', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Primary station contact', type: StationContact })

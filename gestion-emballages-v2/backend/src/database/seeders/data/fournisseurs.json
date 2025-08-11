@@ -8,7 +8,7 @@
         "email": "contact@packagingtech.fr",
         "contact": "Olivier Durand",
         "siret": "85234567890123",
-        "specialties": ["Barquette", "Film Plastique", "Étiquette"],
+        "specialties": "Barquettes PET, Films alimentaires, Étiquettes thermiques, Solutions innovantes",
         "isActive": true,
         "sites": [
             {
@@ -23,7 +23,7 @@
                     "phone": "01 45 12 34 56",
                     "email": "o.durand@packagingtech.fr"
                 },
-                "specialties": ["Barquette", "Film Plastique", "Étiquette"],
+                "specialties": ["Tray", "Plastic Film", "Label"],
                 "estPrincipal": true
             },
             {
@@ -38,7 +38,7 @@
                     "phone": "04 74 23 56 78",
                     "email": "mc.lyonnaise@packagingtech.fr"
                 },
-                "specialties": ["Barquette", "Film Plastique"],
+                "specialties": ["Tray", "Plastic Film"],
                 "estPrincipal": false
             }
         ]
@@ -48,15 +48,15 @@
         "address": "Quartier Saint-Menet, 345 Avenue de la Capelette",
         "city": "Marseille",
         "postalCode": "13011",
-        "phone": "04 91 78 45 23",
-        "email": "commercial@emballages-med.fr",
+        "phone": "04 91 56 78 90",
+        "email": "info@emballages-med.fr",
         "contact": "Philippe Provençal",
-        "siret": "75123456789012",
-        "specialties": ["Cagette", "Carton", "Sac Papier"],
+        "siret": "75698741230456",
+        "specialties": "Cagettes carton, Emballages isothermes, Plateaux biodégradables",
         "isActive": true,
         "sites": [
             {
-                "name": "Usine Marseille",
+                "name": "Usine de Production Marseille",
                 "adresse": {
                     "rue": "Quartier Saint-Menet, 345 Avenue de la Capelette",
                     "city": "Marseille",
@@ -67,72 +67,57 @@
                     "phone": "04 91 78 45 23",
                     "email": "p.provencal@emballages-med.fr"
                 },
-                "specialties": ["Cagette", "Carton", "Sac Papier"],
+                "specialties": ["Crate", "Isothermal Packaging", "Platter"],
                 "estPrincipal": true
             },
             {
-                "name": "Site Montpellier",
+                "name": "Dépôt Montpellier-Hérault",
                 "adresse": {
-                    "rue": "Zone Artisanale de Figuerolles, 89 Rue de l'Industrie",
+                    "rue": "Zone Commerciale Odysseum, 156 Rue de l'Innovation",
                     "city": "Montpellier",
-                    "postalCode": "34070"
+                    "postalCode": "34000"
                 },
                 "contact": {
                     "name": "Sandrine Héraultaise",
                     "phone": "04 67 34 78 90",
                     "email": "s.heraultaise@emballages-med.fr"
                 },
-                "specialties": ["Cagette", "Carton"],
-                "estPrincipal": false
-            },
-            {
-                "name": "Dépôt Avignon",
-                "adresse": {
-                    "rue": "Zone Commerciale Sud, 123 Route de Nîmes",
-                    "city": "Avignon",
-                    "postalCode": "84000"
-                },
-                "contact": {
-                    "name": "Laurent Vauclusien",
-                    "phone": "04 90 45 67 89",
-                    "email": "l.vauclusien@emballages-med.fr"
-                },
-                "specialties": ["Sac Papier"],
+                "specialties": ["Crate", "Isothermal Packaging"],
                 "estPrincipal": false
             }
         ]
     },
     {
         "name": "Plastiques de l'Ouest",
-        "address": "Parc Industriel de la Janais, 234 Boulevard de la Technologie",
-        "city": "Rennes",
-        "postalCode": "35000",
-        "phone": "02 99 34 56 78",
-        "email": "info@plastiques-ouest.com",
+        "address": "Zone Artisanale de Kergaradec, 23 Rue des Embruns",
+        "city": "Brest",
+        "postalCode": "29200",
+        "phone": "02 98 45 67 89",
+        "email": "commercial@plastiques-ouest.com",
         "contact": "Yann Breton",
-        "siret": "65987654321098",
-        "specialties": ["Film Plastique", "Sac Plastique", "Emballage Isotherme"],
+        "siret": "64789123456789",
+        "specialties": "Sacs plastiques, Films étirables, Emballages marins",
         "isActive": true,
         "sites": [
             {
-                "name": "Usine Principale Rennes",
+                "name": "Usine Brest-Kergaradec",
                 "adresse": {
-                    "rue": "Parc Industriel de la Janais, 234 Boulevard de la Technologie",
-                    "city": "Rennes",
-                    "postalCode": "35000"
+                    "rue": "Zone Artisanale de Kergaradec, 23 Rue des Embruns",
+                    "city": "Brest",
+                    "postalCode": "29200"
                 },
                 "contact": {
                     "name": "Yann Breton",
                     "phone": "02 99 34 56 78",
                     "email": "y.breton@plastiques-ouest.com"
                 },
-                "specialties": ["Film Plastique", "Sac Plastique", "Emballage Isotherme"],
+                "specialties": ["Plastic Bag", "Plastic Film"],
                 "estPrincipal": true
             },
             {
-                "name": "Site Angers",
+                "name": "Antenne Angers-Maine",
                 "adresse": {
-                    "rue": "Zone Industrielle Angers-Loire, 156 Rue de la Maine",
+                    "rue": "Parc d'Activités Angers-Technopole, 78 Boulevard Innovation",
                     "city": "Angers",
                     "postalCode": "49000"
                 },
@@ -141,42 +126,42 @@
                     "phone": "02 41 67 89 12",
                     "email": "g.angevine@plastiques-ouest.com"
                 },
-                "specialties": ["Film Plastique", "Sac Plastique"],
+                "specialties": ["Plastic Bag", "Plastic Film"],
                 "estPrincipal": false
             }
         ]
     },
     {
         "name": "AgroPackaging Nord",
-        "address": "Parc d'Activités de Faches-Thumesnil, 467 Avenue de la République",
-        "city": "Faches-Thumesnil",
-        "postalCode": "59155",
-        "phone": "03 20 45 67 89",
+        "address": "Parc Industriel de la Haute-Borne, 89 Avenue des Sciences",
+        "city": "Villeneuve-d'Ascq",
+        "postalCode": "59650",
+        "phone": "03 20 78 90 12",
         "email": "contact@agropack-nord.fr",
         "contact": "François Nordiste",
-        "siret": "55876543210987",
-        "specialties": ["Plateau", "Carton", "Étiquette"],
+        "siret": "12345678901234",
+        "specialties": "Cartons agricoles, Emballages grande capacité, Logistique intégrée",
         "isActive": true,
         "sites": [
             {
-                "name": "Centre Logistique Faches",
+                "name": "Centre de Production Villeneuve-d'Ascq",
                 "adresse": {
-                    "rue": "Parc d'Activités de Faches-Thumesnil, 467 Avenue de la République",
-                    "city": "Faches-Thumesnil",
-                    "postalCode": "59155"
+                    "rue": "Parc Industriel de la Haute-Borne, 89 Avenue des Sciences",
+                    "city": "Villeneuve-d'Ascq",
+                    "postalCode": "59650"
                 },
                 "contact": {
                     "name": "François Nordiste",
                     "phone": "03 20 45 67 89",
                     "email": "f.nordiste@agropack-nord.fr"
                 },
-                "specialties": ["Plateau", "Carton", "Étiquette"],
+                "specialties": ["Cardboard", "Crate"],
                 "estPrincipal": true
             },
             {
-                "name": "Site Amiens",
+                "name": "Plateforme Logistique Amiens-Picardie",
                 "adresse": {
-                    "rue": "Zone Industrielle Sud, 89 Rue de la Somme",
+                    "rue": "Zone Logistique du Vermandois, 234 Route Nationale",
                     "city": "Amiens",
                     "postalCode": "80000"
                 },
@@ -185,56 +170,56 @@
                     "phone": "03 22 56 78 90",
                     "email": "b.picarde@agropack-nord.fr"
                 },
-                "specialties": ["Plateau", "Carton"],
+                "specialties": ["Cardboard", "Crate"],
                 "estPrincipal": false
             }
         ]
     },
     {
         "name": "EcoPack Solutions",
-        "address": "Écoparc d'Alsace, 178 Route de Strasbourg",
-        "city": "Colmar",
-        "postalCode": "68000",
-        "phone": "03 89 23 45 67",
-        "email": "eco@ecopack-solutions.fr",
+        "address": "Route de Colmar, 67 Rue de l'Environnement",
+        "city": "Strasbourg",
+        "postalCode": "67000",
+        "phone": "03 88 34 56 78",
+        "email": "info@ecopack-solutions.fr",
         "contact": "Klaus Alsacien",
-        "siret": "45765432109876",
-        "specialties": ["Sac Papier", "Carton", "Emballage Isotherme"],
+        "siret": "98765432109876",
+        "specialties": "Emballages biodégradables, Solutions durables, Certification écologique",
         "isActive": true,
         "sites": [
             {
-                "name": "Écosite Colmar",
+                "name": "Laboratoire R&D Strasbourg",
                 "adresse": {
-                    "rue": "Écoparc d'Alsace, 178 Route de Strasbourg",
-                    "city": "Colmar",
-                    "postalCode": "68000"
+                    "rue": "Route de Colmar, 67 Rue de l'Environnement",
+                    "city": "Strasbourg",
+                    "postalCode": "67000"
                 },
                 "contact": {
                     "name": "Klaus Alsacien",
                     "phone": "03 89 23 45 67",
                     "email": "k.alsacien@ecopack-solutions.fr"
                 },
-                "specialties": ["Sac Papier", "Carton", "Emballage Isotherme"],
+                "specialties": ["Tray", "Paper Bag", "Other"],
                 "estPrincipal": true
             }
         ]
     },
     {
         "name": "Conditionnements du Centre",
-        "address": "Parc Technologique de la Sologne, 290 Avenue de la Sologne",
+        "address": "Zone Industrielle des Montées, 156 Avenue François Mitterrand",
         "city": "Orléans",
         "postalCode": "45000",
-        "phone": "02 38 56 78 90",
-        "email": "commercial@conditionnements-centre.fr",
+        "phone": "02 38 67 89 01",
+        "email": "ventes@conditionnements-centre.fr",
         "contact": "Martine Orléanaise",
-        "siret": "35654321098765",
-        "specialties": ["Barquette", "Plateau", "Autre"],
+        "siret": "45612378945612",
+        "specialties": "Conditionnement alimentaire, Films de conservation, Étiquetage professionnel",
         "isActive": true,
         "sites": [
             {
-                "name": "Centre de Distribution Orléans",
+                "name": "Usine Orléans-Montées",
                 "adresse": {
-                    "rue": "Parc Technologique de la Sologne, 290 Avenue de la Sologne",
+                    "rue": "Zone Industrielle des Montées, 156 Avenue François Mitterrand",
                     "city": "Orléans",
                     "postalCode": "45000"
                 },
@@ -243,13 +228,13 @@
                     "phone": "02 38 56 78 90",
                     "email": "m.orleanaise@conditionnements-centre.fr"
                 },
-                "specialties": ["Barquette", "Plateau", "Autre"],
+                "specialties": ["Plastic Film", "Label", "Tray"],
                 "estPrincipal": true
             },
             {
-                "name": "Dépôt Tours",
+                "name": "Antenne Tours-Touraine",
                 "adresse": {
-                    "rue": "Zone d'Activité des Deux Lions, 123 Avenue de Grammont",
+                    "rue": "Parc Technologique de Touraine, 89 Boulevard de la Renaissance",
                     "city": "Tours",
                     "postalCode": "37000"
                 },
@@ -258,71 +243,71 @@
                     "phone": "02 47 45 67 89",
                     "email": "c.tourangelle@conditionnements-centre.fr"
                 },
-                "specialties": ["Barquette", "Plateau"],
+                "specialties": ["Plastic Film", "Label"],
                 "estPrincipal": false
             }
         ]
     },
     {
         "name": "Emballages Bio Sud-Ouest",
-        "address": "Écozone de Bordeaux-Lac, 345 Cours de la Libération",
-        "city": "Bordeaux",
-        "postalCode": "33000",
-        "phone": "05 56 78 90 12",
-        "email": "bio@emballages-bio-so.fr",
+        "address": "Parc Technologique Bordeaux-Montesquieu, 234 Allée de la Durabilité",
+        "city": "Gradignan",
+        "postalCode": "33170",
+        "phone": "05 56 89 01 23",
+        "email": "contact@emballages-bio-so.fr",
         "contact": "Sandrine Bordelaise",
-        "siret": "25543210987654",
-        "specialties": ["Sac Papier", "Carton", "Emballage Isotherme"],
+        "siret": "78945612378945",
+        "specialties": "Emballages biologiques certifiés, Sacs papier kraft, Solutions compostables",
         "isActive": true,
         "sites": [
             {
-                "name": "Écosite Bordeaux",
+                "name": "Centre de Production Bordeaux-Gradignan",
                 "adresse": {
-                    "rue": "Écozone de Bordeaux-Lac, 345 Cours de la Libération",
-                    "city": "Bordeaux",
-                    "postalCode": "33000"
+                    "rue": "Parc Technologique Bordeaux-Montesquieu, 234 Allée de la Durabilité",
+                    "city": "Gradignan",
+                    "postalCode": "33170"
                 },
                 "contact": {
                     "name": "Sandrine Bordelaise",
                     "phone": "05 56 78 90 12",
                     "email": "s.bordelaise@emballages-bio-so.fr"
                 },
-                "specialties": ["Sac Papier", "Carton", "Emballage Isotherme"],
+                "specialties": ["Paper Bag", "Tray", "Other"],
                 "estPrincipal": true
             },
             {
-                "name": "Site Toulouse",
+                "name": "Dépôt Toulouse-Occitanie",
                 "adresse": {
-                    "rue": "Parc Technologique du Canal, 178 Avenue de l'Europe",
-                    "city": "Toulouse",
-                    "postalCode": "31000"
+                    "rue": "Zone Aéroportuaire Blagnac, 145 Route de l'Aviation",
+                    "city": "Blagnac",
+                    "postalCode": "31700"
                 },
                 "contact": {
                     "name": "Pierre Toulousain",
                     "phone": "05 61 34 56 78",
                     "email": "p.toulousain@emballages-bio-so.fr"
                 },
-                "specialties": ["Sac Papier", "Carton"],
+                "specialties": ["Paper Bag", "Tray"],
                 "estPrincipal": false
             }
         ]
     },
     {
         "name": "FlexiPack Industries",
-        "address": "Zone Industrielle de Rochefoucauld, 567 Rue de l'Innovation",
+        "address": "Zone Industrielle de la Braconne, 67 Rue des Innovations Flexibles",
         "city": "Angoulême",
         "postalCode": "16000",
-        "phone": "05 45 67 89 01",
-        "email": "contact@flexipack-industries.com",
+        "phone": "05 45 78 90 12",
+        "email": "commercial@flexipack-industries.com",
         "contact": "Alain Charentais",
-        "siret": "15432109876543",
-        "specialties": ["Film Plastique", "Sac Plastique"],
+        "siret": "32165498732165",
+        "specialties": "Films flexibles haute technologie, Emballages sous-vide, Innovation packaging",
         "isActive": true,
         "sites": [
             {
-                "name": "Usine Angoulême",
+                "name": "Laboratoire FlexiPack Angoulême",
                 "adresse": {
-                    "rue": "Zone Industrielle de Rochefoucauld, 567 Rue de l'Innovation",
+                    "rue": "Zone Industrielle de la Braconne, 67 Rue des Innovations Flexibles",
                     "city": "Angoulême",
                     "postalCode": "16000"
                 },
@@ -331,7 +316,326 @@
                     "phone": "05 45 67 89 01",
                     "email": "a.charentais@flexipack-industries.com"
                 },
-                "specialties": ["Film Plastique", "Sac Plastique"],
+                "specialties": ["Plastic Film", "Other"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Cartons Maître Artisan",
+        "address": "Route Départementale 906, 89 Chemin des Papetiers",
+        "city": "Épinal",
+        "postalCode": "88000",
+        "phone": "03 29 45 67 89",
+        "email": "direction@cartons-maitre-artisan.fr",
+        "contact": "Jean-Michel Vosgien",
+        "siret": "15975324685175",
+        "specialties": "Cartons sur-mesure, Présentoirs, Emballages personnalisés",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Atelier Épinal-Vosges",
+                "adresse": {
+                    "rue": "Route Départementale 906, 89 Chemin des Papetiers",
+                    "city": "Épinal",
+                    "postalCode": "88000"
+                },
+                "contact": {
+                    "name": "Jean-Michel Vosgien",
+                    "phone": "03 29 45 67 89",
+                    "email": "jm.vosgien@cartons-maitre-artisan.fr"
+                },
+                "specialties": ["Cardboard", "Platter"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Alpha Packaging France",
+        "address": "Parc d'Activités Paris-Nord, 234 Boulevard de l'Europe",
+        "city": "Gonesse",
+        "postalCode": "95500",
+        "phone": "01 34 56 78 90",
+        "email": "info@alpha-packaging.fr",
+        "contact": "Sophie Martin-Dubois",
+        "siret": "75315928463852",
+        "specialties": "Solutions packaging industrielles, Export international, Logistique intégrée",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Hub Logistique Paris-Nord",
+                "adresse": {
+                    "rue": "Parc d'Activités Paris-Nord, 234 Boulevard de l'Europe",
+                    "city": "Gonesse",
+                    "postalCode": "95500"
+                },
+                "contact": {
+                    "name": "Sophie Martin-Dubois",
+                    "phone": "01 34 56 78 90",
+                    "email": "s.martin-dubois@alpha-packaging.fr"
+                },
+                "specialties": ["Cardboard", "Crate", "Other"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Emballages Alpins",
+        "address": "Zone Industrielle de Cran-Gevrier, 156 Route des Montagnes",
+        "city": "Annecy",
+        "postalCode": "74000",
+        "phone": "04 50 67 89 01",
+        "email": "commercial@emballages-alpins.fr",
+        "contact": "Pierre-Alain Savoyard",
+        "siret": "96385274185296",
+        "specialties": "Emballages montagne, Résistance au froid, Transport altitude",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Usine Annecy-Cran",
+                "adresse": {
+                    "rue": "Zone Industrielle de Cran-Gevrier, 156 Route des Montagnes",
+                    "city": "Annecy",
+                    "postalCode": "74000"
+                },
+                "contact": {
+                    "name": "Pierre-Alain Savoyard",
+                    "phone": "04 50 67 89 01",
+                    "email": "pa.savoyard@emballages-alpins.fr"
+                },
+                "specialties": ["Isothermal Packaging", "Crate"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "ThermoFresh Packaging",
+        "address": "Technopole Sophia-Antipolis, 45 Route des Lucioles",
+        "city": "Valbonne",
+        "postalCode": "06560",
+        "phone": "04 93 78 90 12",
+        "email": "contact@thermofresh-packaging.com",
+        "contact": "Marina Côte-d'Azur",
+        "siret": "85296374196385",
+        "specialties": "Emballages isothermes innovants, Chaîne du froid, Technologies avancées",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "R&D Sophia-Antipolis",
+                "adresse": {
+                    "rue": "Technopole Sophia-Antipolis, 45 Route des Lucioles",
+                    "city": "Valbonne",
+                    "postalCode": "06560"
+                },
+                "contact": {
+                    "name": "Marina Côte-d'Azur",
+                    "phone": "04 93 78 90 12",
+                    "email": "m.cotedazur@thermofresh-packaging.com"
+                },
+                "specialties": ["Isothermal Packaging"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Labels & Étiquettes Pro",
+        "address": "Parc Technologique de Nancy-Brabois, 78 Avenue de la Technologie",
+        "city": "Villers-lès-Nancy",
+        "postalCode": "54600",
+        "phone": "03 83 45 67 89",
+        "email": "ventes@labels-etiquettes-pro.fr",
+        "contact": "Christophe Lorrain",
+        "siret": "28496374185296",
+        "specialties": "Étiquettes professionnelles, Impression numérique, Solutions RFID",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Imprimerie Nancy-Brabois",
+                "adresse": {
+                    "rue": "Parc Technologique de Nancy-Brabois, 78 Avenue de la Technologie",
+                    "city": "Villers-lès-Nancy",
+                    "postalCode": "54600"
+                },
+                "contact": {
+                    "name": "Christophe Lorrain",
+                    "phone": "03 83 45 67 89",
+                    "email": "c.lorrain@labels-etiquettes-pro.fr"
+                },
+                "specialties": ["Label"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Emballages Corse Méditerranée",
+        "address": "Zone Industrielle de Furiani, 23 Route du Maquis",
+        "city": "Bastia",
+        "postalCode": "20600",
+        "phone": "04 95 67 89 01",
+        "email": "info@emballages-corse-med.fr",
+        "contact": "Antoine Corsica",
+        "siret": "36274196385274",
+        "specialties": "Emballages insulaires, Transport maritime, Solutions logistiques îles",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Dépôt Bastia-Furiani",
+                "adresse": {
+                    "rue": "Zone Industrielle de Furiani, 23 Route du Maquis",
+                    "city": "Bastia",
+                    "postalCode": "20600"
+                },
+                "contact": {
+                    "name": "Antoine Corsica",
+                    "phone": "04 95 67 89 01",
+                    "email": "a.corsica@emballages-corse-med.fr"
+                },
+                "specialties": ["Crate", "Cardboard"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "BioGreen Packaging",
+        "address": "Écopole de Bazancourt-Pomacle, 167 Rue de l'Innovation Verte",
+        "city": "Reims",
+        "postalCode": "51100",
+        "phone": "03 26 78 90 12",
+        "email": "contact@biogreen-packaging.com",
+        "contact": "Valérie Champagne-Environnement",
+        "siret": "41852963741852",
+        "specialties": "Emballages 100% verts, Matériaux biosourcés, Économie circulaire",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Innovation Center Reims-Bazancourt",
+                "adresse": {
+                    "rue": "Écopole de Bazancourt-Pomacle, 167 Rue de l'Innovation Verte",
+                    "city": "Reims",
+                    "postalCode": "51100"
+                },
+                "contact": {
+                    "name": "Valérie Champagne-Environnement",
+                    "phone": "03 26 78 90 12",
+                    "email": "v.champagne@biogreen-packaging.com"
+                },
+                "specialties": ["Tray", "Paper Bag", "Plastic Film"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Pack Solutions Normandie",
+        "address": "Parc d'Activités de Mondeville, 89 Avenue Guillaume le Conquérant",
+        "city": "Caen",
+        "postalCode": "14000",
+        "phone": "02 31 56 78 90",
+        "email": "direction@pack-solutions-normandie.fr",
+        "contact": "Michel Normand",
+        "siret": "52963741852963",
+        "specialties": "Emballages agro-alimentaires, Produits laitiers, Solutions fermières",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Centre Logistique Caen-Mondeville",
+                "adresse": {
+                    "rue": "Parc d'Activités de Mondeville, 89 Avenue Guillaume le Conquérant",
+                    "city": "Caen",
+                    "postalCode": "14000"
+                },
+                "contact": {
+                    "name": "Michel Normand",
+                    "phone": "02 31 56 78 90",
+                    "email": "m.normand@pack-solutions-normandie.fr"
+                },
+                "specialties": ["Tray", "Isothermal Packaging", "Platter"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Emballages Écologiques Limousin",
+        "address": "Zone Artisanale de Romanet, 45 Chemin des Innovations Durables",
+        "city": "Limoges",
+        "postalCode": "87000",
+        "phone": "05 55 67 89 01",
+        "email": "eco@emballages-limousin.fr",
+        "contact": "Françoise Limousine",
+        "siret": "63741852963741",
+        "specialties": "Emballages écologiques, Matériaux recyclés, Solutions durables locales",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Atelier Limoges-Romanet",
+                "adresse": {
+                    "rue": "Zone Artisanale de Romanet, 45 Chemin des Innovations Durables",
+                    "city": "Limoges",
+                    "postalCode": "87000"
+                },
+                "contact": {
+                    "name": "Françoise Limousine",
+                    "phone": "05 55 67 89 01",
+                    "email": "f.limousine@emballages-limousin.fr"
+                },
+                "specialties": ["Paper Bag", "Cardboard", "Other"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Packaging Innovations Auvergne",
+        "address": "Parc Technologique de Clermont-Ferrand, 123 Boulevard Blaise Pascal",
+        "city": "Aubière",
+        "postalCode": "63170",
+        "phone": "04 73 78 90 12",
+        "email": "innovation@packaging-auvergne.fr",
+        "contact": "Bernard Auvergnat",
+        "siret": "67891234567891",
+        "specialties": "Recherche & Développement, Prototypage rapide, Solutions sur-mesure",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Pôle R&D Clermont-Aubière",
+                "adresse": {
+                    "rue": "Parc Technologique de Clermont-Ferrand, 123 Boulevard Blaise Pascal",
+                    "city": "Aubière",
+                    "postalCode": "63170"
+                },
+                "contact": {
+                    "name": "Bernard Auvergnat",
+                    "phone": "04 73 78 90 12",
+                    "email": "b.auvergnat@packaging-auvergne.fr"
+                },
+                "specialties": ["Tray", "Platter", "Other"],
+                "estPrincipal": true
+            }
+        ]
+    },
+    {
+        "name": "Franche-Comté Emballages",
+        "address": "Zone Industrielle des Prés-de-Vaux, 67 Rue des Artisans",
+        "city": "Besançon",
+        "postalCode": "25000",
+        "phone": "03 81 45 67 89",
+        "email": "commercial@franche-comte-emballages.fr",
+        "contact": "Daniel Comtois",
+        "siret": "19385274196741",
+        "specialties": "Emballages bois, Cagettes traditionnelles, Artisanat local",
+        "isActive": true,
+        "sites": [
+            {
+                "name": "Scierie-Emballages Besançon",
+                "adresse": {
+                    "rue": "Zone Industrielle des Prés-de-Vaux, 67 Rue des Artisans",
+                    "city": "Besançon",
+                    "postalCode": "25000"
+                },
+                "contact": {
+                    "name": "Daniel Comtois",
+                    "phone": "03 81 45 67 89",
+                    "email": "d.comtois@franche-comte-emballages.fr"
+                },
+                "specialties": ["Crate", "Other"],
                 "estPrincipal": true
             }
         ]

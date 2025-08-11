@@ -26,6 +26,7 @@ import { UserRole } from '@common/enums/user-role.enum';
 interface AuthenticatedRequest {
   user: {
     id: string;
+    email: string;
     role: UserRole;
     entityId?: string;
     entityType?: string;

@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { BaseEntity } from '@common/entities/base.entity';
+import { SoftDeletableEntity } from '@common/entities/base.entity';
 import { Station } from './station.entity';
 
 @Entity('station_contacts')
-export class StationContact extends BaseEntity {
+export class StationContact extends SoftDeletableEntity {
   @Column()
   name: string;
 

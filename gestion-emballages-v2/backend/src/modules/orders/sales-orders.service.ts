@@ -180,28 +180,28 @@ export class SalesOrdersService {
   async update(id: string, updateSalesOrderDto: UpdateSalesOrderDto): Promise<SalesOrder> {
     const salesOrder = await this.findOne(id);
 
-    // Convert date strings to Date objects
-    const updateData = { ...updateSalesOrderDto };
-    if (updateData.actualShipDate) {
-      updateData.actualShipDate = new Date(updateSalesOrderDto.actualShipDate);
+    // Convert date strings to Date objects for entity update
+    const entityUpdateData: any = { ...updateSalesOrderDto };
+    if (updateSalesOrderDto.actualShipDate) {
+      entityUpdateData.actualShipDate = new Date(updateSalesOrderDto.actualShipDate);
     }
-    if (updateData.actualDeliveryDate) {
-      updateData.actualDeliveryDate = new Date(updateSalesOrderDto.actualDeliveryDate);
+    if (updateSalesOrderDto.actualDeliveryDate) {
+      entityUpdateData.actualDeliveryDate = new Date(updateSalesOrderDto.actualDeliveryDate);
     }
-    if (updateData.invoiceDate) {
-      updateData.invoiceDate = new Date(updateSalesOrderDto.invoiceDate);
+    if (updateSalesOrderDto.invoiceDate) {
+      entityUpdateData.invoiceDate = new Date(updateSalesOrderDto.invoiceDate);
     }
-    if (updateData.paymentDueDate) {
-      updateData.paymentDueDate = new Date(updateSalesOrderDto.paymentDueDate);
+    if (updateSalesOrderDto.paymentDueDate) {
+      entityUpdateData.paymentDueDate = new Date(updateSalesOrderDto.paymentDueDate);
     }
-    if (updateData.paymentReceivedDate) {
-      updateData.paymentReceivedDate = new Date(updateSalesOrderDto.paymentReceivedDate);
+    if (updateSalesOrderDto.paymentReceivedDate) {
+      entityUpdateData.paymentReceivedDate = new Date(updateSalesOrderDto.paymentReceivedDate);
     }
-    if (updateData.fulfilledAt) {
-      updateData.fulfilledAt = new Date(updateSalesOrderDto.fulfilledAt);
+    if (updateSalesOrderDto.fulfilledAt) {
+      entityUpdateData.fulfilledAt = new Date(updateSalesOrderDto.fulfilledAt);
     }
 
-    Object.assign(salesOrder, updateData);
+    Object.assign(salesOrder, entityUpdateData);
 
     const updatedSalesOrder = await this.salesOrderRepository.save(salesOrder);
 
@@ -323,27 +323,19 @@ export class SalesOrdersService {
 
   private async generateSoNumber(): Promise<string> {
     const year = new Date().getFullYear();
-    const count = await this.salesOrderRepository.count({
-      where: {
-        soNumber: this.salesOrderRepository
-          .createQueryBuilder()
-          .select()
-          .where('so_number LIKE :pattern', { pattern: `SO-${year}-%` }),
-      },
-    });
+    const count = await this.salesOrderRepository
+      .createQueryBuilder('order')
+      .where('order.soNumber LIKE :pattern', { pattern: `SO-${year}-%` })
+      .getCount();
     return `SO-${year}-${(count + 1).toString().padStart(6, '0')}`;
   }
 
   private async generateInvoiceNumber(): Promise<string> {
     const year = new Date().getFullYear();
-    const count = await this.salesOrderRepository.count({
-      where: {
-        invoiceNumber: this.salesOrderRepository
-          .createQueryBuilder()
-          .select()
-          .where('invoice_number LIKE :pattern', { pattern: `INV-${year}-%` }),
-      },
-    });
+    const count = await this.salesOrderRepository
+      .createQueryBuilder('order')
+      .where('order.invoiceNumber LIKE :pattern', { pattern: `INV-${year}-%` })
+      .getCount();
     return `INV-${year}-${(count + 1).toString().padStart(6, '0')}`;
   }
 

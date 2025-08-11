@@ -1,0 +1,425 @@
+[
+    {
+        "supplierName": "PackagingTech Solutions",
+        "fullName": "Olivier Durand",
+        "position": "Directeur Commercial",
+        "phone": "01 45 12 34 56",
+        "email": "o.durand@packagingtech.fr",
+        "isPrimary": true,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "PackagingTech Solutions",
+        "fullName": "Marie-Claire Lyonnaise",
+        "position": "Responsable Dépôt Lyon",
+        "phone": "04 74 23 56 78",
+        "email": "mc.lyonnaise@packagingtech.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "PackagingTech Solutions",
+        "fullName": "Antoine Technique",
+        "position": "Ingénieur R&D",
+        "phone": "01 45 12 34 58",
+        "email": "a.technique@packagingtech.fr",
+        "isPrimary": false,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "Emballages Méditerranéens",
+        "fullName": "Philippe Provençal",
+        "position": "Directeur Général",
+        "phone": "04 91 78 45 23",
+        "email": "p.provencal@emballages-med.fr",
+        "isPrimary": true,
+        "department": "Direction"
+    },
+    {
+        "supplierName": "Emballages Méditerranéens",
+        "fullName": "Sandrine Héraultaise",
+        "position": "Chef de Dépôt Montpellier",
+        "phone": "04 67 34 78 90",
+        "email": "s.heraultaise@emballages-med.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "Emballages Méditerranéens",
+        "fullName": "Marcel Production",
+        "position": "Responsable Production",
+        "phone": "04 91 78 45 25",
+        "email": "m.production@emballages-med.fr",
+        "isPrimary": false,
+        "department": "Production"
+    },
+    {
+        "supplierName": "Plastiques de l'Ouest",
+        "fullName": "Yann Breton",
+        "position": "Directeur Commercial",
+        "phone": "02 99 34 56 78",
+        "email": "y.breton@plastiques-ouest.com",
+        "isPrimary": true,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "Plastiques de l'Ouest",
+        "fullName": "Gwenaëlle Angevine",
+        "position": "Responsable Antenne Angers",
+        "phone": "02 41 67 89 12",
+        "email": "g.angevine@plastiques-ouest.com",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "Plastiques de l'Ouest",
+        "fullName": "Loïc Maritime",
+        "position": "Spécialiste Emballages Marins",
+        "phone": "02 99 34 56 79",
+        "email": "l.maritime@plastiques-ouest.com",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "AgroPackaging Nord",
+        "fullName": "François Nordiste",
+        "position": "Directeur Général",
+        "phone": "03 20 45 67 89",
+        "email": "f.nordiste@agropack-nord.fr",
+        "isPrimary": true,
+        "department": "Direction"
+    },
+    {
+        "supplierName": "AgroPackaging Nord",
+        "fullName": "Brigitte Picarde",
+        "position": "Responsable Logistique Amiens",
+        "phone": "03 22 56 78 90",
+        "email": "b.picarde@agropack-nord.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "AgroPackaging Nord",
+        "fullName": "Claude Agricole",
+        "position": "Spécialiste Solutions Agricoles",
+        "phone": "03 20 45 67 91",
+        "email": "c.agricole@agropack-nord.fr",
+        "isPrimary": false,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "EcoPack Solutions",
+        "fullName": "Klaus Alsacien",
+        "position": "Directeur Innovation",
+        "phone": "03 89 23 45 67",
+        "email": "k.alsacien@ecopack-solutions.fr",
+        "isPrimary": true,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "EcoPack Solutions",
+        "fullName": "Ingrid Écologique",
+        "position": "Certifications Environnementales",
+        "phone": "03 89 23 45 68",
+        "email": "i.ecologique@ecopack-solutions.fr",
+        "isPrimary": false,
+        "department": "Qualité"
+    },
+    {
+        "supplierName": "Conditionnements du Centre",
+        "fullName": "Martine Orléanaise",
+        "position": "Directrice Commerciale",
+        "phone": "02 38 56 78 90",
+        "email": "m.orleanaise@conditionnements-centre.fr",
+        "isPrimary": true,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "Conditionnements du Centre",
+        "fullName": "Christine Tourangelle",
+        "position": "Responsable Antenne Tours",
+        "phone": "02 47 45 67 89",
+        "email": "c.tourangelle@conditionnements-centre.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "Conditionnements du Centre",
+        "fullName": "Bernard Étiquetage",
+        "position": "Expert Étiquetage Professionnel",
+        "phone": "02 38 56 78 92",
+        "email": "b.etiquetage@conditionnements-centre.fr",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Emballages Bio Sud-Ouest",
+        "fullName": "Sandrine Bordelaise",
+        "position": "Directrice Développement Durable",
+        "phone": "05 56 78 90 12",
+        "email": "s.bordelaise@emballages-bio-so.fr",
+        "isPrimary": true,
+        "department": "Direction"
+    },
+    {
+        "supplierName": "Emballages Bio Sud-Ouest",
+        "fullName": "Pierre Toulousain",
+        "position": "Chef de Dépôt Toulouse",
+        "phone": "05 61 34 56 78",
+        "email": "p.toulousain@emballages-bio-so.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "Emballages Bio Sud-Ouest",
+        "fullName": "Sylvie Certification",
+        "position": "Responsable Certifications Bio",
+        "phone": "05 56 78 90 14",
+        "email": "s.certification@emballages-bio-so.fr",
+        "isPrimary": false,
+        "department": "Qualité"
+    },
+    {
+        "supplierName": "FlexiPack Industries",
+        "fullName": "Alain Charentais",
+        "position": "Directeur R&D",
+        "phone": "05 45 67 89 01",
+        "email": "a.charentais@flexipack-industries.com",
+        "isPrimary": true,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "FlexiPack Industries",
+        "fullName": "Sophie Innovation",
+        "position": "Ingénieure Solutions Flexibles",
+        "phone": "05 45 67 89 02",
+        "email": "s.innovation@flexipack-industries.com",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Cartons Maître Artisan",
+        "fullName": "Jean-Michel Vosgien",
+        "position": "Maître Artisan",
+        "phone": "03 29 45 67 89",
+        "email": "jm.vosgien@cartons-maitre-artisan.fr",
+        "isPrimary": true,
+        "department": "Production"
+    },
+    {
+        "supplierName": "Cartons Maître Artisan",
+        "fullName": "Claire Personnalisation",
+        "position": "Conceptrice Emballages Sur-Mesure",
+        "phone": "03 29 45 67 90",
+        "email": "c.personnalisation@cartons-maitre-artisan.fr",
+        "isPrimary": false,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "Alpha Packaging France",
+        "fullName": "Sophie Martin-Dubois",
+        "position": "Directrice Générale",
+        "phone": "01 34 56 78 90",
+        "email": "s.martin-dubois@alpha-packaging.fr",
+        "isPrimary": true,
+        "department": "Direction"
+    },
+    {
+        "supplierName": "Alpha Packaging France",
+        "fullName": "Thomas Logistique",
+        "position": "Responsable Hub Paris-Nord",
+        "phone": "01 34 56 78 91",
+        "email": "t.logistique@alpha-packaging.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "Alpha Packaging France",
+        "fullName": "Elena Export",
+        "position": "Spécialiste Export International",
+        "phone": "01 34 56 78 92",
+        "email": "e.export@alpha-packaging.fr",
+        "isPrimary": false,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "Emballages Alpins",
+        "fullName": "Pierre-Alain Savoyard",
+        "position": "Directeur Technique",
+        "phone": "04 50 67 89 01",
+        "email": "pa.savoyard@emballages-alpins.fr",
+        "isPrimary": true,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Emballages Alpins",
+        "fullName": "Monique Montagne",
+        "position": "Spécialiste Conditions Extrêmes",
+        "phone": "04 50 67 89 02",
+        "email": "m.montagne@emballages-alpins.fr",
+        "isPrimary": false,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "ThermoFresh Packaging",
+        "fullName": "Marina Côte-d'Azur",
+        "position": "Directrice Innovation",
+        "phone": "04 93 78 90 12",
+        "email": "m.cotedazur@thermofresh-packaging.com",
+        "isPrimary": true,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "ThermoFresh Packaging",
+        "fullName": "Laurent Thermique",
+        "position": "Expert Chaîne du Froid",
+        "phone": "04 93 78 90 13",
+        "email": "l.thermique@thermofresh-packaging.com",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Labels & Étiquettes Pro",
+        "fullName": "Christophe Lorrain",
+        "position": "Directeur Commercial",
+        "phone": "03 83 45 67 89",
+        "email": "c.lorrain@labels-etiquettes-pro.fr",
+        "isPrimary": true,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "Labels & Étiquettes Pro",
+        "fullName": "Nathalie Numérique",
+        "position": "Spécialiste Impression Numérique",
+        "phone": "03 83 45 67 90",
+        "email": "n.numerique@labels-etiquettes-pro.fr",
+        "isPrimary": false,
+        "department": "Production"
+    },
+    {
+        "supplierName": "Labels & Étiquettes Pro",
+        "fullName": "Rémi RFID",
+        "position": "Expert Solutions RFID",
+        "phone": "03 83 45 67 91",
+        "email": "r.rfid@labels-etiquettes-pro.fr",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Emballages Corse Méditerranée",
+        "fullName": "Antoine Corsica",
+        "position": "Directeur Insulaire",
+        "phone": "04 95 67 89 01",
+        "email": "a.corsica@emballages-corse-med.fr",
+        "isPrimary": true,
+        "department": "Direction"
+    },
+    {
+        "supplierName": "Emballages Corse Méditerranée",
+        "fullName": "Maria Maritime",
+        "position": "Coordinatrice Transport Maritime",
+        "phone": "04 95 67 89 02",
+        "email": "m.maritime@emballages-corse-med.fr",
+        "isPrimary": false,
+        "department": "Logistique"
+    },
+    {
+        "supplierName": "BioGreen Packaging",
+        "fullName": "Valérie Champagne-Environnement",
+        "position": "Directrice Innovation Verte",
+        "phone": "03 26 78 90 12",
+        "email": "v.champagne@biogreen-packaging.com",
+        "isPrimary": true,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "BioGreen Packaging",
+        "fullName": "Éric Biosourcé",
+        "position": "Expert Matériaux Biosourcés",
+        "phone": "03 26 78 90 13",
+        "email": "e.biosource@biogreen-packaging.com",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "BioGreen Packaging",
+        "fullName": "Lucie Circulaire",
+        "position": "Responsable Économie Circulaire",
+        "phone": "03 26 78 90 14",
+        "email": "l.circulaire@biogreen-packaging.com",
+        "isPrimary": false,
+        "department": "Développement Durable"
+    },
+    {
+        "supplierName": "Pack Solutions Normandie",
+        "fullName": "Michel Normand",
+        "position": "Directeur Commercial",
+        "phone": "02 31 56 78 90",
+        "email": "m.normand@pack-solutions-normandie.fr",
+        "isPrimary": true,
+        "department": "Commercial"
+    },
+    {
+        "supplierName": "Pack Solutions Normandie",
+        "fullName": "Isabelle Laitier",
+        "position": "Spécialiste Produits Laitiers",
+        "phone": "02 31 56 78 91",
+        "email": "i.laitier@pack-solutions-normandie.fr",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Emballages Écologiques Limousin",
+        "fullName": "Françoise Limousine",
+        "position": "Directrice Développement Durable",
+        "phone": "05 55 67 89 01",
+        "email": "f.limousine@emballages-limousin.fr",
+        "isPrimary": true,
+        "department": "Direction"
+    },
+    {
+        "supplierName": "Emballages Écologiques Limousin",
+        "fullName": "Paul Recyclé",
+        "position": "Expert Matériaux Recyclés",
+        "phone": "05 55 67 89 02",
+        "email": "p.recycle@emballages-limousin.fr",
+        "isPrimary": false,
+        "department": "Technique"
+    },
+    {
+        "supplierName": "Packaging Innovations Auvergne",
+        "fullName": "Bernard Auvergnat",
+        "position": "Directeur R&D",
+        "phone": "04 73 78 90 12",
+        "email": "b.auvergnat@packaging-auvergne.fr",
+        "isPrimary": true,
+        "department": "Recherche et Développement"
+    },
+    {
+        "supplierName": "Packaging Innovations Auvergne",
+        "fullName": "Caroline Prototypage",
+        "position": "Ingénieure Prototypage Rapide",
+        "phone": "04 73 78 90 13",
+        "email": "c.prototypage@packaging-auvergne.fr",
+        "isPrimary": false,
+        "department": "Production"
+    },
+    {
+        "supplierName": "Franche-Comté Emballages",
+        "fullName": "Daniel Comtois",
+        "position": "Maître Artisan Bois",
+        "phone": "03 81 45 67 89",
+        "email": "d.comtois@franche-comte-emballages.fr",
+        "isPrimary": true,
+        "department": "Production"
+    },
+    {
+        "supplierName": "Franche-Comté Emballages",
+        "fullName": "Sylvain Tradition",
+        "position": "Spécialiste Cagettes Traditionnelles",
+        "phone": "03 81 45 67 90",
+        "email": "s.tradition@franche-comte-emballages.fr",
+        "isPrimary": false,
+        "department": "Commercial"
+    }
+]
