@@ -17,7 +17,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { StationsService } from './stations.service';
 import { CreateStationDto } from './dto/create-station.dto';
 import { UpdateStationDto } from './dto/update-station.dto';
-import { PaginationDto } from '@common/dto/pagination.dto';
+import { StationFilterDto } from './dto/station-filter.dto';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
 import { Roles } from '@modules/auth/decorators/roles.decorator';
@@ -43,19 +43,15 @@ export class StationsController {
   @ApiOperation({ summary: 'Create a new station' })
   @ApiResponse({ status: 201, description: 'Station created successfully' })
   async create(@Body() createStationDto: CreateStationDto, @Request() req) {
-    const stationData = {
-      ...createStationDto,
-      createdById: req.user.id,
-    };
-    return this.stationsService.create(stationData);
+    return this.stationsService.create(createStationDto, req.user.id);
   }
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Get all stations with pagination' })
   @ApiResponse({ status: 200, description: 'Stations retrieved successfully' })
-  async findAll(@Query() paginationDto: PaginationDto) {
-    return this.stationsService.findAll(paginationDto);
+  async findAll(@Query() stationFilterDto: StationFilterDto) {
+    return this.stationsService.findAll(stationFilterDto);
   }
 
   @Get(':id')
@@ -71,26 +67,22 @@ export class StationsController {
   @ApiOperation({ summary: 'Update station' })
   @ApiResponse({ status: 200, description: 'Station updated successfully' })
   async update(@Param('id') id: string, @Body() updateStationDto: UpdateStationDto, @Request() req) {
-    const stationData = {
-      ...updateStationDto,
-      updatedById: req.user.id,
-    };
-    return this.stationsService.update(id, stationData);
+    return this.stationsService.update(id, updateStationDto, req.user.id);
   }
 
   @Delete(':id')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Deactivate station' })
   @ApiResponse({ status: 200, description: 'Station deactivated successfully' })
-  async remove(@Param('id') id: string) {
-    return this.stationsService.remove(id);
+  async remove(@Param('id') id: string, @Request() req) {
+    return this.stationsService.remove(id, req.user.id);
   }
 
   @Patch(':id/reactivate')
   @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER)
   @ApiOperation({ summary: 'Reactivate station' })
   @ApiResponse({ status: 200, description: 'Station reactivated successfully' })
-  async reactivate(@Param('id') id: string) {
-    return this.stationsService.reactivate(id);
+  async reactivate(@Param('id') id: string, @Request() req) {
+    return this.stationsService.reactivate(id, req.user.id);
   }
 }

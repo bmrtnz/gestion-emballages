@@ -11,7 +11,7 @@ import { StationStatisticsComponent } from "./station-statistics/station-statist
     standalone: true,
     imports: [CommonModule, LucideAngularModule, TranslocoModule, StationListComponent, StationStatisticsComponent],
     template: `
-        <div class="min-h-screen">
+        <div>
             <!-- Page Header with Expandable Statistics -->
             <div class="mb-8">
                 <!-- Title Row with Statistics Icon and Chevron -->

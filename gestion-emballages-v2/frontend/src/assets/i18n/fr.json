@@ -26,7 +26,13 @@
     "no": "Non",
     "name": "Nom",
     "details": "Détails",
-    "blueWhale": "Blue Whale"
+    "blueWhale": "Blue Whale",
+    "back": "Retour",
+    "phone": "Téléphone",
+    "email": "Email",
+    "call": "Appeler",
+    "contact": "contact",
+    "contacts": "contacts"
   },
   "navigation": {
     "dashboard": "Tableau de bord",
@@ -86,6 +92,7 @@
     "description": "Gérez les stations du réseau",
     "station": "Station",
     "stationGroup": "Groupe de stations",
+    "group": "Groupe",
     "code": "Code",
     "address": "Adresse",
     "city": "Ville",
@@ -117,7 +124,25 @@
     "stationsByGroup": "Répartition par groupe",
     "stationsByCity": "Répartition par ville",
     "stationsByCountry": "Répartition par pays",
-    "displayingStations": "Affichage de {{start}} à {{end}} sur {{total}} stations"
+    "displayingStations": "Affichage de {{start}} à {{end}} sur {{total}} stations",
+    "allContacts": "Tous les contacts",
+    "primaryContact": "Contact principal",
+    "contactDetails": "Détails du contact",
+    "noMainContact": "Aucun contact principal",
+    "noMainContactDescription": "Cette station n'a pas de contact principal défini.",
+    "noContactName": "Nom non disponible",
+    "noContacts": "Aucun contact",
+    "noContactsDescription": "Cette station n'a aucun contact enregistré.",
+    "stationNotFound": "Station introuvable",
+    "stationNotFoundDescription": "La station demandée n'a pas été trouvée.",
+    "backToStations": "Retour aux stations"
+  },
+  "contacts": {
+    "phoneNumber": "Numéro de téléphone",
+    "emailAddress": "Adresse e-mail",
+    "call": "Appeler",
+    "sendEmail": "Envoyer un e-mail",
+    "position": "Poste"
   },
   "stationGroups": {
     "title": "Groupes de stations",
@@ -140,6 +165,10 @@
     "stationGroupUpdated": "Groupe de stations mis à jour avec succès",
     "stationGroupCreated": "Groupe de stations créé avec succès",
     "stationGroupDeleted": "Groupe de stations supprimé avec succès",
+    "contactUpdated": "Contact mis à jour avec succès",
+    "contactUpdateError": "Échec de la mise à jour du contact",
+    "contactCreated": "Contact créé avec succès",
+    "contactDeleted": "Contact supprimé avec succès",
     "errorOccurred": "Une erreur s'est produite",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet élément ?",
     "confirmDeactivate": "Êtes-vous sûr de vouloir désactiver cet utilisateur ?",

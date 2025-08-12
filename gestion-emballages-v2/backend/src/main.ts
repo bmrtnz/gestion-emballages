@@ -3,6 +3,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { CorsConfigFactory } from './config/cors.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,11 +15,16 @@ async function bootstrap() {
   const apiVersion = configService.get<string>('API_VERSION', 'v1');
   app.setGlobalPrefix(`${apiPrefix}/${apiVersion}`);
 
-  // CORS
-  app.enableCors({
-    origin: configService.get<string>('CORS_ORIGIN', 'http://localhost:4200'),
-    credentials: true,
-  });
+  // CORS Configuration
+  const environment = configService.get<string>('NODE_ENV', 'development');
+  const corsOrigins = configService.get<string>('CORS_ORIGINS', 'http://localhost:4200');
+  
+  // Validate CORS configuration
+  CorsConfigFactory.validateCorsConfig(corsOrigins, environment);
+  
+  // Apply CORS configuration
+  const corsOptions = CorsConfigFactory.createCorsOptions(corsOrigins, environment);
+  app.enableCors(corsOptions);
 
   // Global pipes
   app.useGlobalPipes(
@@ -46,9 +52,9 @@ async function bootstrap() {
   const port = configService.get<number>('PORT', 3001);
   await app.listen(port);
 
-  const logger = new Logger('Bootstrap');
-  logger.log(`Application is running on: http://localhost:${port}/${apiPrefix}/${apiVersion}`);
-  logger.log(`Swagger documentation: http://localhost:${port}/${apiPrefix}/docs`);
+  const bootstrapLogger = new Logger('Bootstrap');
+  bootstrapLogger.log(`Application is running on: http://localhost:${port}/${apiPrefix}/${apiVersion}`);
+  bootstrapLogger.log(`Swagger documentation: http://localhost:${port}/${apiPrefix}/docs`);
 }
 
 bootstrap();

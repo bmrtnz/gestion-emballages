@@ -20,7 +20,7 @@ import { SidebarComponent } from './sidebar.component';
       <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-sunshine-50/10 to-energy-50/10 pointer-events-none"></div>
       
       <!-- Content wrapper -->
-      <div class="relative z-10">
+      <div class="relative z-10 flex flex-col min-h-screen">
         <!-- Sidebar -->
         <app-sidebar
           [sidebarOpen]="sidebarOpen()"
@@ -46,8 +46,8 @@ import { SidebarComponent } from './sidebar.component';
         </div>
 
         <!-- Main Content -->
-        <div class="min-h-screen" [class]="getMainContentClasses()">
-          <main class="py-10 min-h-screen bg-gray-50">
+        <div class="flex-1" [class]="getMainContentClasses()">
+          <main class="py-10 bg-gray-50">
             <div class="px-4 sm:px-6 lg:px-8">
               <router-outlet></router-outlet>
             </div>

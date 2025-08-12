@@ -13,8 +13,13 @@ export class CreateStationDto {
   code?: string;
 
   @IsOptional()
-  @IsString()
-  address?: string;
+  address?: string | {
+    street?: string;
+    address?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+  };
 
   @IsOptional()
   @IsString()

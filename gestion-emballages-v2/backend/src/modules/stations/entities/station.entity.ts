@@ -6,6 +6,7 @@ import { StockStation } from '@modules/stocks/entities/stock-station.entity';
 import { TransferRequest } from '@modules/transfers/entities/transfer-request.entity';
 import { Forecast } from '@modules/forecasts/entities/forecast.entity';
 import { ShoppingCart } from '@modules/shopping-carts/entities/shopping-cart.entity';
+import { User } from '@modules/users/entities/user.entity';
 import { StationGroup } from './station-group.entity';
 import { StationContact } from './station-contact.entity';
 
@@ -42,6 +43,13 @@ export class Station extends SoftDeletableEntity {
     peakSeason?: string;
     [key: string]: any;
   };
+
+  // Audit fields
+  @Column({ name: 'created_by' })
+  createdById: string;
+
+  @Column({ name: 'updated_by', nullable: true })
+  updatedById?: string;
 
   // Relations
   @ManyToOne(() => StationGroup, group => group.stations, { nullable: true })
@@ -80,13 +88,21 @@ export class Station extends SoftDeletableEntity {
   @OneToMany(() => ShoppingCart, liste => liste.station)
   shoppingCarts: ShoppingCart[];
 
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'created_by' })
+  createdBy: User;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'updated_by' })
+  updatedBy?: User;
+
   // Virtual properties
   get principalContactFromContacts(): StationContact | undefined {
-    return this.contacts?.find(contact => contact.isPrimary && contact.isActive);
+    return this.contacts?.find(contact => contact.isPrimary);
   }
 
   get activeContacts(): StationContact[] {
-    return this.contacts?.filter(contact => contact.isActive) || [];
+    return this.contacts || [];
   }
 
   get hasGroup(): boolean {

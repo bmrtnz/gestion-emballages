@@ -34,6 +34,27 @@ export class DatabaseSeeder {
     private dataSource: DataSource
   ) {}
 
+  private systemAdminUser: User | null = null;
+
+  private async createSystemAdminUser(): Promise<User> {
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    
+    const systemAdmin = {
+      email: 'system.admin@gestion-emballages.local',
+      hashedPassword: hashedPassword,
+      fullName: 'System Administrator',
+      phone: null,
+      role: UserRole.ADMIN,
+      entityType: null,
+      entityId: null,
+      isActive: true,
+    };
+
+    const userRepo = this.dataSource.getRepository(User);
+    const savedUser = await userRepo.save(systemAdmin);
+    return savedUser;
+  }
+
   async run(): Promise<void> {
     this.logger.log('Starting database seeding...');
 
@@ -46,7 +67,12 @@ export class DatabaseSeeder {
       // 2. Wait a moment for cleanup to complete
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // 3. Seed core reference data
+      // 3. Create system admin user FIRST (needed for audit fields)
+      this.logger.log('👤 Creating system admin user...');
+      this.systemAdminUser = await this.createSystemAdminUser();
+      this.logger.log('✅ Created system admin user for audit trails');
+
+      // 4. Seed core reference data
       this.logger.log('🏗️  Seeding core reference data...');
       const stationGroups = await this.seedStationGroups();
       this.logger.log(`✅ Created ${stationGroups.length} station groups`);
@@ -63,10 +89,10 @@ export class DatabaseSeeder {
       const platforms = await this.seedPlatforms();
       this.logger.log(`✅ Created ${platforms.length} strategic distribution platforms`);
 
-      // 4. Seed user accounts with role-based access
-      this.logger.log('👥 Creating user accounts and access control...');
+      // 5. Seed remaining user accounts with role-based access
+      this.logger.log('👥 Creating additional user accounts and access control...');
       const users = await this.seedUsers(stations, fournisseurs);
-      this.logger.log(`✅ Created ${users.length} users with proper role assignments`);
+      this.logger.log(`✅ Created ${users.length} additional users with proper role assignments`);
 
       // 5. Seed comprehensive product catalog
       this.logger.log('📦 Building comprehensive product catalog...');
@@ -185,6 +211,8 @@ export class DatabaseSeeder {
         postalCode: address?.postalCode || null,
         country: address?.country || 'France',
         isActive: stationInfo.isActive !== undefined ? stationInfo.isActive : true,
+        // Audit fields
+        createdById: this.systemAdminUser!.id,
         // Store additional data as coordinates for now (extensible JSON field)
         coordinates: {
           specialization: stationInfo.specialization || null,
@@ -213,7 +241,7 @@ export class DatabaseSeeder {
     const processedContacts = [];
 
     for (const contactData of contactsData as any[]) {
-      const { stationIdentifiant, fullName, isPrincipal, ...otherInfo } = contactData as any;
+      const { stationIdentifiant, fullName, isPrincipal, isActive, ...otherInfo } = contactData as any;
 
       const station = stationMap.get(stationIdentifiant);
       if (station) {
@@ -221,7 +249,10 @@ export class DatabaseSeeder {
           ...otherInfo,
           name: fullName, // Map fullName to name
           isPrimary: isPrincipal, // Map isPrincipal to isPrimary
+          // Note: isActive field removed as StationContact no longer supports soft delete
           stationId: station.id,
+          // Audit fields
+          createdById: this.systemAdminUser!.id,
         });
       } else {
         this.logger.warn(`Station not found for contact: ${stationIdentifiant}`);

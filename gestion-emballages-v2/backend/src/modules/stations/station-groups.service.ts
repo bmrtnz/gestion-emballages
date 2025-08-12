@@ -152,6 +152,13 @@ export class StationGroupsService {
     });
   }
 
+  async getActiveStationGroups(): Promise<StationGroup[]> {
+    return this.stationGroupRepository.find({
+      where: { isActive: true },
+      order: { name: 'ASC' },
+    });
+  }
+
   async getStationStatistics(): Promise<{
     totalStations: number;
     groupedStations: number;

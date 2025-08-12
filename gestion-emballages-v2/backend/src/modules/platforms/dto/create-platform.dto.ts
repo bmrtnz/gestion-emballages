@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreatePlatformDto {
@@ -40,8 +40,9 @@ export class CreatePlatformDto {
   description?: string;
 
   @IsOptional()
-  @IsString()
-  specialties?: string;
+  @IsArray()
+  @IsString({ each: true })
+  specialties?: string[];
 
   @IsOptional()
   @IsBoolean({ message: 'isActive doit être un booléen' })

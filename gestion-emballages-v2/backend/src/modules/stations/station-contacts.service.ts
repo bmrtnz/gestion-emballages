@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -6,6 +6,7 @@ import { StationContact } from './entities/station-contact.entity';
 import { Station } from './entities/station.entity';
 import { CreateStationContactDto } from './dto/create-station-contact.dto';
 import { UpdateStationContactDto } from './dto/update-station-contact.dto';
+import { UserRole } from '@common/enums/user-role.enum';
 
 @Injectable()
 export class StationContactsService {
@@ -16,7 +17,14 @@ export class StationContactsService {
     private stationRepository: Repository<Station>
   ) {}
 
-  async create(createDto: CreateStationContactDto): Promise<StationContact> {
+  async create(createDto: CreateStationContactDto, user: any): Promise<StationContact> {
+    // Check permissions: STATION users can only create contacts for their own station
+    if (user.role === UserRole.STATION) {
+      if (user.entityType !== 'Station' || user.entityId !== createDto.stationId) {
+        throw new ForbiddenException('You can only create contacts for your own station');
+      }
+    }
+
     // Verify station exists
     const station = await this.stationRepository.findOne({
       where: { id: createDto.stationId },
@@ -26,12 +34,18 @@ export class StationContactsService {
       throw new NotFoundException('Station not found');
     }
 
-    // If this is to be the primary contact, ensure no other primary contact exists
-    if (createDto.isPrimary) {
-      await this.ensurePrimaryContact(createDto.stationId);
+    // If this is to be the primary contact, remove primary status from all other contacts in the same station
+    if (createDto.isPrimary === true) {
+      await this.stationContactRepository.update(
+        { stationId: createDto.stationId, isPrimary: true }, 
+        { isPrimary: false }
+      );
     }
 
-    const contact = this.stationContactRepository.create(createDto);
+    const contact = this.stationContactRepository.create({
+      ...createDto,
+      createdById: user.id,
+    });
     return this.stationContactRepository.save(contact);
   }
 
@@ -55,15 +69,28 @@ export class StationContactsService {
     return contact;
   }
 
-  async update(id: string, updateDto: UpdateStationContactDto): Promise<StationContact> {
+  async update(id: string, updateDto: UpdateStationContactDto, user: any): Promise<StationContact> {
     const contact = await this.findOne(id);
 
-    // If setting as primary contact, ensure no other primary contact exists
-    if (updateDto.isPrimary && !contact.isPrimary) {
-      await this.ensurePrimaryContact(contact.stationId, id);
+    // Check permissions: STATION users can only edit contacts from their own station
+    if (user.role === UserRole.STATION) {
+      if (user.entityType !== 'Station' || user.entityId !== contact.stationId) {
+        throw new ForbiddenException('You can only edit contacts from your own station');
+      }
     }
 
-    Object.assign(contact, updateDto);
+    // If setting as primary contact, remove primary status from all other contacts in the same station
+    if (updateDto.isPrimary === true && !contact.isPrimary) {
+      await this.stationContactRepository.update(
+        { stationId: contact.stationId, isPrimary: true }, 
+        { isPrimary: false }
+      );
+    }
+
+    Object.assign(contact, {
+      ...updateDto,
+      updatedById: user.id,
+    });
     return this.stationContactRepository.save(contact);
   }
 
@@ -71,14 +98,22 @@ export class StationContactsService {
     await this.stationContactRepository.delete(id);
   }
 
-  async setPrincipal(id: string): Promise<StationContact> {
+  async setPrincipal(id: string, user: any): Promise<StationContact> {
     const contact = await this.findOne(id);
+
+    // Check permissions: STATION users can only set primary contacts from their own station
+    if (user.role === UserRole.STATION) {
+      if (user.entityType !== 'Station' || user.entityId !== contact.stationId) {
+        throw new ForbiddenException('You can only set primary contacts from your own station');
+      }
+    }
 
     // Remove primary status from other contacts in the same station
     await this.stationContactRepository.update({ stationId: contact.stationId, isPrimary: true }, { isPrimary: false });
 
     // Set this contact as primary
     contact.isPrimary = true;
+    contact.updatedById = user.id;
     return this.stationContactRepository.save(contact);
   }
 
@@ -88,22 +123,4 @@ export class StationContactsService {
     });
   }
 
-  private async ensurePrimaryContact(stationId: string, excludeId?: string): Promise<void> {
-    const queryBuilder = this.stationContactRepository
-      .createQueryBuilder('contact')
-      .where('contact.stationId = :stationId', { stationId })
-      .andWhere('contact.isPrimary = :isPrimary', { isPrimary: true });
-
-    if (excludeId) {
-      queryBuilder.andWhere('contact.id != :excludeId', { excludeId });
-    }
-
-    const existingPrimary = await queryBuilder.getOne();
-
-    if (existingPrimary) {
-      throw new BadRequestException(
-        'This station already has a primary contact. Please remove the primary status from the other contact first.'
-      );
-    }
-  }
 }

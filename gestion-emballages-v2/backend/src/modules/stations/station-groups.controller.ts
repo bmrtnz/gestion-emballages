@@ -37,6 +37,13 @@ export class StationGroupsController {
     return this.stationGroupsService.getStationStatistics();
   }
 
+  @Get('active')
+  @ApiOperation({ summary: 'Get all active station groups' })
+  @ApiResponse({ status: 200, description: 'Active station groups retrieved successfully' })
+  async getActiveStationGroups() {
+    return this.stationGroupsService.getActiveStationGroups();
+  }
+
   @Get('independent-stations')
   @ApiOperation({ summary: 'Get all independent stations (not in any group)' })
   @ApiResponse({ status: 200, description: 'Independent stations retrieved successfully' })

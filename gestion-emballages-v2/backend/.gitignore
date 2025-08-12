@@ -185,6 +185,7 @@ docs/generated/
 
 # Production files
 .env.production
+.env.staging
 
 # Build artifacts
 lib/

@@ -52,7 +52,7 @@ export class StationService {
   }
 
   updateStation(id: string, station: UpdateStationRequest): Observable<Station> {
-    return this.http.put<Station>(`${this.baseUrl}/${id}`, station);
+    return this.http.patch<Station>(`${this.baseUrl}/${id}`, station);
   }
 
   deleteStation(id: string): Observable<void> {
@@ -94,7 +94,7 @@ export class StationService {
   }
 
   updateStationGroup(id: string, group: UpdateStationGroupRequest): Observable<StationGroup> {
-    return this.http.put<StationGroup>(`${this.groupsUrl}/${id}`, group);
+    return this.http.patch<StationGroup>(`${this.groupsUrl}/${id}`, group);
   }
 
   deleteStationGroup(id: string): Observable<void> {

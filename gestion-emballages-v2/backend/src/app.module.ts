@@ -35,6 +35,11 @@ import { TransferRequestProduct } from './modules/transfers/entities/transfer-re
 import { Forecast } from './modules/forecasts/entities/forecast.entity';
 import { ShoppingCart } from './modules/shopping-carts/entities/shopping-cart.entity';
 import { ShoppingCartItem } from './modules/shopping-carts/entities/shopping-cart-item.entity';
+import { MasterContract } from './modules/contracts/entities/master-contract.entity';
+import { ContractProductSLA } from './modules/contracts/entities/contract-product-sla.entity';
+import { ContractPerformanceMetric } from './modules/contracts/entities/contract-performance-metric.entity';
+import { Document } from './modules/documents/entities/document.entity';
+import { DocumentAccess } from './modules/documents/entities/document-access.entity';
 import { EntityHistory } from './common/entities/entity-history.entity';
 
 // Modules
@@ -46,6 +51,10 @@ import { PlatformsModule } from './modules/platforms/platforms.module';
 import { ProductsModule } from './modules/products/products.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { StocksModule } from './modules/stocks/stocks.module';
+import { TransfersModule } from './modules/transfers/transfers.module';
+import { ShoppingCartsModule } from './modules/shopping-carts/shopping-carts.module';
+import { DocumentsModule } from './modules/documents/documents.module';
+import { ContractsModule } from './modules/contracts/contracts.module';
 import { CommonModule } from './common/common.module';
 
 // Database seeder
@@ -99,6 +108,11 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
           Forecast,
           ShoppingCart,
           ShoppingCartItem,
+          MasterContract,
+          ContractProductSLA,
+          ContractPerformanceMetric,
+          Document,
+          DocumentAccess,
           EntityHistory,
         ],
         synchronize: false, // Disabled - using migrations instead
@@ -120,6 +134,10 @@ import { DatabaseSeeder } from './database/seeders/database.seeder';
     ProductsModule,
     OrdersModule,
     StocksModule,
+    TransfersModule,
+    ShoppingCartsModule,
+    DocumentsModule,
+    ContractsModule,
   ],
   controllers: [],
   providers: [DatabaseSeeder],

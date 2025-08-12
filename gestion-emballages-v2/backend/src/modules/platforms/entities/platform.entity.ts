@@ -33,8 +33,8 @@ export class Platform extends SoftDeletableEntity {
   @Column({ type: 'text', nullable: true })
   description?: string;
 
-  @Column({ type: 'text', nullable: true })
-  specialties?: string;
+  @Column({ type: 'jsonb', nullable: true })
+  specialties?: string[];
 
   // Relations
   @OneToMany(() => PlatformContact, contact => contact.platform, { cascade: true })

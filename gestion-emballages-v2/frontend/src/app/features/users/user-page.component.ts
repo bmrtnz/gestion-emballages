@@ -10,7 +10,7 @@ import { UserStatisticsComponent } from "./user-statistics/user-statistics.compo
     standalone: true,
     imports: [CommonModule, LucideAngularModule, UserListComponent, UserStatisticsComponent],
     template: `
-        <div class="min-h-screen">
+        <div>
             <!-- Page Header with Expandable Statistics -->
             <div class="mb-8">
                 <!-- Title Row with Statistics Icon and Chevron -->

@@ -13,6 +13,7 @@ export interface StationContact {
   phone?: string;
   email?: string;
   position?: string;
+  isPrimary?: boolean;
   isActive: boolean;
   stationId: string;
 }

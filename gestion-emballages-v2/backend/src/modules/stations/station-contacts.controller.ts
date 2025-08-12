@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { StationContactsService } from './station-contacts.service';
@@ -13,18 +13,19 @@ import { UserRole } from '@common/enums/user-role.enum';
 @ApiTags('Station Contacts')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('api/station-contacts')
+@Controller('station-contacts')
 export class StationContactsController {
   constructor(private readonly stationContactsService: StationContactsService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Create a new station contact' })
   @ApiResponse({ status: 201, description: 'Contact successfully created', type: StationContact })
   @ApiResponse({ status: 400, description: 'Validation error or business rule violation' })
   @ApiResponse({ status: 404, description: 'Station not found' })
-  create(@Body() createStationContactDto: CreateStationContactDto): Promise<StationContact> {
-    return this.stationContactsService.create(createStationContactDto);
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
+  create(@Body() createStationContactDto: CreateStationContactDto, @Request() req): Promise<StationContact> {
+    return this.stationContactsService.create(createStationContactDto, req.user);
   }
 
   @Get('station/:stationId')
@@ -47,17 +48,19 @@ export class StationContactsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Update a station contact' })
   @ApiParam({ name: 'id', description: 'Contact ID', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Contact successfully updated', type: StationContact })
   @ApiResponse({ status: 400, description: 'Validation error or business rule violation' })
   @ApiResponse({ status: 404, description: 'Contact not found' })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
   update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateStationContactDto: UpdateStationContactDto
+    @Body() updateStationContactDto: UpdateStationContactDto,
+    @Request() req
   ): Promise<StationContact> {
-    return this.stationContactsService.update(id, updateStationContactDto);
+    return this.stationContactsService.update(id, updateStationContactDto, req.user);
   }
 
   @Delete(':id')
@@ -71,13 +74,14 @@ export class StationContactsController {
   }
 
   @Patch(':id/set-primary')
-  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.STATION)
   @ApiOperation({ summary: 'Set contact as primary for the station' })
   @ApiParam({ name: 'id', description: 'Contact ID', format: 'uuid' })
   @ApiResponse({ status: 200, description: 'Contact set as primary', type: StationContact })
   @ApiResponse({ status: 404, description: 'Contact not found' })
-  setPrincipal(@Param('id', ParseUUIDPipe) id: string): Promise<StationContact> {
-    return this.stationContactsService.setPrincipal(id);
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
+  setPrincipal(@Param('id', ParseUUIDPipe) id: string, @Request() req): Promise<StationContact> {
+    return this.stationContactsService.setPrincipal(id, req.user);
   }
 
   @Get('station/:stationId/primary')

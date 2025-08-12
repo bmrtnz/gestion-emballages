@@ -26,4 +26,5 @@ export class CreateStationContactDto {
   @IsOptional()
   @IsBoolean()
   isPrimary?: boolean;
+
 }

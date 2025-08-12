@@ -5,5 +5,5 @@ export const appConfig = registerAs('app', () => ({
   port: parseInt(process.env.PORT, 10) || 3001,
   apiPrefix: process.env.API_PREFIX || 'api',
   apiVersion: process.env.API_VERSION || 'v1',
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+  corsOrigins: process.env.CORS_ORIGINS || 'http://localhost:4200',
 }));

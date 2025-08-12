@@ -8,7 +8,7 @@ import { UserRole } from '@core/models/user.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="min-h-screen space-y-6">
+    <div class="space-y-6">
       
       <!-- Welcome Header -->
       <div class="bg-white rounded-lg shadow-sm p-6">

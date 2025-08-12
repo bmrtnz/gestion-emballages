@@ -16,10 +16,7 @@ export class PlatformsService {
   ) {}
 
   async create(createPlatformDto: CreatePlatformDto, _userId: string): Promise<Platform> {
-    const platform = this.platformRepository.create({
-      ...createPlatformDto,
-    });
-
+    const platform = this.platformRepository.create(createPlatformDto);
     return await this.platformRepository.save(platform);
   }
 

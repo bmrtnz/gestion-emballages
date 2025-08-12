@@ -238,11 +238,11 @@ interface PlatformFilters {
                 <!-- Specialties -->
                 <td class="px-6 py-2">
                   <div class="flex flex-wrap gap-1">
-                    <span *ngFor="let specialty of platform.specialties" 
+                    <span *ngFor="let specialty of getSpecialtiesArray(platform)" 
                           class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {{ specialty }}
                     </span>
-                    <span *ngIf="!platform.specialties || platform.specialties.length === 0" class="text-sm text-gray-500">-</span>
+                    <span *ngIf="getSpecialtiesArray(platform).length === 0" class="text-sm text-gray-500">-</span>
                   </div>
                 </td>
 
@@ -316,10 +316,10 @@ interface PlatformFilters {
               </div>
             </div>
 
-            <div *ngIf="platform.specialties && platform.specialties.length > 0" class="text-sm">
+            <div *ngIf="getSpecialtiesArray(platform).length > 0" class="text-sm">
               <span class="text-gray-500">Spécialités:</span>
               <div class="flex flex-wrap gap-1 mt-1">
-                <span *ngFor="let specialty of platform.specialties" 
+                <span *ngFor="let specialty of getSpecialtiesArray(platform)" 
                       class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {{ specialty }}
                 </span>
@@ -413,6 +413,29 @@ export class PlatformListComponent implements OnInit {
 
   ngOnInit() {
     this.loadPlatforms();
+  }
+
+  // Helper method to ensure specialties is always an array
+  getSpecialtiesArray(platform: Platform): string[] {
+    if (!platform.specialties) return [];
+    if (Array.isArray(platform.specialties)) return platform.specialties;
+    
+    // Handle case where specialties might be a string (backward compatibility)
+    const specialtiesValue = platform.specialties as any;
+    if (typeof specialtiesValue === 'string') {
+      // Handle string that looks like a JSON array or comma-separated values
+      try {
+        const parsed = JSON.parse(specialtiesValue);
+        return Array.isArray(parsed) ? parsed : [specialtiesValue];
+      } catch {
+        // If not valid JSON, split by comma or return as single item
+        return specialtiesValue.includes(',') 
+          ? specialtiesValue.split(',').map((s: string) => s.trim())
+          : [specialtiesValue];
+      }
+    }
+    
+    return [];
   }
 
   async loadPlatforms() {

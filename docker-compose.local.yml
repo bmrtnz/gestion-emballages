@@ -1,0 +1,120 @@
+# Local Development Docker Compose
+# Only runs supporting services (PostgreSQL, Redis, MinIO, etc.)
+# Backend and Frontend run locally outside of Docker
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: gestion-emballages-postgres-local
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gestion_emballages_dev
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_local_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+      - ./docker/postgres/dev-scripts:/docker-entrypoint-initdb.d/dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - local-dev-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: gestion-emballages-redis-local
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_local_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - local-dev-network
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: gestion-emballages-minio-local
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: devuser
+      MINIO_ROOT_PASSWORD: devpassword123
+    ports:
+      - "9010:9000"   # API port
+      - "9011:9001"   # Console port
+    volumes:
+      - minio_local_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - local-dev-network
+
+  # Development Tools
+  adminer:
+    image: adminer:latest
+    container_name: gestion-emballages-adminer-local
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: dracula
+    networks:
+      - local-dev-network
+    depends_on:
+      - postgres
+
+  # MailHog for Email Testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: gestion-emballages-mailhog-local
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
+    networks:
+      - local-dev-network
+
+  # Redis Commander
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: gestion-emballages-redis-commander-local
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - local-dev-network
+    depends_on:
+      - redis
+
+networks:
+  local-dev-network:
+    driver: bridge
+
+volumes:
+  postgres_local_data:
+    driver: local
+  redis_local_data:
+    driver: local
+  minio_local_data:
+    driver: local
